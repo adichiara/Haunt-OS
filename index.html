@@ -544,7 +544,7 @@ let VPi=0,VB={hr:74,spo2:98,resp:16,bp:'118/76',temp:37};
 const FEEDS=(C.cams||[]).map((c,i)=>{const m=mediaObj(c.src);return {label:c.label||('CAM '+String(i+1).padStart(2,'0')),sub:c.sub||'',slot:c.slot?((+c.slot-1)%4+4)%4:i%4,flip:!!c.flip,zoom:+c.zoom||1,offAt:c.offAt,src0:c.src,m0:m,m,seed:i*17+3}});
 function applyFeed(c,f){f=f||{label:'',sub:'',m:null,seed:3};c.feed=f;c.label=f.label;c.sub=f.sub;c.media=f.m&&f.m.video?f.m:null;c.still=f.m&&!f.m.video?f.m.el:null;c.offline=!f.m;c.flip=f.flip;c.zoom=f.zoom;c.seed=f.seed;
  if(c.box){const lb=c.box.querySelector('.lab');if(lb){lb.textContent=f.label;const sm=document.createElement('small');sm.textContent=f.sub;lb.appendChild(sm)}}}
-function mediaObj(src){if(!src)return null;if(isVid(src)){const v=document.createElement('video');v.src=src;v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';v.play().catch(()=>{});VIDS.push(v);return {el:v,video:true}}const i=new Image();i.src=src;return {el:i,video:false}}
+function mediaObj(src){if(!src)return null;if(isVid(src)){const v=document.createElement('video');v.src=src;v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';VIDS.push(v);return {el:v,video:true}}const i=new Image();i.src=src;return {el:i,video:false}}
 const $=s=>document.querySelector(s);
 /* biohazard glyph, drawn once */
 (function(){const c=document.createElement('canvas');c.width=c.height=240;const x=c.getContext('2d');x.translate(120,120);x.scale(2.3,2.3);x.fillStyle='#ff2b38';x.strokeStyle='#ff2b38';
@@ -578,19 +578,28 @@ function grain(ctx,w,h,a){ctx.save();ctx.globalAlpha=a;const tl=tiles[Math.rando
 /* camera feeds: the user's stills with slow drift, flicker, grain */
 const cams=[0,1,2,3].map(q=>({}));
 cams.forEach((c,q)=>applyFeed(c,FEEDS.find(f=>f.slot===q)));
+function setFx(ctx,f){const el=ctx.canvas;if(el._fx!==f){el._fx=f;el.style.filter=f}}
 function drawFeed(ctx,W,H,t,c,gray){
  const m=c.media;const el=m?m.el:c.still;if(!el){ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);return}const iw=m&&m.video?el.videoWidth:el.naturalWidth,ih=m&&m.video?el.videoHeight:el.naturalHeight;
  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);if(!iw)return;
  const z=(1.06+.025*Math.sin(t*.11+c.seed))*(c.zoom||1),s=Math.max(W/iw,H/ih)*z;
  const dx=Math.sin(t*.07+c.seed)*W*.015,dy=Math.cos(t*.05+c.seed)*H*.01;
  let fl=1;const fb=hash(Math.floor(t*9)+c.seed);if(fb<.035)fl=.45;else if(fb<.07)fl=.8;
- ctx.filter=(gray||m?'grayscale(.85) contrast(1.15) ':'')+`brightness(${fl})`;
- if(c.flip){ctx.save();ctx.translate(W,0);ctx.scale(-1,1)}ctx.drawImage(el,(W-iw*s)/2+dx,(H-ih*s)/2+dy,iw*s,ih*s);if(c.flip)ctx.restore();ctx.filter='none';
+ /* the look is a CSS filter on the canvas element, not a canvas2d filter:
+    same picture, GPU-composited, and roughly half the cost on video feeds */
+ setFx(ctx,(gray||m?'grayscale(.85) contrast(1.15) ':'')+`brightness(${fl})`);
+ if(c.flip){ctx.save();ctx.translate(W,0);ctx.scale(-1,1)}ctx.drawImage(el,(W-iw*s)/2+dx,(H-ih*s)/2+dy,iw*s,ih*s);if(c.flip)ctx.restore();
  grain(ctx,W,H,.1);
  const ry=(t*50+c.seed*40)%(H+60)-30;ctx.fillStyle='rgba(255,255,255,.035)';ctx.fillRect(0,ry,W,24);
  if(hash(Math.floor(t*14)+c.seed*3)<.02){ctx.drawImage(ctx.canvas,0,H*.4,W,H*.08,8,H*.4,W,H*.08)}
 }
-function drawLost(ctx,W,H){grain(ctx,W,H,1);ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,0,W,H)}
+function drawLost(ctx,W,H){setFx(ctx,'none');grain(ctx,W,H,1);ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,0,W,H)}
+/* only decode the clips that are actually on screen */
+function videoOn(m,on){const el=m&&m.video?m.el:null;if(!el)return;if(on){if(el.paused)el.play().catch(()=>{})}else if(!el.paused)el.pause()}
+function syncVideos(){try{const cc=S.mode==='cctv';
+ FEEDS.forEach(f=>videoOn(f.m,cc&&cams.some(c=>c.feed===f)));
+ videoOn(TXFEED&&TXFEED.media,S.mode==='tx');
+ videoOn(labMedia,S.mode==='lab')}catch(e){}}
 
 /* cctv layout */
 const grid=$('#cctv');
@@ -793,7 +802,7 @@ function syncTabs(){document.querySelectorAll('.tabs span[data-mode]').forEach(e
 /* modes & controls */
 const screens={tx:$('#s-tx'),cctv:$('#s-cctv'),map:$('#s-map'),alert:$('#s-alert'),vitals:$('#s-vitals'),lab:$('#s-lab'),end:$('#s-end')};
 const MODES=['tx','cctv','map','alert','vitals','lab','end'];
-function setMode(m){S.mode=m;S.modeT0=S.t;syncTabs();if(m==='vitals')vReset();if(m==='end')endReset();for(const k in screens)screens[k].hidden=k!==m;document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));glitch()}
+function setMode(m){S.mode=m;S.modeT0=S.t;syncTabs();if(m==='vitals')vReset();if(m==='end')endReset();for(const k in screens)screens[k].hidden=k!==m;document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));syncVideos();glitch()}
 function restart(){S.t=0;S.modeT0=0;if(S.mode==='vitals')vReset();if(S.mode==='end')endReset();S.nextGlitch=5;M=buildMap(S.seed);logEl.innerHTML='';lastStates=[];sens.forEach(s=>s.arr.fill(null));hist.fill(0);if(audio){audio.currentTime=0;audio.play().catch(()=>{})}}
 const GFX={until:0,start:0,kind:'',freeze:0,seed:0};const gfxc=$('#gfx').getContext('2d');
 const GKINDS=['shift','rgb','roll','stutter','flash','flicker','punch','crt'];
@@ -840,7 +849,7 @@ function loadAudio(f){if(audio)audio.pause();audio=new Audio(URL.createObjectURL
  try{const ac=new (window.AudioContext||window.webkitAudioContext)();const src=ac.createMediaElementSource(audio);analyser=ac.createAnalyser();analyser.fftSize=1024;abuf=new Uint8Array(analyser.fftSize);src.connect(analyser);analyser.connect(ac.destination);ac.resume()}catch(err){analyser=null}
  setMode('tx');restart();note('Loaded audio: '+f.name)}
 function loadClip(c,f){const url=URL.createObjectURL(f);
- if(f.type.startsWith('video')){const v=document.createElement('video');v.src=url;v.muted=true;v.loop=true;v.playsInline=true;v.play().catch(()=>{});c.media={el:v,video:true}}
+ if(f.type.startsWith('video')){const v=document.createElement('video');v.src=url;v.muted=true;v.loop=true;v.playsInline=true;c.media={el:v,video:true};syncVideos()}
  else{const im=new Image();im.src=url;c.media={el:im,video:false}}note('Loaded '+f.name+' into '+c.label)}
 function note(t){let n=$('#note');if(!n){n=document.createElement('span');n.id='note';n.className='msgline';$('#ctl').prepend(n)}n.textContent=t}
 cams.forEach(c=>{const b=c.box;b.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();b.classList.add('drop')});b.addEventListener('dragleave',()=>b.classList.remove('drop'));
@@ -1052,7 +1061,7 @@ function loopTick(dt){if(!LOOP.on)return;LOOP.next-=dt;if(LOOP.next<=0)loopGo(LO
 $('#b-loop').onclick=startLoop;
 /* ---------- lab clip + room controls ---------- */
 function loadLab(f){const url=URL.createObjectURL(f);
- if(f.type.startsWith('video')){const v=document.createElement('video');v.src=url;v.muted=true;v.loop=true;v.playsInline=true;v.play().catch(()=>{});labMedia={el:v,video:true}}
+ if(f.type.startsWith('video')){const v=document.createElement('video');v.src=url;v.muted=true;v.loop=true;v.playsInline=true;labMedia={el:v,video:true}}
  else{const im=new Image();im.src=url;labMedia={el:im,video:false}}setMode('lab');note('Loaded '+f.name+' into the lab screen')}
 $('#b-lab').onclick=()=>$('#f-lab').click();
 $('#f-lab').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)loadLab(f)};
@@ -1177,7 +1186,7 @@ let GMIN=4,GMAX=10;{const G=C.glitches||{};if(G.auto===false)S.auto=false;const 
 /* ---------- camera list: every camera selectable, each tied to its own spot ---------- */
 const GROUPS=(C.camGroups||[]).map(g=>({name:g.name||'',feeds:(g.cams||[]).map(l=>FEEDS.find(f=>f.label===l)).filter(Boolean)}));
 function selCam(d){document.querySelectorAll('#camlist div').forEach(x=>x.classList.toggle('sel',x===d))}
-function showFeeds(list){grid.classList.remove('solo');cams.forEach(c=>c.box.classList.remove('max'));list.forEach(f=>{const c=cams[f.slot];applyFeed(c,f);c.swT=S.t});tone(1500,.04,.05,'square')}
+function showFeeds(list){grid.classList.remove('solo');cams.forEach(c=>c.box.classList.remove('max'));list.forEach(f=>{const c=cams[f.slot];applyFeed(c,f);c.swT=S.t});syncVideos();tone(1500,.04,.05,'square')}
 let CL='';
 function buildCamList(){const L=$('#camlist');L.innerHTML=FEEDS.map((f,i)=>`<div data-f="${i}"><i class="dot"></i>${escH(f.label)}</div>`).join('')+(GROUPS.length?'<hr>'+GROUPS.map((g,i)=>`<div data-g="${i}"><i class="dot"></i>${escH(g.name)}</div>`).join(''):'');
  L.querySelectorAll('div[data-f]').forEach(d=>d.onclick=()=>{ac();showFeeds([FEEDS[+d.dataset.f]]);selCam(d)});
@@ -1267,12 +1276,12 @@ function applyDay(){
   :BREACH<.2?['shift','flicker']:BREACH<.45?['shift','flicker','rgb','roll']
   :BREACH<.7?['shift','flicker','rgb','roll','stutter','punch']:GKINDS.slice();
  S.nextGlitch=S.t+GMIN;
- buildChips();setPatient(0);renderSide();renderList();blankPane();
+ buildChips();setPatient(0);renderSide();renderList();blankPane();syncVideos();
  if(PREVIEW)console.log('Haunt-OS preview: '+(DAY===0?'party day':DAY+' days out'));}
 
 const dayReady=resolveDay();
 S.paused=true;
-$('#c-go').onclick=()=>{ac();hookAnalyser();unlockAudio();VIDS.forEach(v=>v.play().catch(()=>{}));$('#c-go').textContent='\u2026';Promise.race([dayReady,new Promise(r=>setTimeout(r,2500))]).then(()=>{applyDay();$('#connect').hidden=true;S.paused=false;goMode('tx');startTx();glitch('flicker');const oc=C.alerts&&C.alerts.onConnect;if(oc&&oc[0]&&BREACH>.3)setTimeout(()=>toast(oc[0],oc[1]||''),1800)})};
+$('#c-go').onclick=()=>{ac();hookAnalyser();unlockAudio();$('#c-go').textContent='\u2026';Promise.race([dayReady,new Promise(r=>setTimeout(r,2500))]).then(()=>{applyDay();$('#connect').hidden=true;S.paused=false;goMode('tx');startTx();glitch('flicker');const oc=C.alerts&&C.alerts.onConnect;if(oc&&oc[0]&&BREACH>.3)setTimeout(()=>toast(oc[0],oc[1]||''),1800)})};
 
 /* loop */
 M=buildMap(S.seed);
@@ -1291,5 +1300,6 @@ function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;drawGfx();if(
  else if(S.mode==='end')updateEnd(t-S.modeT0);
  if(S.auto&&!S.paused&&t>S.nextGlitch){glitch(pickAuto());S.nextGlitch=t+GMIN+Math.random()*Math.max(0,GMAX-GMIN)}
  requestAnimationFrame(frame)}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)VIDS.forEach(v=>{if(!v.paused)v.pause()});else syncVideos()});
 requestAnimationFrame(frame);
 </script>
