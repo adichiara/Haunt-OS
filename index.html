@@ -25,6 +25,11 @@ body{background:var(--bg);color:var(--fg);font-family:var(--cond);margin:0;
 .layer{position:absolute;inset:0}
 [hidden]{display:none!important}
 .appbar .brand{text-transform:none}
+.tabs{overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs span{flex:none;cursor:default}
+.tabs span[data-mode]{cursor:pointer}
+.tabs .search{flex:none;margin-left:auto}
 .appbar .osurl{margin-left:18px;font-family:var(--mono);font-size:14px;letter-spacing:.03em;color:#53646b;text-transform:none}
 body.nourl .osurl{display:none}
 /* no on-screen date or clock: keeps cuts consistent between takes */
@@ -382,7 +387,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
     </div>
     <div class="colstack">
      <div class="cpane soft"><div class="cph"><span>SECTOR</span><small>B1</small></div><canvas id="minimap" width="330" height="470"></canvas></div>
-     <div class="cpane soft"><div class="cph"><span>STATUS</span></div><div class="route">Containment <b style="color:#ff6b74">FAILED</b><br>Personnel <b style="color:#ff6b74">NO RESPONSE</b><br>Uplink <b id="uplink">SEARCHING</b></div></div>
+     <div class="cpane soft"><div class="cph"><span>STATUS</span></div><div class="route">Containment <b style="color:#ff6b74">FAILED</b><br>Personnel <b style="color:#ff6b74">NO RESPONSE</b><br>Uplink <b id="uplink">SEARCHING</b><br><span id="t-status" style="color:#7fa696"></span></div></div>
     </div>
    </div>
   </section>
@@ -501,7 +506,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
 <div id="connect"><img class="bioimg" alt=""><div class="k" id="c-kick">INCOMING TRANSMISSION</div><h1 id="c-title">CHANNEL 07</h1><button id="c-go">Connect</button><small id="c-note"></small></div>
 <div class="ctl" id="ctl">
  <div class="grp" id="modes">
-  <button data-mode="tx" class="on">1 Transmission</button><button data-mode="cctv">2 CCTV</button><button data-mode="map">3 Breach map</button><button data-mode="alert">4 Alert</button><button data-mode="vitals">5 Vitals</button><button data-mode="lab">6 Lab</button><button data-mode="end">7 End card</button>
+  <button data-mode="tx" class="on">1 Transmission</button><button data-mode="cctv">2 Cameras</button><button data-mode="map">3 Breach map</button><button data-mode="alert">4 Alert</button><button data-mode="vitals">5 Vitals</button><button data-mode="lab">6 Lab</button><button data-mode="end">7 End card</button>
  </div>
  <div class="grp">
   <button id="b-restart">Restart</button><button id="b-glitch">Glitch</button><button id="b-auto" class="on">Auto glitch</button><select id="gstyle" aria-label="Glitch style"><option value="mix">Glitch: mix</option><option value="shift">Glitch: shift</option><option value="rgb">Glitch: RGB split</option><option value="roll">Glitch: vertical roll</option><option value="stutter">Glitch: stutter</option><option value="flash">Glitch: flash</option><option value="flicker">Glitch: power flicker</option><option value="punch">Glitch: lens punch</option><option value="crt">Glitch: CRT collapse</option></select><span class="lbl">Auto uses:</span><span class="grp" id="autok" style="gap:4px"></span><button id="b-pause">Pause</button><button id="b-new">New map</button><button id="b-sound" class="on">Sound on</button><button id="b-loop">Party loop</button>
@@ -530,13 +535,14 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
 <script src="content.js"></script>
 <script src="subjects.js"></script>
 <script src="emails.js"></script>
+<script src="timeline.js"></script>
 <script>
 const C=window.CONTENT;
 if(!C){document.body.innerHTML='<p style="font:16px/1.6 monospace;color:#ff6b78;padding:24px;max-width:640px">content.js did not load.<br>Make sure content.js sits in the same folder as index.html. If it does, the file probably has a missing comma or quote: open the browser console (F12) to see the line number.</p>';throw new Error('content.js missing or invalid')}
 const isVid=s=>/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(s||'');const VIDS=[];
-const SUBJ=((window.SUBJECTS&&window.SUBJECTS.length)?window.SUBJECTS:[{id:'0-14',bed:'Bed 07',bay:'Isolation Bay 3',admitted:'21:58',monitor:'flat'}]).slice(0,8);
+let SUBJ=[];
 let VPi=0,VB={hr:74,spo2:98,resp:16,bp:'118/76',temp:37};
-const FEEDS=(C.cams||[]).map((c,i)=>({label:c.label||('CAM '+String(i+1).padStart(2,'0')),sub:c.sub||'',slot:c.slot?((+c.slot-1)%4+4)%4:i%4,flip:!!c.flip,zoom:+c.zoom||1,m:mediaObj(c.src),seed:i*17+3}));
+const FEEDS=(C.cams||[]).map((c,i)=>{const m=mediaObj(c.src);return {label:c.label||('CAM '+String(i+1).padStart(2,'0')),sub:c.sub||'',slot:c.slot?((+c.slot-1)%4+4)%4:i%4,flip:!!c.flip,zoom:+c.zoom||1,offAt:c.offAt,src0:c.src,m0:m,m,seed:i*17+3}});
 function applyFeed(c,f){f=f||{label:'',sub:'',m:null,seed:3};c.feed=f;c.label=f.label;c.sub=f.sub;c.media=f.m&&f.m.video?f.m:null;c.still=f.m&&!f.m.video?f.m.el:null;c.offline=!f.m;c.flip=f.flip;c.zoom=f.zoom;c.seed=f.seed;
  if(c.box){const lb=c.box.querySelector('.lab');if(lb){lb.textContent=f.label;const sm=document.createElement('small');sm.textContent=f.sub;lb.appendChild(sm)}}}
 function mediaObj(src){if(!src)return null;if(isVid(src)){const v=document.createElement('video');v.src=src;v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';v.play().catch(()=>{});VIDS.push(v);return {el:v,video:true}}const i=new Image();i.src=src;return {el:i,video:false}}
@@ -549,7 +555,7 @@ const $=s=>document.querySelector(s);
  for(const a of [-90,30,150]){const r=a*Math.PI/180;x.beginPath();x.arc(Math.cos(r)*31,Math.sin(r)*31,16,0,7);x.fill()}
  x.beginPath();x.arc(0,0,6.5,0,7);x.fill();x.lineWidth=3;
  for(const a of [90,210,330]){const r=a*Math.PI/180;x.beginPath();x.moveTo(0,0);x.lineTo(Math.cos(r)*45,Math.sin(r)*45);x.stroke()}
- const u=c.toDataURL();document.querySelectorAll('.bioimg').forEach(i=>i.src=u)})();
+ const u=window.BIOURL=c.toDataURL();document.querySelectorAll('.bioimg').forEach(i=>i.src=u)})();
 
 const W0=1600,H0=900;
 const S={mode:'tx',t:0,speed:1,paused:false,auto:true,nextGlitch:5,seed:7};
@@ -643,12 +649,12 @@ function buildMap(seed){const r=mulberry(seed);const N=S.rooms||8;const R=(a,b)=
 const hatchC=document.createElement('canvas');hatchC.width=hatchC.height=8;{const x=hatchC.getContext('2d');x.strokeStyle='rgba(255,60,72,.55)';x.lineWidth=1;x.beginPath();x.moveTo(-2,10);x.lineTo(10,-2);x.stroke()}
 let hatchPat=null;
 const msgs=(C.map&&C.map.events&&C.map.events.length)?C.map.events:['MOTION DETECTED','DOOR FORCED','CONTAINMENT FAILURE'];
-function stepMap(t){if(M.inf.size===0&&t>=.8){M.inf.set(M.seedRoom.i,t);addLog('CONTAINMENT FAILURE','SECTOR '+M.seedRoom.label,t);M.next=t+1.4;return}
+function stepMap(t){if(BREACH<=0)return;if(M.inf.size===0&&t>=.8){M.inf.set(M.seedRoom.i,t);addLog('CONTAINMENT FAILURE','SECTOR '+M.seedRoom.label,t);M.next=t+1.4;return}
  if(t<M.next||M.inf.size===0)return;
  const cand=[];for(const o of M.rooms){if(M.inf.has(o.i)||o===M.origin)continue;const src=o.n.find(e=>M.inf.has(e.r.i));if(src)cand.push([o,src.r])}
  if(!cand.length){M.next=t+999;return}
  const [o,from]=cand[Math.random()*cand.length|0];M.inf.set(o.i,t);M.par.set(o.i,from);
- addLog(o.cam?'CCTV FEED LOST':msgs[Math.random()*msgs.length|0],'SECTOR '+o.label,t);M.next=t+(.9+Math.random()*1.2)*Math.max(.3,Math.min(4,22/M.rooms.length))}
+ addLog(o.cam?'CCTV FEED LOST':msgs[Math.random()*msgs.length|0],'SECTOR '+o.label,t);M.next=t+SPREAD*(.7+Math.random()*.6)}
 function drawMap(ctx,W,H,t,mini){
  if(!hatchPat)hatchPat=ctx.createPattern(hatchC,'repeat');
  ctx.clearRect(0,0,W,H);const B=M.bb,cs=Math.min(W/(B.w+(mini?2:6)),H/(B.h+(mini?2:6))),ox=(W-B.w*cs)/2-B.x*cs,oy=(H-B.h*cs)/2-B.y*cs;
@@ -784,10 +790,16 @@ function updateTx(t){bootLines.forEach(([t0,txt],i)=>{const s=typ(txt,t0,t,34);i
  $('#sig').classList.toggle('weak',weak);const st=$('#sigtxt');st.classList.toggle('weak',weak);st.textContent=weak?'SIGNAL WEAK':t<T1?'SEARCHING':'SIGNAL';
  return weak}
 
+/* ---------- one menu bar on every screen, same names as the web version ---------- */
+const TABS=[['Transmission','tx'],['Cameras','cctv'],['Breach map','map'],['Alert','alert'],['Vitals','vitals'],['Lab','lab'],['Mail','files'],['Terminal','term'],['Respond','end']];
+const SEARCHPH={tx:'Search channels, frequencies\u2026',cctv:'Search cameras, feeds, events\u2026',map:'Search modules, cameras, systems\u2026',vitals:'Search patients, bays, monitors\u2026',lab:'Search samples, sequences, subjects\u2026'};
+const SICO='<svg class="ico" viewBox="0 0 24 24" style="width:14px"><circle cx="10" cy="10" r="6"/><path d="M15 15l5 5"/></svg>';
+function syncTabs(){document.querySelectorAll('.tabs span[data-mode]').forEach(e=>e.classList.toggle('on',e.dataset.mode===S.mode))}
+
 /* modes & controls */
 const screens={tx:$('#s-tx'),cctv:$('#s-cctv'),map:$('#s-map'),alert:$('#s-alert'),vitals:$('#s-vitals'),lab:$('#s-lab'),end:$('#s-end')};
 const MODES=['tx','cctv','map','alert','vitals','lab','end'];
-function setMode(m){S.mode=m;S.modeT0=S.t;if(m==='vitals')vReset();if(m==='end')endReset();for(const k in screens)screens[k].hidden=k!==m;document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));glitch()}
+function setMode(m){S.mode=m;S.modeT0=S.t;syncTabs();if(m==='vitals')vReset();if(m==='end')endReset();for(const k in screens)screens[k].hidden=k!==m;document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));glitch()}
 function restart(){S.t=0;S.modeT0=0;if(S.mode==='vitals')vReset();if(S.mode==='end')endReset();S.nextGlitch=5;M=buildMap(S.seed);logEl.innerHTML='';lastStates=[];sens.forEach(s=>s.arr.fill(null));hist.fill(0);if(audio){audio.currentTime=0;audio.play().catch(()=>{})}}
 const GFX={until:0,start:0,kind:'',freeze:0,seed:0};const gfxc=$('#gfx').getContext('2d');
 const GKINDS=['shift','rgb','roll','stutter','flash','flicker','punch','crt'];
@@ -1056,6 +1068,8 @@ $('#b-labclr').onclick=()=>{labMedia=null;note('Lab screen: built-in cell')};
 function setRooms(v){S.rooms=+v;restart();$('#roomsn').textContent=M.rooms.length+' rooms'}
 $('#rooms').oninput=e=>setRooms(e.target.value);
 
+
+
 vReset();
 S.rooms=Math.max(5,Math.min(12,+((C.map&&C.map.rooms)||8)));
 
@@ -1068,7 +1082,7 @@ function hookAnalyser(){if(!audio||analyser||!AC||location.protocol==='file:')re
 function txAudioTick(tt){if(!audio||S.audioStarted||tt<T2)return;S.audioStarted=true;try{audio.currentTime=0}catch(e){}audio.muted=!soundOn;audio.play().catch(()=>{})}
 function startTx(){S.txT0=S.t;S.audioStarted=false;hist.fill(0);if(audio){audio.pause();try{audio.currentTime=0}catch(e){}}}
 function unlockAudio(){if(!audio)return;audio.muted=true;const p=audio.play();if(p)p.then(()=>{audio.pause();audio.muted=!soundOn;try{audio.currentTime=0}catch(e){}}).catch(()=>{audio.muted=!soundOn})}
-const PATS=SUBJ.map(x=>Object.assign({},x,{name:'SUBJECT '+x.id,bedline:[x.bed,x.bay].filter(Boolean).join(' · ')}));const VP={get i(){return VPi}};
+let PATS=[];const VP={get i(){return VPi}};
 function setPatient(i){VPi=(i+PATS.length)%PATS.length;const p=PATS[VPi];VB=Object.assign({hr:74,spo2:98,resp:16,bp:'118/76',temp:37},p.base||{});V.scen=SCEN[p.monitor]?p.monitor:'flat';$('#t-vbed').textContent='Patient Monitor  //  '+(p.bedline||'');vReset();S.modeT0=S.t;document.querySelectorAll('.subjchips button').forEach((b,j)=>b.classList.toggle('on',j===VPi))}
 const HINTS={files:'Pick a folder, then a message',term:'Type HELP, or tap a command',tx:'',cctv:'Pick a camera from the list · tap a feed to enlarge',map:'',alert:'',vitals:'Pick a subject top right, or tap the monitor',lab:'Tap the specimen: next stage · tap a panel to switch it',end:''};
 function goMode(m){if(m==='lab')[0,1].forEach(i=>{if(lpState[i]&&lpState[i].key==='subject')setPanel(i,'subject')});if(m==='term')setTimeout(()=>{if(matchMedia('(pointer:fine)').matches)$('#tin').focus()},60);if(m==='tx'&&S.mode!=='tx'&&(!audio||audio.ended))startTx();setMode(m);document.querySelectorAll('#webnav button[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));$('#hint2').textContent=HINTS[m]||'';$('#w-replay').hidden=m!=='tx'}
@@ -1104,12 +1118,9 @@ function mediaTag(src){if(/\.(mp3|wav|ogg|m4a)(\?|$)/i.test(src))return `<audio 
 const MAIL=window.EMAILS||{};
 const ACCT=MAIL.account||{name:'OPERATOR',addr:'operator@local',org:'Mail'};
 const FOLD=(MAIL.folders&&MAIL.folders.length)?MAIL.folders:[{id:'inbox',name:'Inbox'}];
-const MSGS=(MAIL.messages||[]).map((m,i)=>Object.assign({},m,{i,folder:m.folder||'inbox',date:m.date||'',unread:!!m.unread}))
- .sort((a,b)=>(b.date>a.date)-(b.date<a.date)).map((m,i)=>(m.i=i,m));
+let MSGS=[];
 function subjText(x){return `SUBJECT ${x.id} · MEDICAL RECORD\n\nROLE:       ${x.role||''}\nAGE / SEX:  ${x.age??''} / ${x.sex||''}\nLOCATION:   ${[x.bed,x.bay].filter(Boolean).join(' · ')}\nADMITTED:   ${x.admitted||''}\nEXPOSURE:   ${x.exposure||''}\nSTAGE:      ${x.stage||''}\nSTATUS:     ${x.status||''}\n\nNOTES: ${x.notes||''}`}
-const ATT=[...(MAIL.attachments||[]).map(a=>({name:a.name||'FILE',text:a.text||'',media:a.media||''})),
-           ...SUBJ.map(x=>({name:'subject_'+x.id+'.rec',text:subjText(x),media:''}))].map((a,i)=>(a.i=i,a));
-const FILES=ATT;
+let ATT=[],FILES=ATT;
 const ICO_F='<svg class="ico" viewBox="0 0 24 24"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg>';
 const ICO_A='<svg class="ico" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>';
 let MBOX=FOLD[0].id,MSEL=-1,ASEL=-1;
@@ -1187,19 +1198,97 @@ buildCamList();
 const STD=[...document.querySelectorAll('#webnav button[data-mode]')].map(b=>[b.textContent,b.dataset.mode]);
 document.querySelectorAll('.screen').forEach(sc=>{const tb=sc.querySelector('.tabs');if(!tb)return;const id=sc.id.slice(2),search=tb.querySelector('.search');tb.innerHTML='';
  STD.forEach(([n,m])=>{const sp=document.createElement('span');sp.textContent=n;if(m===id)sp.className='on';sp.addEventListener('click',()=>{ac();goMode(m)});tb.appendChild(sp)});
- if(id==='vitals'){const ch=document.createElement('span');ch.className='subjchips';const dc={flat:'g',rean:'a',feral:'r',husk:'d'};
-  ch.innerHTML=SUBJ.map((x,i)=>`<button title="${escH(x.role||'')}"><i class="${dc[x.monitor]||'g'}"></i>${escH(x.id)}</button>`).join('');tb.appendChild(ch);
-  ch.querySelectorAll('button').forEach((b,i)=>b.onclick=e=>{e.stopPropagation();ac();setPatient(i);glitch('shift')})}
+ if(id==='vitals'){const ch=document.createElement('span');ch.className='subjchips';ch.id='subjchips';tb.appendChild(ch)}
  else if(search)tb.appendChild(search)});
-setPatient(0);S.paused=true;
-$('#c-go').onclick=()=>{ac();hookAnalyser();unlockAudio();VIDS.forEach(v=>v.play().catch(()=>{}));$('#connect').hidden=true;S.paused=false;goMode('tx');startTx();glitch('flicker')};
+/* =====================================================================
+   THE COUNTDOWN
+   How many days until the party decides what the facility looks like.
+   The day comes from the web server's clock, not the visitor's, so it
+   cannot be moved by changing the date on their computer.
+   ===================================================================== */
+const TL=window.TIMELINE||{},PARTY=TL.partyDate||'2026-10-30',FIRSTDAY=+TL.firstDay||14;
+const DAYKEYS=Object.keys(TL.days||{}).map(Number).sort((a,b)=>a-b);
+let DAY=FIRSTDAY,PREVIEW=false,BREACH=0,SPREAD=20;
+const p2=n=>String(n).padStart(2,'0');
+function partyAt(){const [y,m,d]=PARTY.split('-').map(Number);return new Date(y,m-1,d)}
+function daysUntil(now){const t=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.round((partyAt()-t)/864e5)}
+const clampDay=n=>Math.max(0,Math.min(FIRSTDAY,n));
+function dayState(d){for(const k of DAYKEYS)if(k>=d)return TL.days[k]||{};return TL.days[DAYKEYS[DAYKEYS.length-1]]||{}}
+function dayDate(d,time){const dt=partyAt();dt.setDate(dt.getDate()-d);
+ return dt.getFullYear()+'-'+p2(dt.getMonth()+1)+'-'+p2(dt.getDate())+(time?' '+time:'')}
+/* preview links. The token is a hash of the day, so a visitor cannot
+   skip ahead by editing a number in the address bar. */
+function tok(d){let h=2166136261;const s=(TL.previewSalt||'x')+'|'+d;
+ for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36).padStart(7,'0').slice(-7)}
+function resolveDay(){
+ const k=new URLSearchParams(location.search).get('k');
+ if(k)for(let d=0;d<=FIRSTDAY;d++)if(tok(d)===k){DAY=d;PREVIEW=true;return Promise.resolve()}
+ DAY=clampDay(daysUntil(new Date()));
+ return fetch(location.href,{method:'HEAD',cache:'no-store'}).then(r=>{const h=r.headers.get('date');
+  if(h){const t=new Date(h);if(!isNaN(t))DAY=clampDay(daysUntil(t))}}).catch(()=>{})}
+if(location.protocol==='file:'||/^(localhost|127\.)/.test(location.hostname)){
+ const L=[];for(let d=FIRSTDAY;d>=0;d--)L.push('  '+(d===0?'party day':d+' days out').padEnd(12)+'?k='+tok(d));
+ console.log('%cHaunt-OS preview links%c\n'+L.join('\n'),'color:#46e59a;font-weight:700','color:#8797a0')}
+
+function seedBreach(frac){if(!frac||frac<=0){M.next=S.t+SPREAD;return}
+ const par=new Map(),order=[M.seedRoom],seen=new Set([M.seedRoom]);
+ for(let i=0;i<order.length;i++)for(const e of order[i].n)if(!seen.has(e.r)&&e.r!==M.origin){seen.add(e.r);par.set(e.r.i,order[i]);order.push(e.r)}
+ const n=Math.min(order.length,Math.round(frac*Math.max(1,M.reach-1)));
+ for(let i=0;i<n;i++){const o=order[i];M.inf.set(o.i,S.t-8-(n-i)*.05);const pa=par.get(o.i);if(pa)M.par.set(o.i,pa)}
+ M.next=S.t+SPREAD}
+
+function buildChips(){const ch=$('#subjchips');if(!ch)return;const dc={flat:'g',rean:'a',feral:'r',husk:'d'};
+ ch.innerHTML=SUBJ.map(x=>`<button title="${escH(x.role||'')}"><i class="${dc[x.monitor]||'g'}"></i>${escH(x.id)}</button>`).join('');
+ ch.querySelectorAll('button').forEach((b,i)=>b.onclick=e=>{e.stopPropagation();ac();setPatient(i);glitch('shift')})}
+
+function applyDay(){
+ const E=dayState(DAY);BREACH=+E.breach||0;SPREAD=Math.max(3,+E.spread||20);
+ /* subjects: who is in a bed today, and how far gone they are */
+ SUBJ=(window.SUBJECTS||[]).filter(x=>x.day===undefined||x.day>=DAY).slice(0,8).map(x=>{
+  let st=null;for(const g of (x.stages||[]))if(g.day>=DAY)st=g;
+  const o=Object.assign({},x,st||{});o.monitor=SCEN[o.monitor]?o.monitor:'flat';
+  o.admitted=x.day===undefined?(x.admitted||''):dayDate(x.day).slice(5).replace('-','/');return o});
+ if(!SUBJ.length)SUBJ=[{id:'0-00',monitor:'flat',bed:'Bed 01',bay:'Isolation Bay 1',notes:'No subjects in isolation.'}];
+ PATS=SUBJ.map(x=>Object.assign({},x,{name:'SUBJECT '+x.id,bedline:[x.bed,x.bay].filter(Boolean).join(' \u00b7 ')}));
+ /* mail: what has arrived, and what is still unread */
+ MSGS=(MAIL.messages||[]).filter(m=>m.day===undefined||m.day>=DAY)
+  .map(m=>Object.assign({},m,{folder:m.folder||'inbox',
+    date:m.day===undefined?(m.date||''):dayDate(m.day,m.time||'09:00'),
+    unread:m.day===undefined?false:m.day===DAY}))
+  .sort((a,b)=>(b.date>a.date)-(b.date<a.date)).map((m,i)=>(m.i=i,m));
+ ATT=[...(MAIL.attachments||[]).map(a=>({name:a.name||'FILE',text:a.text||'',media:a.media||''})),
+      ...SUBJ.filter(x=>x.id!=='0-00').map(x=>({name:'subject_'+x.id+'.rec',text:subjText(x),media:''}))].map((a,i)=>(a.i=i,a));
+ FILES=ATT;
+ /* cameras that have gone dark */
+ FEEDS.forEach(f=>{const off=!f.src0||(f.offAt!==undefined&&DAY<=f.offAt);f.m=off?null:f.m0});
+ cams.forEach((c,q)=>applyFeed(c,FEEDS.find(f=>f.slot===q)));
+ buildCamList();
+ /* the rest of the facility */
+ M=buildMap(S.seed);seedBreach(BREACH);logEl.innerHTML='';
+ if(E.lab){$('#labstage').value=E.lab;S.modeT0=S.t}
+ const A=E.alert||{};if(A.title)document.querySelectorAll('.t-alert').forEach(e=>e.textContent=A.title);
+ if(A.subtitle)document.querySelectorAll('.t-alertsub').forEach(e=>e.textContent=A.subtitle);
+ if(A.line)$('#t-alertline').textContent=A.line;
+ if($('#t-status'))$('#t-status').textContent=E.status||'';
+ if(E.every){GMIN=E.every[0];GMAX=E.every[1]}
+ else{GMIN=Math.max(2.5,28-25*BREACH);GMAX=Math.max(GMIN+3,48-41*BREACH)}
+ AUTOK=(E.styles&&E.styles.filter(k=>GKINDS.includes(k)).length)?E.styles.filter(k=>GKINDS.includes(k))
+  :BREACH<.2?['shift','flicker']:BREACH<.45?['shift','flicker','rgb','roll']
+  :BREACH<.7?['shift','flicker','rgb','roll','stutter','punch']:GKINDS.slice();
+ S.nextGlitch=S.t+GMIN;
+ buildChips();setPatient(0);renderSide();renderList();blankPane();
+ if(PREVIEW)console.log('Haunt-OS preview: '+(DAY===0?'party day':DAY+' days out'));}
+
+const dayReady=resolveDay();
+S.paused=true;
+$('#c-go').onclick=()=>{ac();hookAnalyser();unlockAudio();VIDS.forEach(v=>v.play().catch(()=>{}));$('#c-go').textContent='\u2026';Promise.race([dayReady,new Promise(r=>setTimeout(r,2500))]).then(()=>{applyDay();$('#connect').hidden=true;S.paused=false;goMode('tx');startTx();glitch('flicker');const oc=C.alerts&&C.alerts.onConnect;if(oc&&oc[0]&&BREACH>.3)setTimeout(()=>toast(oc[0],oc[1]||''),1800)})};
 
 /* loop */
 M=buildMap(S.seed);$('#roomsn').textContent=M.rooms.length+' rooms';
 const txcam=$('#txcam').getContext('2d'),mini=$('#minimap').getContext('2d'),mapc=$('#map').getContext('2d');
 let last=performance.now(),lastClock='';
 function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;drawGfx();if(now/1000<GFX.freeze){requestAnimationFrame(frame);return}const sdt=S.paused?0:dt*S.speed;loopTick(dt);
- if(!S.paused){S.t+=dt*S.speed;stepMap(S.t);updateSensors(dt*S.speed);if(M.next>S.t+500){if(!M.doneAt)M.doneAt=S.t;else if(S.t-M.doneAt>25){S.seed=(S.seed+1)|0;M=buildMap(S.seed);M.next=S.t+1.2;M.t0=S.t;logEl.innerHTML='';lastStates=[]}}}
+ if(!S.paused){S.t+=dt*S.speed;stepMap(S.t);updateSensors(dt*S.speed);if(M.next>S.t+500){if(!M.doneAt)M.doneAt=S.t;else if(S.t-M.doneAt>25){S.seed=(S.seed+1)|0;M=buildMap(S.seed);seedBreach(BREACH);M.t0=S.t;logEl.innerHTML='';lastStates=[]}}}
  const t=S.t,ck=clock(t);if(ck!==lastClock){lastClock=ck;document.querySelectorAll('[data-clock]').forEach(e=>e.textContent=ck)}
  if(S.mode==='tx'){const weak=updateTx(t-S.txT0);drawFeed(txcam,460,560,t,TXFEED,true);drawMap(mini,330,470,t,true);drawWave(t-S.txT0,weak);txAudioTick(t-S.txT0)}
  else if(S.mode==='cctv'){cams.forEach((c,i)=>{const lost=c.offline||camLost(i,t),sw=t-(c.swT??-9)<.35;c.lostNow=lost;

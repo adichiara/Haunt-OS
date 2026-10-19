@@ -4,6 +4,12 @@
 
    Each message:
      folder:  inbox | sent | spam | archive
+     date:    'YYYY-MM-DD HH:MM' for a fixed message that is always
+              there (the backstory). These always show as already read.
+     day:     OR, instead of `date`, how many days before the party it
+              arrives. 7 means it lands 7 days out, 0 is party day. Its
+              date is worked out for you. It shows as NEW on the day it
+              arrives, as read after that, and does not exist before.
      from:    who it's from (a role or an office, not a person)
      addr:    their email address
      to:      who it's addressed to
@@ -515,17 +521,231 @@ P.S. — I promise I'm not a bot! 🙂` },
     to: 'Principal Investigator', subject: 'Per my last email',
     body: 'Following up on the below. Per my last email, do you have a minute?' },
 
-  /* ---------- the night of ---------- */
-  { folder: 'inbox', date: '2026-10-18 20:41', unread: true, from: 'Lab A Night Lead', addr: 'lab-a-night@exresfac.org',
+  /* ---------- the countdown ----------
+     These arrive one day at a time. `day` is how many days before the
+     party. Copy a block, change the day, and it slots into place.     */
+
+  { folder: 'inbox', day: 11, time: '09:14', from: 'Maintenance', addr: 'maintenance@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Work order 4471 closed — vent 7',
+    body:
+`Attended. No fault found. Ductwork sound, dampers operating, no
+obstruction visible from the access hatch.
+
+Noise reported by night staff is consistent with rodent activity.
+Bait stations placed.
+
+Closing as resolved. Please reopen if the noise persists.` },
+
+  { folder: 'inbox', day: 10, time: '07:32', from: 'Air Handling (automated)', addr: 'alarms@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Advisory: particulate deviation — Sublevel B',
+    body:
+`ZONE:      SUBLEVEL B
+READING:   0.41 (threshold 0.30)
+DURATION:  6 h 20 m
+SOURCE:    UNDETERMINED
+
+Advisory only. No action required at this level.
+Filters were replaced 9 days ago.` },
+
+  { folder: 'inbox', day: 10, time: '16:48', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
+    to: 'Principal Investigator', subject: 'B-07 overnight plate counts',
+    body:
+`The overnight counts are wrong. I ran them twice.
+
+Either the incubator is miscalibrated or the doubling time has dropped
+by an order of magnitude since Friday.
+
+I would like someone to check my arithmetic before I put this anywhere
+official.` },
+
+  { folder: 'sent', day: 9, time: '08:05', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+    to: 'Lab B Floor Lead', subject: 'RE: B-07 overnight plate counts',
+    body: 'Your arithmetic is fine.\n\nRun it again tonight. Alone, and on the sealed bench.' },
+
+  { folder: 'inbox', day: 9, time: '13:27', from: 'Security', addr: 'security@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Door sensor fault — Lab B',
+    body:
+`The Lab B door is reporting OPEN while physically closed. Engineering
+has been notified.
+
+In the meantime the access log for that door should be treated as
+unreliable. Please badge in as normal regardless.` },
+
+  { folder: 'inbox', day: 8, time: '06:51', from: 'Occupational Health', addr: 'occhealth@exresfac.org',
+    to: 'Principal Investigator', subject: 'Exposure report — Lab B (1 of 1)',
+    body:
+`An exposure incident was logged at 04:40.
+
+Personnel admitted to isolation for observation as a precaution. The
+wound is minor. Standard protocol is 48 hours.
+
+We anticipate a routine discharge.` },
+
+  { folder: 'inbox', day: 8, time: '11:02', from: 'Environmental Health & Safety', addr: 'ehs@exresfac.org',
+    to: 'All Laboratory Personnel', subject: 'Reminder: respirator fit testing this week',
+    body:
+`Fit testing is available Tuesday and Wednesday in the training room.
+
+Testing is required annually for all personnel working in Level 3 and
+Level 4 spaces.
+
+Sublevel B personnel: your scheduled slot conflicts with the all-hands
+meeting. Please attend both.` },
+
+  { folder: 'inbox', day: 7, time: '09:40', from: 'Security Systems (automated)', addr: 'alarms@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Camera offline — CAM 13 (Vent 7 Access)',
+    body:
+`CAM 13 has stopped reporting. Last frame 09:38.
+
+A service request has been raised. Current queue time for non-critical
+camera faults is 6 weeks.
+
+CAM 08 (Freight Lift) remains offline from 14 August.` },
+
+  { folder: 'inbox', day: 7, time: '15:19', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
+    to: 'Principal Investigator', subject: 'Ran it again. Alone. Sealed bench.',
+    body:
+`Doubling time is down by a factor of nine from the figures in the
+protocol.
+
+The culture is also no longer confined to the medium. There is growth
+on the underside of the plate lid.
+
+I have sealed Lab B. Nobody in or out until you have seen this.` },
+
+  { folder: 'inbox', day: 6, time: '07:15', from: 'Occupational Health', addr: 'occhealth@exresfac.org',
+    to: 'Principal Investigator', subject: 'Exposure report — Lab B (2 of 2)',
+    body:
+`A second exposure was logged overnight during restraint of the first
+patient.
+
+Both are now in isolation. The second declined sedation and has asked
+repeatedly for the return of her duty weapon.
+
+Observation extended to 96 hours.` },
+
+  { folder: 'spam', day: 6, time: '02:58', from: 'World Summit on Emerging Pathogens', addr: 'secretariat@wsep-global.info',
+    to: 'Undisclosed recipients', subject: 'Final Call — Abstract deadline EXTENDED (3rd extension)',
+    body:
+`Dear Dr. Pricipal Invesitgator,
+
+Due to overwhelming response, the abstract deadline has been extended
+for the third time.
+
+Submit your esteemed abstract today and receive a 5% early-bird
+discount on the registration fee of 1,490 USD.
+
+Topics of interest include but are not limited to: all topics.` },
+
+  { folder: 'inbox', day: 5, time: '05:44', from: 'Occupational Health', addr: 'occhealth@exresfac.org',
+    to: 'Principal Investigator', subject: 'Isolation census — 4 occupied',
+    body:
+`Bay occupancy has doubled overnight. Two further admissions:
+
+  - night custodian, airborne exposure, vent 7
+  - graduate intern, needlestick
+
+We are now at 4 of 6 beds. Please advise whether to open Bay 2.
+
+The custodian has asked whether the knocking in vent 7 was ever
+investigated. I did not have an answer for him.` },
+
+  { folder: 'sent', day: 4, time: '08:30', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+    to: 'Facility Director', subject: 'Request: evacuate and seal Sublevel B',
+    files: ['B-07_incident_summary.pdf'],
+    body:
+`I am requesting immediate evacuation of Sublevel B and a hard seal of
+the level pending external review.
+
+Incubation is now under one hour. Four personnel are in isolation. The
+agent is no longer confined to Lab B and I can no longer account for
+its route.
+
+I am aware of what this does to the quarter. I am asking anyway.` },
+
+  { folder: 'inbox', day: 3, time: '10:12', from: 'Facility Director', addr: 'director@exresfac.org',
+    to: 'Principal Investigator', subject: 'RE: Request: evacuate and seal Sublevel B',
+    body:
+`Request reviewed and denied.
+
+An evacuation at this stage would trigger notification requirements we
+are not in a position to meet before the end of the quarter, and the
+sponsor review is on the 14th.
+
+Continue containment at the local level. Keep it off email.
+
+I have every confidence in your team.` },
+
+  { folder: 'inbox', day: 3, time: '18:55', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
+    to: 'Principal Investigator', subject: 'The custodian',
+    body:
+`He stopped breathing at 22:31 last night.
+
+The monitor is still counting. Slower than a heartbeat should be, and
+in a rhythm I have not seen before.
+
+I have not turned it off. I would like instructions.` },
+
+  { folder: 'inbox', day: 2, time: '04:03', from: 'Containment Systems (automated)', addr: 'alarms@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Seal integrity 61% — Sublevel B',
+    body:
+`PRIMARY SEAL:   61% (threshold 85%)
+SECONDARY SEAL: 88%
+AIR HANDLING:   RECIRCULATING
+VENT 7 DAMPER:  OPEN — MANUAL OVERRIDE AT PANEL
+
+The manual override was engaged at 03:51 from inside the level.` },
+
+  { folder: 'inbox', day: 2, time: '12:30', from: 'Human Resources', addr: 'hr@exresfac.org',
+    to: 'All Staff', subject: 'Halloween costume guidelines',
+    body:
+`A reminder that costumes are welcome but must not include:
+
+  - masks that obscure the face at badge readers
+  - fake blood on or near laboratory spaces
+  - anything resembling personal protective equipment
+
+Sublevel B personnel are exempt from the third item for obvious
+reasons.
+
+Prizes will be awarded for best costume.` },
+
+  { folder: 'inbox', day: 1, time: '03:21', from: 'Security Systems (automated)', addr: 'alarms@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Multiple cameras offline — Sublevel B',
+    body:
+`The following feeds have stopped reporting within the last 40 minutes:
+
+  CAM 05  Lab A
+  CAM 10  Isolation Bay
+  CAM 12  Generator Room
+
+No fault is reported on the network path. The cameras are receiving
+power.
+
+Service request raised.` },
+
+  { folder: 'inbox', day: 1, time: '19:47', from: 'Lab A Night Lead', addr: 'lab-a-night@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Who is on tonight',
+    body:
+`I need an honest count of who is actually on the level tonight.
+
+Not the roster. The roster says twenty-three. I have seen nine people
+since this morning and I have heard more than nine moving around.
+
+Reply with your name and where you are.` },
+
+  /* ---------- party day ---------- */
+
+  { folder: 'inbox', day: 0, time: '20:41', from: 'Lab A Night Lead', addr: 'lab-a-night@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Vent 7 — noise again',
     body:
-`Second night in a row. Maintenance closed the ticket as rats.
+`Third night running. Maintenance closed the ticket as rats.
 
 It is rhythmic. Rats are not rhythmic.
 
 Logging it again. Someone please look at it before I do.` },
 
-  { folder: 'inbox', date: '2026-10-18 21:33', unread: true, flag: true, from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
+  { folder: 'inbox', day: 0, time: '21:33', flag: true, from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Subject in Bay 1 — core temp readings',
     body:
 `Bay 1 core temp has climbed 2.1 C in 40 minutes with no fever response
@@ -535,11 +755,11 @@ I have asked for a second opinion. I would like a third.
 
 Who is still on site?` },
 
-  { folder: 'inbox', date: '2026-10-18 21:49', unread: true, flag: true, from: 'Lab A Night Lead', addr: 'lab-a-night@exresfac.org',
+  { folder: 'inbox', day: 0, time: '21:49', flag: true, from: 'Lab A Night Lead', addr: 'lab-a-night@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'RE: Subject in Bay 1 — core temp readings',
     body: 'I am going to the seal room. Do not open Lab B until I call back.\n\nIf I do not call back in ten minutes, do not open Lab B at all.' },
 
-  { folder: 'inbox', date: '2026-10-18 22:04', unread: true, flag: true, from: 'Containment Systems (automated)', addr: 'alarms@exresfac.org',
+  { folder: 'inbox', day: 0, time: '22:04', flag: true, from: 'Containment Systems (automated)', addr: 'alarms@exresfac.org',
     to: 'All Personnel — Sublevel B', subject: 'CONTAINMENT FAILURE — SUBLEVEL B — ISOLATION PROTOCOL ENGAGED',
     body:
 `PRIMARY SEAL FAILURE DETECTED 21:58.
@@ -552,7 +772,7 @@ PERSONNEL ARE INSTRUCTED TO SHELTER IN PLACE AND AWAIT INSTRUCTION.
 
 NO FURTHER INSTRUCTION IS SCHEDULED.` },
 
-  { folder: 'inbox', date: '2026-10-18 22:47', unread: true, flag: true, endCard: true,
+  { folder: 'inbox', day: 0, time: '22:47', flag: true, endCard: true,
     from: 'Emergency Coordination', addr: 'emergency-coord@exresfac.org',
     to: 'Principal Investigator', subject: 'RESCUE ORDER — AUTHORIZED',
     files: ['rescue_order_signed.pdf'],
