@@ -33,7 +33,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--cond);margin:0;
 .appbar .osurl{margin-left:18px;font-family:var(--mono);font-size:14px;letter-spacing:.03em;color:#53646b;text-transform:none}
 body.nourl .osurl{display:none}
 /* no on-screen date or clock: keeps cuts consistent between takes */
-[data-clock],.appbar .dt,.ticker time,.feedts{display:none!important}
+
 .screen{position:absolute;inset:0;display:flex;flex-direction:column}
 canvas{display:block;width:100%;height:100%}
 .ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -394,7 +394,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
 
   <!-- CCTV -->
   <section class="screen" id="s-cctv" hidden>
-   <div class="appbar"><span class="brand"><img class="bioimg" alt=""><span class="t-brand">Haunt-OS v3.7.4</span></span><span class="sp"></span><span class="recbar"><i></i>RECORDING</span></div>
+   <div class="appbar"><span class="brand"><img class="bioimg" alt=""><span class="t-brand">Haunt-OS v3.7.4</span></span><span class="sp"></span><span class="recbar"><i></i>RECORDING</span><span class="dt"><span class="t-date"></span><span data-clock></span></span></div>
    <div class="tabs"><span class="search">Search cameras, feeds, events… <svg class="ico" viewBox="0 0 24 24" style="width:14px"><circle cx="10" cy="10" r="6"/><path d="M15 15l5 5"/></svg></span></div>
    <div class="body">
     <div class="pane camlist" id="camlist"></div>
@@ -562,7 +562,9 @@ const S={mode:'tx',t:0,speed:1,paused:false,auto:true,nextGlitch:5,seed:7};
 const hash=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)};
 function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const pad=n=>String(n).padStart(2,'0');
-function clock(t){const s=Math.floor(22*3600+41*60+27+t);return pad(Math.floor(s/3600)%24)+':'+pad(Math.floor(s/60)%60)+':'+pad(s%60)}
+const MON3=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function clock(t){const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())}
+function dateStr(){try{const p=dayDate(typeof DAY==='number'?DAY:0).split('-');return MON3[+p[1]-1]+' '+p[2]}catch(e){const d=new Date();return MON3[d.getMonth()]+' '+pad(d.getDate())}}
 
 const wrap=$('#wrap'),stage=$('#stage');
 new ResizeObserver(()=>{const cw=wrap.clientWidth,ch=wrap.clientHeight,s=Math.min(cw/W0,ch/H0);
@@ -1101,7 +1103,7 @@ $('#cell').addEventListener('click',()=>{ac();const sel=$('#labstage'),o=['anim'
 $('#s-alert').addEventListener('click',()=>{ac();glitch('flash')});
 /* apply content text */
 (function(){const B=C.brand||{},T=(sel,v)=>{if(v==null)return;document.querySelectorAll(sel).forEach(e=>e.textContent=v)};
- T('.t-brand',B.name);T('.t-date',B.date);T('#t-sec',B.securityName);T('#t-secdate',B.securityDate);
+ T('.t-brand',B.name);T('#t-sec',B.securityName);T('#t-secdate',B.securityDate);
  T('#t-feedlab',TXC.feedLabel);if(TXC.routing)$('#t-route').innerHTML=TXC.routing.map(l=>String(l).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))).join('<br>');
  const MP=C.map||{};T('#t-maptitle',MP.title);T('#t-mapfoot',MP.footer);
  const AL=C.alert||{};T('.t-alert',AL.title);T('.t-alertsub',AL.subtitle);T('#t-alertline',AL.line);
@@ -1288,8 +1290,8 @@ M=buildMap(S.seed);$('#roomsn').textContent=M.rooms.length+' rooms';
 const txcam=$('#txcam').getContext('2d'),mini=$('#minimap').getContext('2d'),mapc=$('#map').getContext('2d');
 let last=performance.now(),lastClock='';
 function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;drawGfx();if(now/1000<GFX.freeze){requestAnimationFrame(frame);return}const sdt=S.paused?0:dt*S.speed;loopTick(dt);
- if(!S.paused){S.t+=dt*S.speed;stepMap(S.t);updateSensors(dt*S.speed);if(M.next>S.t+500){if(!M.doneAt)M.doneAt=S.t;else if(S.t-M.doneAt>25){S.seed=(S.seed+1)|0;M=buildMap(S.seed);seedBreach(BREACH);M.t0=S.t;logEl.innerHTML='';lastStates=[]}}}
- const t=S.t,ck=clock(t);if(ck!==lastClock){lastClock=ck;document.querySelectorAll('[data-clock]').forEach(e=>e.textContent=ck)}
+ if(!S.paused){S.t+=dt*S.speed;stepMap(S.t);updateSensors(dt*S.speed);if(M.next>S.t+500){if(!M.doneAt)M.doneAt=S.t;else if(S.t-M.doneAt>25){M=buildMap(S.seed);seedBreach(BREACH);M.t0=S.t;logEl.innerHTML='';lastStates=[]}}}
+ const t=S.t,ck=clock(t);if(ck!==lastClock){lastClock=ck;const ds=dateStr();document.querySelectorAll('[data-clock]').forEach(e=>e.textContent=ck);document.querySelectorAll('.t-date').forEach(e=>e.textContent=ds)}
  if(S.mode==='tx'){const weak=updateTx(t-S.txT0);drawFeed(txcam,460,560,t,TXFEED,true);drawMap(mini,330,470,t,true);drawWave(t-S.txT0,weak);txAudioTick(t-S.txT0)}
  else if(S.mode==='cctv'){cams.forEach((c,i)=>{const lost=c.offline||camLost(i,t),sw=t-(c.swT??-9)<.35;c.lostNow=lost;
    if(grid.classList.contains('solo')&&!c.box.classList.contains('max'))return;c.lostEl.hidden=!lost;c.recEl.style.visibility=lost?'hidden':'visible';
