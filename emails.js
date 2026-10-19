@@ -1,0 +1,659 @@
+/* =====================================================================
+   MAIL · everything in the Mail screen
+   Edit, save, refresh. Add as many messages as you like.
+
+   Each message:
+     folder:  inbox | sent | spam | archive
+     from:    who it's from (a role or an office, not a person)
+     addr:    their email address
+     to:      who it's addressed to
+     subject: the subject line
+     date:    'YYYY-MM-DD HH:MM'  (24-hour clock)
+     unread:  true shows it in bold with a dot
+     flag:    true shows a red marker
+     files:   names of attachments listed on the message (just labels)
+     endCard: true adds a button that plays the party end card
+     body:    the message. Use backticks `...` for more than one line.
+              Wrap words in [[double brackets]] to black them out.
+
+   The sidebar also lists SAVED ATTACHMENTS (the `attachments` list at the
+   bottom of this file) for things that aren't emails. Medical records for
+   the subjects in subjects.js are added to that list automatically.
+   ===================================================================== */
+window.EMAILS = {
+
+  account: { name: 'PRINCIPAL INVESTIGATOR', addr: 'pi.sublevel-b@exresfac.org', org: 'ExResFac Mail' },
+
+  folders: [
+    { id: 'inbox',   name: 'Inbox' },
+    { id: 'sent',    name: 'Sent' },
+    { id: 'archive', name: 'Archive' },
+    { id: 'spam',    name: 'Spam' }
+  ],
+
+  messages: [
+
+  /* ---------- the review board ---------- */
+  { folder: 'sent', date: '2025-11-04 16:22', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+    to: 'Institutional Review Board', subject: 'Request for exemption determination — Protocol B-07',
+    files: ['B-07_exemption_request.pdf'],
+    body:
+`Submitting for exemption determination under the non-human-subjects
+category.
+
+The protocol involves observation of subjects who, at the time of
+enrollment, no longer meet the regulatory definition of a living human
+subject. Vital signs are absent. Responsiveness to name, to language and
+to pain is absent. Ambulation is present.
+
+As the determination of human subject status is made at the point of
+enrollment, and as no enrolled subject met that definition at that point,
+we believe the protocol falls outside the board's purview.
+
+Supporting documentation attached. Happy to discuss.` },
+
+  { folder: 'inbox', date: '2025-11-19 10:41', unread: false, from: 'Institutional Review Board', addr: 'irb-office@exresfac.org',
+    to: 'Principal Investigator', subject: 'RE: Request for exemption determination — Protocol B-07',
+    body:
+`The board has reviewed your request and has three points of clarification
+before a determination can be issued.
+
+1. The protocol states subjects are "not human subjects" but does not
+   state what they are. Please complete Section 4b.
+2. If subjects cannot consent, and next of kin cannot be reached, and the
+   subject is ambulatory, who signs?
+3. The board does not currently have a form for this. We are asking the
+   university whether to make one.
+
+A revised consent document is required regardless of determination. The
+template is on the portal. The portal is down.
+
+Please respond within 30 days.` },
+
+  { folder: 'sent', date: '2025-11-21 08:03', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+    to: 'Institutional Review Board', subject: 'RE: RE: Request for exemption determination — Protocol B-07',
+    body:
+`Re: point 2 — the subject does sign. Twice, in one case. We have the form.
+
+Re: point 1 — Section 4b now reads "pending classification."
+
+Re: the portal — understood.` },
+
+  { folder: 'inbox', date: '2026-02-02 09:15', unread: false, from: 'Office of Research Compliance', addr: 'compliance@exresfac.org',
+    to: 'All Protocol Holders', subject: 'ACTION REQUIRED: Continuing review overdue (Protocol B-07)',
+    body:
+`Our records indicate continuing review for Protocol B-07 is 46 days
+overdue. Enrollment must be suspended until review is complete.
+
+Please confirm that enrollment has been suspended.
+
+This is an automated message. Replies are not monitored.` },
+
+  { folder: 'sent', date: '2026-02-02 09:31', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+    to: 'Office of Research Compliance', subject: 'RE: ACTION REQUIRED: Continuing review overdue (Protocol B-07)',
+    body: 'Confirming that enrollment has been suspended. Enrollment is, at this stage, not something we control.' },
+
+  /* ---------- journals ---------- */
+  { folder: 'archive', date: '2025-12-08 14:50', from: 'Journal of Applied Biocontainment', addr: 'no-reply@manuscriptdesk.jabc.org',
+    to: 'Principal Investigator', subject: 'Submission received — JABC-2025-11847',
+    body:
+`Thank you for submitting your manuscript:
+
+"Thermoregulatory Collapse and Persistent Ambulation in a Large-Animal
+Model: A Prospective Case Series"
+
+Manuscript ID: JABC-2025-11847
+Status: With Editor
+
+You may track the status of your submission at any time by logging in.
+Please do not log in more than once per day. We can see you.` },
+
+  { folder: 'inbox', date: '2025-12-11 17:02', unread: false, from: 'Journal of Applied Biocontainment', addr: 'editorial@jabc.org',
+    to: 'Principal Investigator', subject: 'Decision — JABC-2025-11847',
+    body:
+`Dear Author,
+
+Thank you for submitting your manuscript to the Journal of Applied
+Biocontainment. After an initial assessment, we regret that we are unable
+to send it out for review. The subject matter, while interesting, is not
+a good fit for our readership.
+
+We receive many more submissions than we can publish and this decision
+is not a reflection of the quality of your work.
+
+We wish you success in placing it elsewhere.` },
+
+  { folder: 'inbox', date: '2026-03-17 11:28', unread: false, from: 'Annals of Containment Medicine', addr: 'editorial@annalscm.org',
+    to: 'Principal Investigator', subject: 'Reviewer comments — ACM-0442 (Major Revision)',
+    files: ['ACM-0442_reviews.pdf'],
+    body:
+`Three reviews are enclosed. The editor invites a major revision.
+
+REVIEWER 1: Clear, well-powered, an important contribution. Minor edits
+only. Recommend acceptance.
+
+REVIEWER 2: The authors appear unfamiliar with the literature, in
+particular with the foundational work of [[REDACTED]] (2019), which they
+do not cite. The sample size is inadequate. The statistical approach is
+inappropriate. The figures are illegible. I question whether the authors
+observed what they claim to have observed. I recommend rejection, and
+suggest the authors read [[REDACTED]] (2019) before resubmitting
+anywhere.
+
+REVIEWER 3: "Looks fine."
+
+Please submit a point-by-point response to all 41 comments.` },
+
+  { folder: 'sent', date: '2026-04-02 23:47', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+    to: 'Annals of Containment Medicine', subject: 'Response to reviewers — ACM-0442',
+    files: ['ACM-0442_response_to_reviewers.docx', 'ACM-0442_revised_clean.docx', 'ACM-0442_revised_tracked.docx'],
+    body:
+`Please find the revised manuscript and our point-by-point response.
+
+We thank the reviewers for their careful reading.
+
+Regarding Reviewer 2's comment on the 2019 work: we have now cited it.
+We were unable to locate a copy, as it does not appear to be indexed, or
+published, or to exist. We have cited it anyway.` },
+
+  { folder: 'inbox', date: '2026-05-26 08:14', unread: false, from: 'Annals of Containment Medicine', addr: 'editorial@annalscm.org',
+    to: 'Principal Investigator', subject: 'Decision — ACM-0442',
+    body:
+`After consideration of your revision, we regret to inform you that we
+are unable to accept the manuscript for publication.
+
+Reviewer 2 has raised additional concerns, including several relating to
+material added at Reviewer 2's request.
+
+We appreciate the opportunity to consider your work.` },
+
+  { folder: 'inbox', date: '2026-07-30 13:09', unread: false, flag: true, from: 'Letters in Rapid Pathogenesis', addr: 'office@lrp-letters.org',
+    to: 'Principal Investigator', subject: 'ACCEPTED — LRP-1193',
+    body:
+`We are pleased to inform you that your manuscript
+
+"Sixteen Minutes: Revised Incubation Kinetics for a Novel Transmissible
+Agent"
+
+has been accepted for publication.
+
+Please remit the article processing charge of 4,180 USD within 14 days.
+Please also complete the colour figure surcharge form, the open access
+licence form, and the form confirming you have completed the other two
+forms.
+
+Congratulations on this achievement.` },
+
+  { folder: 'sent', date: '2026-08-14 10:55', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+    to: 'Journal of Neurodegenerative Processes', subject: 'Submission — "Loss of Nociceptive Response as an Early Marker of Stage Transition"',
+    body:
+`Attached please find our manuscript for consideration as a Brief Report.
+
+The work has not been published elsewhere and is not under consideration
+elsewhere.
+
+We suggest the following reviewers, and respectfully request the
+exclusion of one (named in the cover letter) on grounds of a documented
+history.` },
+
+  /* ---------- the spam folder ---------- */
+  { folder: 'spam', date: '2026-01-09 03:17', unread: true, from: 'Intl. Congress on Advanced Life Sciences', addr: 'invitations@icals-summit.info',
+    to: 'Undisclosed recipients', subject: 'Invitation to be KEYNOTE SPEAKER — ICALS 2026 (Dubai)',
+    body:
+`Respected Dr. Pricipal Invesitgator,
+
+Greetings of the day!! We have gone through your esteemed article and we
+are highly impressed by your eminent contribution in the field of
+PODIATRIC SPORTS MEDICINE.
+
+It is our immense pleasure to invite you as KEYNOTE SPEAKER at the 14th
+Intl. Congress on Advanced Life Sciences, to be held at a venue to be
+confirmed.
+
+Registration: 1,290 USD (speakers), 1,290 USD (non-speakers).
+Accommodation, travel, meals and the venue are not included.
+
+Kindly revert with your esteemed confirmation at your earliest.
+Awaiting your positive response!!
+
+Warm regards,
+Conference Secretariat (Ms.)` },
+
+  { folder: 'spam', date: '2026-01-09 03:19', unread: true, from: 'Intl. Congress on Advanced Life Sciences', addr: 'invitations@icals-summit.info',
+    to: 'Undisclosed recipients', subject: 'Gentle Reminder: Invitation to be KEYNOTE SPEAKER — ICALS 2026',
+    body: 'Respected Dr. Pricipal Invesitgator,\n\nKindly revert.' },
+
+  { folder: 'spam', date: '2026-02-26 02:44', unread: true, from: 'Open Science Publishing Group', addr: 'billing@osp-group.biz',
+    to: 'Principal Investigator', subject: 'INVOICE #88213 — Article Processing Charge OVERDUE',
+    body:
+`Dear Author,
+
+Our records show an unpaid balance of 2,950 USD for the processing of
+your article in the International Journal of Interdisciplinary Studies.
+
+Please remit payment to avoid withdrawal of your published work.
+
+(If you have not submitted an article to us, please disregard this
+notice, or pay it anyway to avoid confusion.)` },
+
+  { folder: 'spam', date: '2026-04-11 04:02', unread: true, from: 'Journal of Dental Economics', addr: 'editor-in-chief@jde-openaccess.net',
+    to: 'Esteemed Researcher', subject: 'Call for Papers — your expertise is needed!',
+    body:
+`Dear Esteemed Researcher,
+
+Having read your remarkable paper, we believe your expertise in dental
+economics would greatly enrich our special issue.
+
+Rapid peer review (48 hours). Acceptance rate: high.
+
+We also invite you to join our EDITORIAL BOARD. No duties are required.` },
+
+  { folder: 'spam', date: '2026-06-03 01:58', unread: true, from: 'Global Research Awards Committee', addr: 'awards@grac-recognition.org',
+    to: 'Principal Investigator', subject: 'You have been SELECTED — Scientist of the Year 2026',
+    body:
+`Congratulations! Following a rigorous selection process, you have been
+selected for the Scientist of the Year award.
+
+To claim your award, please complete the nomination form and remit the
+administration fee of 495 USD.
+
+Plaque, certificate and digital badge included. Shipping extra.` },
+
+  { folder: 'spam', date: '2026-09-22 05:31', unread: true, from: 'IT Helpdesk', addr: 'it-support@exresfac-secure-mail.org',
+    to: 'Principal Investigator', subject: 'URGENT: Your mailbox storage is FULL — action required within 24h',
+    body:
+`Dear User,
+
+Your mailbox has exceeded its storage quota of 99.9%. You will be unable
+to send or receive messages.
+
+CLICK HERE TO VALIDATE YOUR ACCOUNT AND RESTORE SERVICE
+
+Failure to validate within 24 hours will result in permanent deletion of
+all messages.
+
+Thank you,
+IT Helpdesk Team` },
+
+  /* ---------- the building ---------- */
+  { folder: 'inbox', date: '2026-09-29 02:14', unread: false, flag: true, from: 'Freezer Monitoring (automated)', addr: 'alarms@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'ALARM: Unit B-03 (-80C) temperature excursion',
+    body:
+`UNIT:        B-03
+LOCATION:    SUBLEVEL B, LAB B
+SET POINT:   -80.0 C
+CURRENT:     -61.4 C
+CONDITION:   DOOR AJAR
+DURATION:    00:22:08
+
+This is the fourth notification. Acknowledge in the portal.` },
+
+  { folder: 'inbox', date: '2026-09-29 02:51', unread: false, from: 'Freezer Monitoring (automated)', addr: 'alarms@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'RESOLVED: Unit B-03 (-80C) temperature excursion',
+    body: 'UNIT B-03 has returned to set point.\n\nDuration of excursion: 00:58:51.\nContents: see attached inventory.\nInventory: not attached.' },
+
+  { folder: 'inbox', date: '2026-08-19 15:33', unread: false, from: 'Core Imaging Facility', addr: 'core-imaging@exresfac.org',
+    to: 'Principal Investigator', subject: 'Booking conflict — Confocal 2, Thursday 09:00-17:00',
+    body:
+`Your lab has booked Confocal 2 for eight consecutive hours on Thursday.
+
+Another group has raised this with us. Per the shared-use policy, blocks
+over four hours require justification.
+
+Please also note that the previous user has reported finding the stage
+"sticky." We would ask all users to clean up after sessions.
+
+We are not accusing anyone.` },
+
+  { folder: 'inbox', date: '2026-08-20 09:02', unread: false, from: 'Core Imaging Facility', addr: 'core-imaging@exresfac.org',
+    to: 'Principal Investigator', subject: 'RE: Booking conflict — Confocal 2',
+    body: 'Thank you for the justification. "It is moving and we would like to see why" has been accepted.' },
+
+  { folder: 'inbox', date: '2026-07-02 11:47', unread: false, from: 'Purchasing', addr: 'purchasing@exresfac.org',
+    to: 'Principal Investigator', subject: 'Backorder notice — PO 44817',
+    body:
+`The following item is on backorder:
+
+  ITEM:  Nitrile gloves, size M, 100ct (case of 10)
+  LEAD:  16 weeks
+  NOTE:  Manufacturer reports "unprecedented demand"
+
+Substitution available: size XS or size XXL.
+
+Please confirm which you would like.` },
+
+  { folder: 'inbox', date: '2026-06-15 08:00', unread: false, from: 'Environmental Health & Safety', addr: 'ehs@exresfac.org',
+    to: 'All Laboratory Personnel', subject: 'OVERDUE: 4 required training modules',
+    body:
+`Our records indicate the following modules are overdue for personnel in
+your area:
+
+  - Bloodborne Pathogens (annual)         OVERDUE 211 days
+  - Biosafety Level 4 Practices (annual)  OVERDUE 184 days
+  - Emergency Egress & Assembly           OVERDUE 184 days
+  - Workplace Civility                    OVERDUE 9 days
+
+Laboratory access may be suspended for personnel with overdue modules.
+
+Each module takes approximately 45 minutes. The civility module takes
+two hours.` },
+
+  { folder: 'inbox', date: '2026-05-04 16:20', unread: false, from: 'Facilities', addr: 'facilities@exresfac.org',
+    to: 'All Staff', subject: 'Autoclave 2 out of service',
+    body:
+`Autoclave 2 is out of service pending repair. Estimated return: 3 weeks.
+
+Please route all loads to Autoclave 1.
+
+Please do not route all loads to Autoclave 1 at the same time.` },
+
+  { folder: 'inbox', date: '2026-10-06 07:45', unread: true, from: 'Environmental Health & Safety', addr: 'ehs@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Biosafety cabinet certification due — BSC-7, BSC-9',
+    body:
+`Annual certification for BSC-7 and BSC-9 expires in 11 days.
+
+Cabinets may not be used for work with infectious material after the
+expiration date.
+
+The certifier is booked until February.` },
+
+  /* ---------- funding and sponsor ---------- */
+  { folder: 'inbox', date: '2026-03-02 12:11', unread: false, from: 'Office of Sponsored Programs', addr: 'osp@exresfac.org',
+    to: 'Principal Investigator', subject: 'Resubmission deadline — 14 days',
+    body:
+`A reminder that the resubmission deadline is in 14 days. Internal
+routing closes 5 business days prior, which is in 7 days, which is
+Tuesday.
+
+Required at routing: budget, budget justification, facilities statement,
+data management plan, biosketches, and the one-page summary of what
+changed since the last submission.
+
+Reviewer 2 on the last submission was also one of your journal reviewers.
+We are not permitted to tell you that.` },
+
+  { folder: 'inbox', date: '2026-09-11 10:28', unread: false, from: 'Program Office', addr: 'program-office@fundingbody.gov',
+    to: 'Principal Investigator', subject: 'Annual report — clarification on scope',
+    body:
+`Thank you for the annual report.
+
+The report describes several lines of work that do not appear in the
+approved aims. Specific Aim 2 was a characterization study. The report
+describes containment.
+
+Please clarify whether this represents a change in scope, and if so,
+submit a prior-approval request.
+
+We would also note the budget shows a significant increase in the line
+item for restraints. Please provide a justification.` },
+
+  { folder: 'inbox', date: '2026-10-07 09:40', unread: true, flag: true, from: 'Sponsor Liaison — Contract 4417', addr: 'liaison@hbr-industrial.com',
+    to: 'Principal Investigator', subject: 'Milestone 6 deliverable — now 32 days late',
+    body:
+`Milestone 6 was due 32 days ago. We have not received the deliverable or
+a revised schedule.
+
+Per section 11.2, continued delay without written notice permits us to
+withhold the quarterly payment.
+
+We understand that research timelines are uncertain. We also understand
+that we have a board meeting on the 14th.
+
+Please advise today.` },
+
+  { folder: 'sent', date: '2026-10-07 18:52', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+    to: 'Sponsor Liaison — Contract 4417', subject: 'RE: Milestone 6 deliverable — now 32 days late',
+    body:
+`A revised schedule will follow this week.
+
+The delay relates to the agent behaving differently than modelled at
+every timepoint after 40 minutes. We would rather be late than wrong.
+
+I would welcome a conversation about the schedule generally.` },
+
+  /* ---------- inbox life ---------- */
+  { folder: 'inbox', date: '2026-10-12 06:00', unread: true, from: 'IT Service Desk', addr: 'no-reply@exresfac.org',
+    to: 'Principal Investigator', subject: 'Your password expires in 3 days',
+    body:
+`Your network password will expire in 3 days.
+
+New passwords must be at least 14 characters and must include an
+uppercase letter, a lowercase letter, a number, a symbol, and must not
+resemble any of your previous 24 passwords.
+
+Passwords may not be written down.` },
+
+  { folder: 'inbox', date: '2026-10-13 11:15', unread: true, from: 'All-Staff', addr: 'all-staff@exresfac.org',
+    to: 'All Staff', subject: 'Parking lot C resurfacing — October 20 to November 3',
+    body:
+`Lot C will be closed for resurfacing. Please use Lot A or Lot D.
+
+Lot A is permit-only. Lot D is closed.
+
+Thank you for your flexibility.` },
+
+  { folder: 'inbox', date: '2026-10-13 11:31', unread: true, from: 'Reply-All', addr: 'staff-member-1@exresfac.org',
+    to: 'All Staff', subject: 'RE: Parking lot C resurfacing — October 20 to November 3',
+    body: 'Please remove me from this list.' },
+
+  { folder: 'inbox', date: '2026-10-13 11:33', unread: true, from: 'Reply-All', addr: 'staff-member-2@exresfac.org',
+    to: 'All Staff', subject: 'RE: RE: Parking lot C resurfacing — October 20 to November 3',
+    body: 'Me too please.' },
+
+  { folder: 'inbox', date: '2026-10-13 11:38', unread: true, from: 'Reply-All', addr: 'staff-member-3@exresfac.org',
+    to: 'All Staff', subject: 'RE: RE: RE: Parking lot C resurfacing — October 20 to November 3',
+    body: 'STOP REPLYING ALL' },
+
+  { folder: 'inbox', date: '2026-10-13 11:39', unread: true, from: 'Reply-All', addr: 'staff-member-4@exresfac.org',
+    to: 'All Staff', subject: 'RE: RE: RE: RE: Parking lot C resurfacing — October 20 to November 3',
+    body: 'Sorry, ignore, wrong list.' },
+
+  { folder: 'inbox', date: '2026-10-14 08:05', unread: true, from: 'Human Resources', addr: 'hr@exresfac.org',
+    to: 'All Staff', subject: 'Reminder: Fall Wellness Challenge — log your steps!',
+    body:
+`There is still time to join the Fall Wellness Challenge!
+
+Participants who log 10,000 steps per day for four weeks will be entered
+into a drawing for a 25 USD gift card.
+
+Sublevel B personnel: the step tracker does not receive signal below
+grade. Please estimate.` },
+
+  { folder: 'inbox', date: '2026-10-15 13:22', unread: true, from: 'Building Services', addr: 'bldg-services@exresfac.org',
+    to: 'All Staff', subject: 'Break room refrigerator will be emptied Friday',
+    body:
+`The break room refrigerator will be emptied at 5:00 PM Friday. Anything
+remaining will be discarded.
+
+Please note that items labelled as laboratory samples will also be
+discarded, as the refrigerator is not a laboratory refrigerator.
+
+Several items are not labelled at all. One is labelled "DEFINITELY NOT
+THE VIRUS." It will be discarded.` },
+
+  { folder: 'inbox', date: '2026-10-16 09:30', unread: true, from: 'Lab A Coordination', addr: 'lab-a-coord@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Quick question',
+    body: 'Do you have a minute?' },
+
+  { folder: 'inbox', date: '2026-10-16 15:44', unread: true, from: 'Training & Development', addr: 'learning@exresfac.org',
+    to: 'All Staff', subject: 'Lunch & Learn: "Managing Difficult Conversations" — Thursday 12:00',
+    body:
+`Join us Thursday for a Lunch & Learn on managing difficult conversations.
+
+Lunch is not provided.
+
+This session is mandatory for supervisory staff and strongly encouraged
+for everyone else.` },
+
+  { folder: 'inbox', date: '2026-10-17 08:12', unread: true, from: 'Calendar', addr: 'calendar@exresfac.org',
+    to: 'Principal Investigator', subject: 'Invitation: Weekly Sync (recurring) — Mon 09:00, 60 min',
+    body:
+`You have been invited to a recurring meeting.
+
+  WHEN:     Mondays, 09:00 - 10:00
+  WHERE:    Conference Room 2 / remote
+  AGENDA:   (none provided)
+  ATTENDEES: 23
+
+Accept  ·  Decline  ·  Propose New Time` },
+
+  { folder: 'inbox', date: '2026-10-17 16:50', unread: true, from: 'Recruiter', addr: 'talent@apex-biosolutions-recruiting.com',
+    to: 'Principal Investigator', subject: 'Exciting opportunity matching your background!',
+    body:
+`Hi there,
+
+I came across your profile and was really impressed by your experience.
+
+I'm working with a fast-growing client in the biotech space looking for a
+Senior Scientist. Competitive comp, great culture, hybrid.
+
+Would you be open to a quick 15-minute chat this week?
+
+P.S. — I promise I'm not a bot! 🙂` },
+
+  { folder: 'inbox', date: '2026-10-18 07:58', unread: true, from: 'Lab A Coordination', addr: 'lab-a-coord@exresfac.org',
+    to: 'Principal Investigator', subject: 'Per my last email',
+    body: 'Following up on the below. Per my last email, do you have a minute?' },
+
+  /* ---------- the night of ---------- */
+  { folder: 'inbox', date: '2026-10-18 20:41', unread: true, from: 'Lab A Night Lead', addr: 'lab-a-night@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Vent 7 — noise again',
+    body:
+`Second night in a row. Maintenance closed the ticket as rats.
+
+It is rhythmic. Rats are not rhythmic.
+
+Logging it again. Someone please look at it before I do.` },
+
+  { folder: 'inbox', date: '2026-10-18 21:33', unread: true, flag: true, from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'Subject in Bay 1 — core temp readings',
+    body:
+`Bay 1 core temp has climbed 2.1 C in 40 minutes with no fever response
+elsewhere. Monitor is reporting a pulse I cannot find by hand.
+
+I have asked for a second opinion. I would like a third.
+
+Who is still on site?` },
+
+  { folder: 'inbox', date: '2026-10-18 21:49', unread: true, flag: true, from: 'Lab A Night Lead', addr: 'lab-a-night@exresfac.org',
+    to: 'Sublevel B Distribution', subject: 'RE: Subject in Bay 1 — core temp readings',
+    body: 'I am going to the seal room. Do not open Lab B until I call back.\n\nIf I do not call back in ten minutes, do not open Lab B at all.' },
+
+  { folder: 'inbox', date: '2026-10-18 22:04', unread: true, flag: true, from: 'Containment Systems (automated)', addr: 'alarms@exresfac.org',
+    to: 'All Personnel — Sublevel B', subject: 'CONTAINMENT FAILURE — SUBLEVEL B — ISOLATION PROTOCOL ENGAGED',
+    body:
+`PRIMARY SEAL FAILURE DETECTED 21:58.
+ISOLATION PROTOCOL ENGAGED 21:59.
+ISOLATION PROTOCOL FAILED 22:04.
+
+ALL EXITS SEALED. LEVEL 5 OVERRIDE REQUIRED.
+
+PERSONNEL ARE INSTRUCTED TO SHELTER IN PLACE AND AWAIT INSTRUCTION.
+
+NO FURTHER INSTRUCTION IS SCHEDULED.` },
+
+  { folder: 'inbox', date: '2026-10-18 22:47', unread: true, flag: true, endCard: true,
+    from: 'Emergency Coordination', addr: 'emergency-coord@exresfac.org',
+    to: 'Principal Investigator', subject: 'RESCUE ORDER — AUTHORIZED',
+    files: ['rescue_order_signed.pdf'],
+    body:
+`A team has been assembled and authorized to enter Sublevel B.
+
+They are volunteers. They have masks. Their armaments are foam-based.
+They are very enthusiastic.
+
+Objective: recover personnel. Contain what can be contained.
+
+Hold your position. They are coming.` }
+
+  ],
+
+  /* ---------- saved attachments (not emails) ----------
+     These show in the sidebar under SAVED ATTACHMENTS.           */
+  attachments: [
+
+  { name: 'B-07_handling_protocol_rev4.txt', text:
+`SPECIMEN B-07 · HANDLING PROTOCOL · REV 4
+
+1. Double gloves. Face shield. No exceptions.
+2. Never handle B-07 alone.
+3. Never handle B-07 after dark.
+4. If B-07 moves toward you, step back and log the time.
+5. If B-07 moves toward you a second time, leave the lab.
+6. Do not name B-07.
+
+Rev 4 note: rule 6 added following an incident. The name has been
+removed from all prior revisions.` },
+
+  { name: 'door_events_B1.log', text:
+`21:52  LAB B DOOR        BADGE (TECH)    OPEN
+21:55  VENT 7 HATCH      MANUAL          OPEN
+21:57  LAB B DOOR        FORCED          ALARM
+21:58  CONTAINMENT       SEAL FAILURE    ALARM
+21:59  ALL EXITS         LOCKDOWN        SEALED
+22:11  ISOLATION BAY 1   BADGE (SEC)     OPEN
+22:24  ISOLATION BAY 4   [[UNKNOWN]]      FORCED
+22:38  COMMS ROOM        BADGE (PI)      SEALED
+22:39  COMMS ROOM        —               SOMETHING KNOCKING` },
+
+  { name: 'staff_roster_sublevel_B.txt', text:
+`SUBLEVEL B · ON SITE 21:58 · 23 TOTAL
+
+PRINCIPAL INVESTIGATOR   Virology       ALIVE · COMMS ROOM
+LAB TECHNICIAN           Lab B          SUBJECT 0-14
+SECURITY OFFICER         Checkpoint 2   SUBJECT 0-17
+NIGHT CUSTODIAN          Facilities     SUBJECT 0-22
+GRADUATE INTERN          Virology       SUBJECT 0-23
+MAINTENANCE TECH         HVAC           SUBJECT 0-27
+COURIER                  Receiving      SUBJECT 0-29
+CAFETERIA STAFF          Kitchen        SUBJECT 0-31
+RESEARCH SCIENTIST       Lab A          SUBJECT 0-33
+(14 more)                —              [[UNACCOUNTED FOR]]` },
+
+  { name: 'evac_routes_B1.txt', text:
+`EVACUATION ROUTES · LEVEL B1
+
+ROUTE A   Stairwell C to loading dock      BLOCKED
+ROUTE B   Freight lift to surface          NO POWER
+ROUTE C   Vent 7 crawlway                  DO NOT USE
+ROUTE D   Wait for rescue                  RECOMMENDED
+
+Rescue teams enter through the loading dock.
+Listen for the foam.` },
+
+  { name: 'power_report_2240.txt', text:
+`POWER · LEVEL B1 · AUTO REPORT 22:40
+
+MAIN GRID          OFFLINE
+AUX GENERATOR      34% FUEL · 3 h 10 m remaining
+LIGHTING           EMERGENCY ONLY
+CCTV               4 OF 16 RECORDING
+COMMS ROOM         PRIORITY ROUTING
+FREEZER, LAB A     ON (please)
+COFFEE MACHINE     ON (unexplained)` },
+
+  { name: 'personal_log_2209.txt', text:
+`[PERSONAL LOG · 22:09 · TRANSCRIPT]
+
+It is in the air handling now. Vent 7. I told them in February.
+Bay 1 stopped breathing twenty minutes ago and the monitor is still
+counting. Slower than before. Wrong rhythm.
+
+I am going to the comms room. If this recording survives and I do not:
+B-07 is not a virus. It is a [[REDACTED]].
+
+[END OF LOG]` },
+
+  { name: 'sticky_note_monitor_3.txt', text:
+`(handwritten, stuck to monitor 3)
+
+Password is NOT "password" anymore.
+It's "password2".
+
+(second note, different handwriting)
+
+Whoever wrote the first note is in Isolation Bay 4 now.
+Who changes the password?` }
+
+  ]
+};
