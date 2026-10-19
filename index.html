@@ -520,6 +520,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
  </div>
  <div class="grp">
   <span class="lbl">Vitals:</span><select id="vscen" aria-label="Vitals scenario"><option value="flat">Flatline</option><option value="rean">Dies, then comes back</option><option value="feral">Infected: frenzied</option><option value="husk">Infected: no pulse, still moving</option></select>
+  <span class="lbl">Feed rate:</span><select id="feedfps" aria-label="Camera feed frame rate"><option value="15">15 fps (CCTV)</option><option value="12">12 fps</option><option value="8">8 fps</option><option value="30">30 fps</option><option value="0">Every frame</option></select>
   <span class="lbl">Lab:</span><button id="b-lab">Load lab clip</button><input type="file" id="f-lab" accept="video/*,image/*" tabindex="-1"><select id="labgrade" aria-label="Lab clip look"><option value="green">Green scope</option><option value="mono">Monochrome</option><option value="red">Red alert</option></select><button id="b-labclr">Use built-in cell</button>
   <select id="labov" aria-label="Lab overlay"><option value="track">Overlay: tracking box</option><option value="multi">Overlay: multi-target</option><option value="lock">Overlay: target lock</option><option value="scan">Overlay: scan sweep</option><option value="measure">Overlay: measure grid</option><option value="none">Overlay: none</option></select>
   <select id="labstage" aria-label="Lab panel stage"><option value="anim">Panels: play from start</option><option value="early">Panels: early</option><option value="spread">Panels: spreading</option><option value="full">Panels: full breach</option></select><select id="lp0sel" aria-label="Upper right panel"></select><select id="lp1sel" aria-label="Lower right panel"></select>
@@ -601,6 +602,10 @@ function syncVideos(){try{const cc=S.mode==='cctv';
  videoOn(TXFEED&&TXFEED.media,S.mode==='tx');
  videoOn(labMedia,S.mode==='lab')}catch(e){}}
 
+/* camera feeds repaint at their own rate: real CCTV is not 60 fps, and
+   each repaint is four full-size draws. 0 = every frame.               */
+let FEEDFPS=(C.cctvFps===undefined||C.cctvFps===null)?15:Math.max(0,+C.cctvFps||0),feedLast=-1e9;
+function feedDue(now){if(!FEEDFPS)return true;const iv=1000/FEEDFPS;if(now-feedLast<iv)return false;feedLast=now;return true}
 /* cctv layout */
 const grid=$('#cctv');
 cams.forEach((c,i)=>{const d=document.createElement('div');d.className='cam';
@@ -1066,6 +1071,7 @@ function loadLab(f){const url=URL.createObjectURL(f);
 $('#b-lab').onclick=()=>$('#f-lab').click();
 $('#f-lab').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)loadLab(f)};
 $('#b-labclr').onclick=()=>{labMedia=null;note('Lab screen: built-in cell')};
+$('#feedfps').onchange=e=>{FEEDFPS=+e.target.value;feedLast=-1e9;note('Camera feeds: '+(FEEDFPS?FEEDFPS+' fps':'every frame'))};
 {const pane=$('#cell').parentElement;pane.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation()});
  pane.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();const f=e.dataTransfer.files[0];if(f&&!f.type.startsWith('audio'))loadLab(f)})}
 
@@ -1291,9 +1297,9 @@ function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;drawGfx();if(
  if(!S.paused){S.t+=dt*S.speed;stepMap(S.t);updateSensors(dt*S.speed);if(M.next>S.t+500){if(!M.doneAt)M.doneAt=S.t;else if(S.t-M.doneAt>25){M=buildMap(S.seed);seedBreach(BREACH);M.t0=S.t;logEl.innerHTML='';lastStates=[]}}}
  const t=S.t,ck=clock(t);if(ck!==lastClock){lastClock=ck;const ds=dateStr();document.querySelectorAll('[data-clock]').forEach(e=>e.textContent=ck);document.querySelectorAll('.t-date').forEach(e=>e.textContent=ds)}
  if(S.mode==='tx'){const weak=updateTx(t-S.txT0);drawFeed(txcam,460,560,t,TXFEED,true);drawMap(mini,330,470,t,true);drawWave(t-S.txT0,weak);txAudioTick(t-S.txT0)}
- else if(S.mode==='cctv'){cams.forEach((c,i)=>{const lost=c.offline||camLost(i,t),sw=t-(c.swT??-9)<.35;c.lostNow=lost;
+ else if(S.mode==='cctv'){if(feedDue(now)){cams.forEach((c,i)=>{const lost=c.offline||camLost(i,t),sw=t-(c.swT??-9)<.35;c.lostNow=lost;
    if(grid.classList.contains('solo')&&!c.box.classList.contains('max'))return;c.lostEl.hidden=!lost;c.recEl.style.visibility=lost?'hidden':'visible';
-   if(lost||sw)drawLost(c.ctx,800,400);else drawFeed(c.ctx,800,400,t,c,false)});updateCamList()}
+   if(lost||sw)drawLost(c.ctx,800,400);else drawFeed(c.ctx,800,400,t,c,false)});updateCamList()}}
  else if(S.mode==='map'){drawMap(mapc,1000,560,t,false);drawSens();updateStatus()}
  else if(S.mode==='vitals')drawVitals(t-S.modeT0,sdt);
  else if(S.mode==='lab')drawLab(t-S.modeT0,sdt);
