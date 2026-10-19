@@ -80,9 +80,10 @@ window.CONTENT = {
     { name: 'ALL CAMERAS', cams: ['CAM 01', 'CAM 02', 'CAM 03', 'CAM 04'] }
   ],
 
-  /* ---------- Breach map ---------- */
+  /* ---------- Breach map ----------
+     The floor plan is fixed (the facility only has the one), so there is
+     nothing to set here but the wording.                               */
   map: {
-    rooms: 8,                        // 5 to 12
     title: 'Facility Map',
     footer: 'Level B1 // Research Wing',
     events: ['MOTION DETECTED', 'DOOR FORCED', 'CONTAINMENT FAILURE', 'AIR PRESSURE DROP',

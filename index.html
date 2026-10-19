@@ -520,7 +520,6 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
  </div>
  <div class="grp">
   <span class="lbl">Vitals:</span><select id="vscen" aria-label="Vitals scenario"><option value="flat">Flatline</option><option value="rean">Dies, then comes back</option><option value="feral">Infected: frenzied</option><option value="husk">Infected: no pulse, still moving</option></select>
-  <span class="lbl">Map rooms:</span><input type="range" id="rooms" min="5" max="12" step="1" value="8" aria-label="Number of rooms"><span id="roomsn" class="lbl"></span>
   <span class="lbl">Lab:</span><button id="b-lab">Load lab clip</button><input type="file" id="f-lab" accept="video/*,image/*" tabindex="-1"><select id="labgrade" aria-label="Lab clip look"><option value="green">Green scope</option><option value="mono">Monochrome</option><option value="red">Red alert</option></select><button id="b-labclr">Use built-in cell</button>
   <select id="labov" aria-label="Lab overlay"><option value="track">Overlay: tracking box</option><option value="multi">Overlay: multi-target</option><option value="lock">Overlay: target lock</option><option value="scan">Overlay: scan sweep</option><option value="measure">Overlay: measure grid</option><option value="none">Overlay: none</option></select>
   <select id="labstage" aria-label="Lab panel stage"><option value="anim">Panels: play from start</option><option value="early">Panels: early</option><option value="spread">Panels: spreading</option><option value="full">Panels: full breach</option></select><select id="lp0sel" aria-label="Upper right panel"></select><select id="lp1sel" aria-label="Lower right panel"></select>
@@ -608,23 +607,16 @@ function camLost(i,t){if(i===3)return (t%64)>50&&(t%64)<52.6;if(i===1)return (t%
 
 /* facility map (blueprint) */
 const MW=48,MH=34;let M;
-function buildMap(seed){const r=mulberry(seed);const N=S.rooms||8;const R=(a,b)=>a+Math.round(r()*(b-a));
- const cw=R(18,26),chh=R(12,17),core={x:Math.round((MW-cw)/2+(r()-.5)*6),y:Math.round((MH-chh)/2+(r()-.5)*4),w:cw,h:chh};
- const blocks=[core];let sides=['N','S','E','W'].filter(()=>r()<.7);while(sides.length<2){const c=['N','S','E','W'][r()*4|0];if(!sides.includes(c))sides.push(c)}
- for(const sd of sides){if(sd==='N'||sd==='S'){const ww=R(7,Math.max(7,Math.min(15,cw-3))),wx=core.x+R(0,cw-ww);
-   if(sd==='N'){const top=R(0,Math.min(3,Math.max(0,core.y-5)));if(core.y-top>=4)blocks.push({x:wx,y:top,w:ww,h:core.y-top})}
-   else{const b0=core.y+chh,bot=MH-R(0,Math.min(3,Math.max(0,MH-b0-5)));if(bot-b0>=4)blocks.push({x:wx,y:b0,w:ww,h:bot-b0})}}
-  else{const wh=R(6,Math.max(6,Math.min(12,chh-3))),wy=core.y+R(0,chh-wh);
-   if(sd==='W'){const lf=R(0,Math.min(3,Math.max(0,core.x-5)));if(core.x-lf>=4)blocks.push({x:lf,y:wy,w:core.x-lf,h:wh})}
-   else{const r0=core.x+cw,rt=MW-R(0,Math.min(3,Math.max(0,MW-r0-5)));if(rt-r0>=4)blocks.push({x:r0,y:wy,w:rt-r0,h:wh})}}}
- const tot=blocks.reduce((a,b)=>a+b.w*b.h,0);let cnt=blocks.map(b=>Math.max(1,Math.round(N*b.w*b.h/tot)));
- while(cnt.reduce((a,b)=>a+b,0)>N){const i=cnt.indexOf(Math.max(...cnt));cnt[i]--}
- while(cnt.reduce((a,b)=>a+b,0)<N)cnt[0]++;
+/* FIXED FLOOR PLAN · Level B1, Research Wing.
+   One layout, always. [x, y, w, h, rooms in this block, 1 = core block]  */
+const PLAN=[[8,0,26,11,15,1],[4,11,30,5,7,1],[0,16,34,11,20,0],[34,9,6,18,6,0],[4,27,33,10,17,0]];
+function buildMap(seed){const r=mulberry(9);const R=(a,b)=>a+Math.round(r()*(b-a));
+ const blocks=PLAN.map(p=>({x:p[0],y:p[1],w:p[2],h:p[3]})),cnt=PLAN.map(p=>p[4]);
  let rooms=[];
  blocks.forEach((bk,bi)=>{let lv=[{...bk}],g=0;while(lv.length<cnt[bi]&&g++<200){let k=0,bs=-1;lv.forEach((o,i)=>{const sc=o.w*o.h*(.7+.6*r());if(sc>bs){bs=sc;k=i}});const o=lv[k];
    const vert=o.w>=o.h;if(vert&&o.w>=8){const sp=Math.round(o.w*(.35+r()*.3));lv.splice(k,1,{x:o.x,y:o.y,w:sp,h:o.h},{x:o.x+sp,y:o.y,w:o.w-sp,h:o.h})}
    else if(o.h>=8){const sp=Math.round(o.h*(.35+r()*.3));lv.splice(k,1,{x:o.x,y:o.y,w:o.w,h:sp},{x:o.x,y:o.y+sp,w:o.w,h:o.h-sp})}else break}
-  lv.forEach(o=>o.core=bi===0);rooms.push(...lv)});
+  lv.forEach(o=>o.core=!!PLAN[bi][5]);rooms.push(...lv)});
  // interior detail: corridor + cells, or simple cells
  for(const o of rooms){o.det=[];const L=Math.max(o.w,o.h),Sh=Math.min(o.w,o.h),hz=o.w>=o.h;
   const seg=(a,b,c,d)=>o.det.push(hz?[o.x+a,o.y+b,o.x+c,o.y+d]:[o.x+b,o.y+a,o.x+d,o.y+c]);
@@ -644,7 +636,7 @@ function buildMap(seed){const r=mulberry(seed);const N=S.rooms||8;const R=(a,b)=
   else if(b.x+b.w===a.x&&ov(a.y,a.y+a.h,b.y,b.y+b.h)>=2)a.n.push({r:b,side:'v',p:a.x,c:(Math.max(a.y,b.y)+Math.min(a.y+a.h,b.y+b.h))/2});
   else if(a.y+a.h===b.y&&ov(a.x,a.x+a.w,b.x,b.x+b.w)>=2)a.n.push({r:b,side:'h',p:a.y+a.h,c:(Math.max(a.x,b.x)+Math.min(a.x+a.w,b.x+b.w))/2});
   else if(b.y+b.h===a.y&&ov(a.x,a.x+a.w,b.x,b.x+b.w)>=2)a.n.push({r:b,side:'h',p:a.y,c:(Math.max(a.x,b.x)+Math.min(a.x+a.w,b.x+b.w))/2})}
- let seedRoom=rooms[0],best=1e9;for(const o of rooms){const d=Math.hypot(o.x+o.w/2-MW*.55,o.y+o.h/2-MH*.42);if(d<best&&o.w*o.h>=12){best=d;seedRoom=o}}
+ let seedRoom=rooms[0],best=1e9;for(const o of rooms){const d=Math.hypot(o.x+o.w/2-(bb.x+bb.w*.63),o.y+o.h/2-(bb.y+bb.h*.37));if(d<best&&o.w*o.h>=12){best=d;seedRoom=o}}
  const order=[seedRoom],seen=new Set([seedRoom]);for(let k=0;k<order.length;k++)for(const e of order[k].n)if(!seen.has(e.r)){seen.add(e.r);order.push(e.r)}
  const dots=[];for(let i=0;i<14;i++){const q=rooms[r()*rooms.length|0];dots.push([q.x+.8+r()*(q.w-1.6),q.y+.8+r()*(q.h-1.6),r()*6])}
  return {bb,rooms,seedRoom,origin:order[order.length-1],reach:order.length,inf:new Map(),par:new Map(),next:1.2,dots}}
@@ -659,7 +651,7 @@ function stepMap(t){if(BREACH<=0)return;if(M.inf.size===0&&t>=.8){M.inf.set(M.se
  addLog(o.cam?'CCTV FEED LOST':msgs[Math.random()*msgs.length|0],'SECTOR '+o.label,t);M.next=t+SPREAD*(.7+Math.random()*.6)}
 function drawMap(ctx,W,H,t,mini){
  if(!hatchPat)hatchPat=ctx.createPattern(hatchC,'repeat');
- ctx.clearRect(0,0,W,H);const B=M.bb,cs=Math.min(W/(B.w+(mini?2:6)),H/(B.h+(mini?2:6))),ox=(W-B.w*cs)/2-B.x*cs,oy=(H-B.h*cs)/2-B.y*cs;
+ ctx.clearRect(0,0,W,H);const B=M.bb,cs=Math.min(W/(B.w+(mini?2:3.4)),H/(B.h+(mini?2:3.4))),ox=(W-B.w*cs)/2-B.x*cs,oy=(H-B.h*cs)/2-B.y*cs;
  const X=v=>ox+v*cs,Y=v=>oy+v*cs;
  if(!mini){ctx.strokeStyle='rgba(140,170,180,.06)';ctx.lineWidth=1;ctx.beginPath();for(let x=0;x<=W;x+=cs){ctx.moveTo(x,0);ctx.lineTo(x,H)}for(let y=0;y<=H;y+=cs){ctx.moveTo(0,y);ctx.lineTo(W,y)}ctx.stroke();
   ctx.strokeStyle='rgba(140,170,180,.12)';ctx.beginPath();for(let x=0;x<=W;x+=cs*4){ctx.moveTo(x,0);ctx.lineTo(x,H)}for(let y=0;y<=H;y+=cs*4){ctx.moveTo(0,y);ctx.lineTo(W,y)}ctx.stroke()}
@@ -1067,13 +1059,10 @@ $('#f-lab').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)loadLa
 $('#b-labclr').onclick=()=>{labMedia=null;note('Lab screen: built-in cell')};
 {const pane=$('#cell').parentElement;pane.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation()});
  pane.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();const f=e.dataTransfer.files[0];if(f&&!f.type.startsWith('audio'))loadLab(f)})}
-function setRooms(v){S.rooms=+v;restart();$('#roomsn').textContent=M.rooms.length+' rooms'}
-$('#rooms').oninput=e=>setRooms(e.target.value);
 
 
 
 vReset();
-S.rooms=Math.max(5,Math.min(12,+((C.map&&C.map.rooms)||8)));
 
 /* ---------- web edition glue ---------- */
 S.txT0=0;S.audioStarted=false;
@@ -1286,7 +1275,7 @@ S.paused=true;
 $('#c-go').onclick=()=>{ac();hookAnalyser();unlockAudio();VIDS.forEach(v=>v.play().catch(()=>{}));$('#c-go').textContent='\u2026';Promise.race([dayReady,new Promise(r=>setTimeout(r,2500))]).then(()=>{applyDay();$('#connect').hidden=true;S.paused=false;goMode('tx');startTx();glitch('flicker');const oc=C.alerts&&C.alerts.onConnect;if(oc&&oc[0]&&BREACH>.3)setTimeout(()=>toast(oc[0],oc[1]||''),1800)})};
 
 /* loop */
-M=buildMap(S.seed);$('#roomsn').textContent=M.rooms.length+' rooms';
+M=buildMap(S.seed);
 const txcam=$('#txcam').getContext('2d'),mini=$('#minimap').getContext('2d'),mapc=$('#map').getContext('2d');
 let last=performance.now(),lastClock='';
 function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;drawGfx();if(now/1000<GFX.freeze){requestAnimationFrame(frame);return}const sdt=S.paused?0:dt*S.speed;loopTick(dt);
