@@ -602,9 +602,11 @@ function videoOn(m,on){const el=m&&m.video?m.el:null;if(!el)return;if(on){if(el.
    through once and the rest of the session stays smooth. A clip warms up as
    soon as it is loaded; the button re-warms every clip.                   */
 const WARM=new Set();
-function warmOne(v,done){const loop0=v.loop;v.loop=false;v.muted=true;let fired=false;
+function warmOne(v,done){if(WARM.has(v)){if(done)done();return}
+ if(v._loop0===undefined)v._loop0=v.loop;   /* a second warm must not capture loop=false */
+ v.loop=false;v.muted=true;let fired=false;
  const fin=()=>{if(fired)return;fired=true;clearTimeout(tm);v.removeEventListener('ended',fin);v.removeEventListener('error',fin);
-  v.loop=loop0;try{v.currentTime=0}catch(e){}WARM.delete(v);syncVideos();if(done)done()};
+  v.loop=v._loop0!==false;try{v.currentTime=0}catch(e){}WARM.delete(v);syncVideos();if(done)done()};
  const tm=setTimeout(fin,((isFinite(v.duration)&&v.duration?v.duration:30)*1000)+6000);
  v.addEventListener('ended',fin);v.addEventListener('error',fin);
  WARM.add(v);try{v.currentTime=0}catch(e){}syncVideos()}
