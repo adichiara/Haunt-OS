@@ -31,37 +31,33 @@ window.TIMELINE = {
           alert:  { title: 'NOTICE', subtitle: 'ROUTINE MONITORING', line: 'All systems nominal' },
           status: 'ALL CHANNELS CLEAR' },
 
-    11: { breach: 0,    spread: 999, lab: 'early',
+    8: { breach: 0,    spread: 998, lab: 'early',
           alert:  { title: 'NOTICE', subtitle: 'SENSOR FAULT', line: 'Maintenance ticket raised' },
           status: 'ALL CHANNELS CLEAR' },
 
-    10: { breach: 0.04, spread: 90, lab: 'early',
-          alert:  { title: 'ADVISORY', subtitle: 'AIR QUALITY DEVIATION', line: 'Sublevel B · monitoring' },
-          status: 'MINOR INTERFERENCE ON CH 07' },
+    7: { breach: 0.04, spread: 90, lab: 'early',
+          alert:  { title: 'ADVISORY', subtitle: 'AIR QUALITY DEVIATION', line: 'Monitoring' },
+          status: 'MINOR SIGNAL INTERFERENCE' },
 
-     8: { breach: 0.10, spread: 60, lab: 'early',
+     6: { breach: 0.10, spread: 60, lab: 'early',
           alert:  { title: 'ADVISORY', subtitle: 'CONTAINMENT DEGRADED', line: 'Lab B sealed pending review' },
-          status: 'INTERFERENCE ON CH 07' },
+          status: 'MINOR SIGNAL INTERFERENCE' },
 
-     7: { breach: 0.16, spread: 48, lab: 'spread',
+     5: { breach: 0.16, spread: 48, lab: 'spread',
           alert:  { title: 'CAUTION', subtitle: 'SEAL INTEGRITY 61%', line: 'Access restricted · Level 4 only' },
           status: 'SIGNAL DEGRADED' },
 
-     5: { breach: 0.28, spread: 36, lab: 'spread',
+     4: { breach: 0.40, spread: 36, lab: 'spread',
           alert:  { title: 'CAUTION', subtitle: 'BIOHAZARD SENSORS ACTIVE', line: 'Isolation bays at capacity' },
           status: 'SIGNAL DEGRADED' },
 
-     4: { breach: 0.40, spread: 28, lab: 'spread',
+     3: { breach: 0.50, spread: 28, lab: 'spread',
           alert:  { title: 'WARNING', subtitle: 'CONTAINMENT FAILING', line: 'Evacuation request pending review' },
           status: 'SIGNAL WEAK' },
 
-     3: { breach: 0.54, spread: 20, lab: 'full',
-          alert:  { title: 'WARNING', subtitle: 'CONTAINMENT FAILING', line: 'Evacuation request DENIED' },
-          status: 'SIGNAL WEAK' },
-
-     2: { breach: 0.68, spread: 14, lab: 'full',
-          alert:  { title: 'ALERT', subtitle: 'MULTIPLE SECTORS LOST', line: 'Shelter in place' },
-          status: 'SIGNAL WEAK · PACKET LOSS' },
+     2: { breach: 0.64, spread: 14, lab: 'full',
+          alert:  { title: 'WARNING', subtitle: 'MULTIPLE SECTORS LOST', line: 'Shelter in place' },
+          status: 'SIGNAL FAILING' },
 
      1: { breach: 0.82, spread: 9, lab: 'full',
           alert:  { title: 'ALERT', subtitle: 'CONTAINMENT BREACH', line: 'Quarantine protocol engaged' },
