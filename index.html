@@ -530,7 +530,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
   <input type="text" id="i-head" aria-label="Headline"><input type="text" id="i-date" aria-label="Date"><input type="text" id="i-time" aria-label="Time"><input type="text" id="i-place" aria-label="Place or party name"><input type="text" id="i-tag" aria-label="Tagline">
  </div>
  <div class="hint" style="color:#8fa0a6">Interactive version: <b style="color:#46e59a;font-family:var(--mono)">https://adichiara.github.io/Haunt-OS</b> &nbsp;·&nbsp; “URL on screen” puts it in the title bar so viewers can find it.</div>
- <div class="hint">Keys: <kbd>1</kbd>–<kbd>7</kbd> screens · <kbd>P</kbd> party loop (<kbd>Esc</kbd> to stop) · <kbd>S</kbd> sound · <kbd>R</kbd> restart · <kbd>G</kbd> glitch · <kbd>Space</kbd> pause · <kbd>H</kbd> hide controls · <kbd>F</kbd> full screen · double-click a camera to enlarge it. You can also drag a video or image file straight onto a camera, or an audio file anywhere on the screen. To record: go full screen, then screen-record. Loaded clips and audio stay on your device.</div>
+ <div class="hint">Keys: <kbd>1</kbd>–<kbd>7</kbd> screens · <kbd>P</kbd> party loop (<kbd>Esc</kbd> to stop) · <kbd>S</kbd> sound · <kbd>R</kbd> restart · <kbd>G</kbd> glitch · <kbd>Space</kbd> pause · <kbd>H</kbd> hide controls · <kbd>F</kbd> full screen · double-click a camera to enlarge it. You can also drag a video or image file straight onto a camera, or an audio file anywhere on the screen. After loading clips, press <b>Warm up clips</b> once and wait for &ldquo;Clips ready&rdquo;: the first pass through a clip is the slow one, so this gets the stutter out of the way before you record. Feed rate sets how often the camera pictures repaint &mdash; 15 fps looks like real CCTV and costs less; switch to Every frame once the clips are warm. To record: go full screen, then screen-record. Loaded clips and audio stay on your device.</div>
 </div>
 
 <script src="content.js"></script>
@@ -598,14 +598,16 @@ function drawFeed(ctx,W,H,t,c,gray){
 function drawLost(ctx,W,H){setFx(ctx,'none');grain(ctx,W,H,1);ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,0,W,H)}
 /* only decode the clips that are actually on screen */
 function videoOn(m,on){const el=m&&m.video?m.el:null;if(!el)return;if(on){if(el.paused)el.play().catch(()=>{})}else if(!el.paused)el.pause()}
-/* the first pass through a clip is the expensive one — play them all the
-   way through once, up front, and the rest of the session stays smooth */
+/* the first pass through a clip is the expensive one — play it all the way
+   through once and the rest of the session stays smooth. A clip warms up as
+   soon as it is loaded; the button re-warms every clip.                   */
+const WARM=new Set();
 function warmOne(v,done){const loop0=v.loop;v.loop=false;v.muted=true;let fired=false;
  const fin=()=>{if(fired)return;fired=true;clearTimeout(tm);v.removeEventListener('ended',fin);v.removeEventListener('error',fin);
-  v.loop=loop0;try{v.currentTime=0}catch(e){}v.pause();done()};
+  v.loop=loop0;try{v.currentTime=0}catch(e){}WARM.delete(v);syncVideos();if(done)done()};
  const tm=setTimeout(fin,((isFinite(v.duration)&&v.duration?v.duration:30)*1000)+6000);
  v.addEventListener('ended',fin);v.addEventListener('error',fin);
- try{v.currentTime=0}catch(e){}v.play().catch(fin)}
+ WARM.add(v);try{v.currentTime=0}catch(e){}syncVideos()}
 let warming=false;
 function warmClips(){if(warming)return;
  const list=[];cams.forEach(c=>{if(c.media&&c.media.video)list.push(c.media.el)});
@@ -614,13 +616,14 @@ function warmClips(){if(warming)return;
  if(!list.length){note('No clips loaded yet');return}
  warming=true;btn.classList.add('on');let done=0;
  const tick=()=>{done++;btn.textContent='Warming up '+done+'/'+list.length;
-  if(done>=list.length){warming=false;btn.classList.remove('on');btn.textContent='Warm up clips';note('Clips ready — feeds will play smoothly now');syncVideos()}};
+  if(done>=list.length){warming=false;btn.classList.remove('on');btn.textContent='Warm up clips';note('Clips ready \u2014 feeds will play smoothly now')}};
  btn.textContent='Warming up 0/'+list.length;
  list.forEach(v=>warmOne(v,tick))}
+/* one decision per video element: on screen now, or warming up */
 function warmFeed(f){if(!f||!f.m||!f.m.video||f.warm)return;f.warm=1;warmOne(f.m.el,()=>{f.warm=2;syncVideos()})}
-function syncVideos(){try{const cc=S.mode==='cctv',on=new Set();
+function syncVideos(){try{const cc=S.mode==='cctv',on=new Set(WARM);
  const add=m=>{if(m&&m.video&&m.el)on.add(m.el)};
- FEEDS.forEach(f=>{if(f.warm===1||(cc&&cams.some(c=>c.feed===f)))add(f.m)});
+ FEEDS.forEach(f=>{if(cc&&cams.some(c=>c.feed===f))add(f.m)});
  if(S.mode==='tx'&&TXFEED)add(TXFEED.media);
  if(S.mode==='lab')add(labMedia);
  VIDS.forEach(v=>{if(on.has(v)){if(v.paused)v.play().catch(()=>{})}else if(!v.paused)v.pause()})}catch(e){}}
@@ -877,7 +880,7 @@ function loadAudio(f){if(audio)audio.pause();audio=new Audio(URL.createObjectURL
  try{const ac=new (window.AudioContext||window.webkitAudioContext)();const src=ac.createMediaElementSource(audio);analyser=ac.createAnalyser();analyser.fftSize=1024;abuf=new Uint8Array(analyser.fftSize);src.connect(analyser);analyser.connect(ac.destination);ac.resume()}catch(err){analyser=null}
  setMode('tx');restart();note('Loaded audio: '+f.name)}
 function loadClip(c,f){const url=URL.createObjectURL(f);
- if(f.type.startsWith('video')){const v=document.createElement('video');v.src=url;v.muted=true;v.loop=true;v.playsInline=true;c.media={el:v,video:true};syncVideos()}
+ if(f.type.startsWith('video')){const v=document.createElement('video');v.src=url;v.muted=true;v.loop=true;v.playsInline=true;c.media={el:v,video:true};warmOne(v)}
  else{const im=new Image();im.src=url;c.media={el:im,video:false}}note('Loaded '+f.name+' into '+c.label)}
 function note(t){let n=$('#note');if(!n){n=document.createElement('span');n.id='note';n.className='msgline';$('#ctl').prepend(n)}n.textContent=t}
 cams.forEach(c=>{const b=c.box;b.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();b.classList.add('drop')});b.addEventListener('dragleave',()=>b.classList.remove('drop'));
@@ -1089,7 +1092,7 @@ function loopTick(dt){if(!LOOP.on)return;LOOP.next-=dt;if(LOOP.next<=0)loopGo(LO
 $('#b-loop').onclick=startLoop;
 /* ---------- lab clip + room controls ---------- */
 function loadLab(f){const url=URL.createObjectURL(f);
- if(f.type.startsWith('video')){const v=document.createElement('video');v.src=url;v.muted=true;v.loop=true;v.playsInline=true;labMedia={el:v,video:true}}
+ if(f.type.startsWith('video')){const v=document.createElement('video');v.src=url;v.muted=true;v.loop=true;v.playsInline=true;labMedia={el:v,video:true};warmOne(v)}
  else{const im=new Image();im.src=url;labMedia={el:im,video:false}}setMode('lab');note('Loaded '+f.name+' into the lab screen')}
 $('#b-lab').onclick=()=>$('#f-lab').click();
 $('#f-lab').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)loadLab(f)};
