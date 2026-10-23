@@ -510,7 +510,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
   <button data-mode="tx" class="on">1 Transmission</button><button data-mode="cctv">2 Cameras</button><button data-mode="map">3 Breach map</button><button data-mode="alert">4 Alert</button><button data-mode="vitals">5 Vitals</button><button data-mode="lab">6 Lab</button><button data-mode="end">7 End card</button>
  </div>
  <div class="grp">
-  <button id="b-restart">Restart</button><button id="b-glitch">Glitch</button><button id="b-auto" class="on">Auto glitch</button><select id="gstyle" aria-label="Glitch style"><option value="mix">Glitch: mix</option><option value="shift">Glitch: shift</option><option value="rgb">Glitch: RGB split</option><option value="roll">Glitch: vertical roll</option><option value="stutter">Glitch: stutter</option><option value="flash">Glitch: flash</option><option value="flicker">Glitch: power flicker</option><option value="punch">Glitch: lens punch</option><option value="crt">Glitch: CRT collapse</option></select><span class="lbl">Auto uses:</span><span class="grp" id="autok" style="gap:4px"></span><button id="b-pause">Pause</button><button id="b-new">New map</button><button id="b-sound" class="on">Sound on</button><button id="b-loop">Party loop</button>
+  <button id="b-restart">Restart</button><button id="b-glitch">Glitch</button><button id="b-auto" class="on">Auto glitch</button><select id="gstyle" aria-label="Glitch style"><option value="mix">Glitch: mix</option><option value="shift">Glitch: shift</option><option value="rgb">Glitch: RGB split</option><option value="roll">Glitch: vertical roll</option><option value="stutter">Glitch: stutter</option><option value="flash">Glitch: flash</option><option value="flicker">Glitch: power flicker</option><option value="punch">Glitch: lens punch</option><option value="crt">Glitch: CRT collapse</option></select><span class="lbl">Auto uses:</span><span class="grp" id="autok" style="gap:4px"></span><button id="b-pause">Pause</button><button id="b-team">Play team fall</button><button id="b-new">New map</button><button id="b-sound" class="on">Sound on</button><button id="b-loop">Party loop</button>
   <select id="speed" aria-label="Speed"><option value="0.5">0.5× speed</option><option value="1" selected>1× speed</option><option value="2">2× speed</option></select>
  </div>
  <div class="grp">
@@ -530,7 +530,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
   <input type="text" id="i-head" aria-label="Headline"><input type="text" id="i-date" aria-label="Date"><input type="text" id="i-time" aria-label="Time"><input type="text" id="i-place" aria-label="Place or party name"><input type="text" id="i-tag" aria-label="Tagline">
  </div>
  <div class="hint" style="color:#8fa0a6">Interactive version: <b style="color:#46e59a;font-family:var(--mono)">https://adichiara.github.io/Haunt-OS</b> &nbsp;·&nbsp; “URL on screen” puts it in the title bar so viewers can find it.</div>
- <div class="hint">Keys: <kbd>1</kbd>–<kbd>7</kbd> screens · <kbd>P</kbd> party loop (<kbd>Esc</kbd> to stop) · <kbd>S</kbd> sound · <kbd>R</kbd> restart · <kbd>G</kbd> glitch · <kbd>Space</kbd> pause · <kbd>H</kbd> hide controls · <kbd>F</kbd> full screen · double-click a camera to enlarge it. You can also drag a video or image file straight onto a camera, or an audio file anywhere on the screen. After loading clips, press <b>Warm up clips</b> once and wait for &ldquo;Clips ready&rdquo;: the first pass through a clip is the slow one, so this gets the stutter out of the way before you record. Feed rate sets how often the camera pictures repaint &mdash; 15 fps looks like real CCTV and costs less; switch to Every frame once the clips are warm. To record: go full screen, then screen-record. Loaded clips and audio stay on your device.</div>
+ <div class="hint">Keys: <kbd>1</kbd>–<kbd>7</kbd> screens · <kbd>P</kbd> party loop (<kbd>Esc</kbd> to stop) · <kbd>S</kbd> sound · <kbd>R</kbd> restart · <kbd>T</kbd> team fall · <kbd>G</kbd> glitch · <kbd>Space</kbd> pause · <kbd>H</kbd> hide controls · <kbd>F</kbd> full screen · double-click a camera to enlarge it. You can also drag a video or image file straight onto a camera, or an audio file anywhere on the screen. After loading clips, press <b>Warm up clips</b> once and wait for &ldquo;Clips ready&rdquo;: the first pass through a clip is the slow one, so this gets the stutter out of the way before you record. Feed rate sets how often the camera pictures repaint &mdash; 15 fps looks like real CCTV and costs less; switch to Every frame once the clips are warm. To record: go full screen, then screen-record. Loaded clips and audio stay on your device.</div>
 </div>
 
 <script src="content.js"></script>
@@ -759,7 +759,113 @@ function drawMap(ctx,W,H,t,mini){
  ctx.beginPath();ctx.arc(cx,cy,mini?3:4.5,0,7);ctx.fillStyle='#22d68c';ctx.fill();
  ctx.beginPath();ctx.arc(cx,cy,(mini?3:4.5)+pr*(mini?12:22),0,7);ctx.strokeStyle=`rgba(34,214,140,${1-pr})`;ctx.lineWidth=2;ctx.stroke();
  if(!mini){ctx.fillStyle='#22d68c';ctx.font='500 12px "IBM Plex Mono", monospace';ctx.fillText('TX',cx+9,cy-7)}
+ drawSquad(ctx,X,Y,cs,t,mini);
 }
+/* ---------- RESCUE TEAM · tactical markers and the scripted fall ----------
+   Six operators route room to room from the armory to the breach, moving in
+   bounds (half the element moves while half holds), then their biosigns drop
+   out one at a time. Nothing about the attack is shown; only the readout.  */
+const OPN=6;
+const OPDEF=[['RT-1',0,0,-3],['RT-2',2.0,1.7,11],['RT-3',2.45,-1.8,-3],
+             ['RT-4',4.8,1.5,11],['RT-5',5.2,-1.6,-3],['RT-6',7.4,.2,11]];
+/* [seconds, index into OPDEF] — the order they go down */
+const FALLAT=[[12.0,5],[14.6,4],[16.2,2],[17.1,3],[19.8,1],[22.2,0]];
+const TURNAT=[25.2,3];            /* one of them gets back up */
+const SQ={on:false,t:0,s:0,L:0,spd:0,pts:[],ops:[],fired:0,turned:false};
+function roomAt(x,y){for(const o of M.rooms)if(x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h)return o;return null}
+function squadPath(){            /* armory -> breach, hugging the doorways */
+ const from=M.origin,to=M.seedRoom;
+ const prev=new Map();prev.set(from.i,null);const q=[from];
+ for(let k=0;k<q.length&&q[k]!==to;k++)for(const e of q[k].n)if(!prev.has(e.r.i)){prev.set(e.r.i,q[k]);q.push(e.r)}
+ const ctr=o=>[o.x+o.w/2,o.y+o.h/2];
+ if(!prev.has(to.i))return [ctr(from),ctr(to)];
+ const rooms=[];let cur=to;while(cur){rooms.unshift(cur);cur=prev.get(cur.i)}
+ const pts=[ctr(rooms[0])];
+ for(let i=0;i<rooms.length-1;i++){const a=rooms[i],b=rooms[i+1],e=a.n.find(q=>q.r===b);
+  if(e)pts.push(e.side==='v'?[e.p,e.c]:[e.c,e.p]);
+  pts.push(ctr(b))}
+ return pts}
+function pathLen(pts){let L=0;for(let i=1;i<pts.length;i++)L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);return L}
+function atDist(pts,d){
+ if(pts.length<2)return [pts[0]?pts[0][0]:0,pts[0]?pts[0][1]:0,0];
+ d=Math.max(0,d);
+ for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],seg=Math.hypot(b[0]-a[0],b[1]-a[1]);
+  if(d<=seg||i===pts.length-1){const k=seg?Math.min(1,d/seg):0;
+   return [a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,Math.atan2(b[1]-a[1],b[0]-a[0])]}
+  d-=seg}
+ return [pts[pts.length-1][0],pts[pts.length-1][1],0]}
+const ADVT=20,BOUND=4.6,MOVE=3.2;      /* advance for 20s, in 3.2s bounds */
+function teamFall(){
+ if(SQ.on){teamStop();return}
+ SQ.pts=squadPath();SQ.L=pathLen(SQ.pts);
+ SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.turned=false;
+ SQ.spd=.93*SQ.L/(ADVT*MOVE/BOUND);
+ SQ.ops=OPDEF.map((d,i)=>({cs:d[0],back:d[1],lat:d[2],ly:d[3],i,alive:true,lost:0,turned:false,td:0,sd:0,
+   x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
+ if(S.mode!=='map')setMode('map');
+ addLog('RESCUE TEAM 1 · '+OPN+' OPERATORS','ARMORY',S.t);
+ const b=$('#b-team');if(b){b.textContent='Stop team fall';b.classList.add('on')}}
+function teamStop(){SQ.on=false;SQ.ops=[];const b=$('#b-team');if(b){b.textContent='Play team fall';b.classList.remove('on')}}
+function loseOp(o){o.alive=false;o.lost=SQ.t;o.sd=Math.max(0,SQ.s-o.back);
+ const rm=roomAt(o.x,o.y);
+ addLog('BIOSIGN LOST · '+o.cs,'SECTOR '+(rm?rm.label:'--'),S.t)}
+function stepSquad(dt){
+ if(!SQ.on||!SQ.ops.length)return;
+ SQ.t+=dt;const t=SQ.t;
+ if(t<ADVT&&(t%BOUND)<MOVE)SQ.s+=dt*SQ.spd;
+ while(SQ.fired<FALLAT.length&&t>=FALLAT[SQ.fired][0]){
+  const o=SQ.ops[FALLAT[SQ.fired][1]];
+  if(SQ.fired===0)addLog('CONTACT · RESCUE TEAM 1','SECTOR '+(roomAt(o.x,o.y)||{label:'--'}).label,S.t);
+  loseOp(o);SQ.fired++;
+  if(SQ.fired===FALLAT.length){addLog('RESCUE TEAM 1 · NO BIOSIGNS','ALL SECTORS',S.t);glitch('flicker')}}
+ if(!SQ.turned&&t>=TURNAT[0]){SQ.turned=true;const o=SQ.ops[TURNAT[1]];o.turned=true;
+  addLog('MOVEMENT · '+o.cs+' TAG ACTIVE','RECLASSIFIED',S.t);glitch('shift')}
+ for(const o of SQ.ops){
+  let p;
+  if(o.alive)p=atDist(SQ.pts,Math.max(0,SQ.s-o.back));
+  else if(o.turned){o.td+=dt*.6;p=atDist(SQ.pts,Math.max(0,o.sd-o.td))}
+  else continue;
+  const n=p[2]+Math.PI/2;
+  o.x=p[0]+Math.cos(n)*o.lat;o.y=p[1]+Math.sin(n)*o.lat;o.h=p[2]+(o.turned?Math.PI:0)}}
+function drawSquad(ctx,X,Y,cs,t,mini){
+ if(!SQ.on||!SQ.ops.length)return;
+ const R=(mini?.44:.8)*cs;
+ for(const o of SQ.ops){const x=X(o.x),y=Y(o.y);
+  if(o.alive){
+   ctx.save();ctx.translate(x,y);ctx.rotate(o.h);
+   ctx.shadowColor='rgba(120,230,255,.95)';ctx.shadowBlur=mini?5:12;
+   ctx.fillStyle='#8fe9ff';ctx.beginPath();ctx.moveTo(R,0);ctx.lineTo(-R*.7,R*.64);
+   ctx.lineTo(-R*.34,0);ctx.lineTo(-R*.7,-R*.64);ctx.closePath();ctx.fill();ctx.restore();
+   if(!mini){const hold=(SQ.t%BOUND)>=MOVE&&SQ.t<ADVT;
+    if(hold){ctx.strokeStyle='rgba(143,233,255,.5)';ctx.lineWidth=1.2;
+     ctx.beginPath();ctx.arc(x,y,R*1.5,0,7);ctx.stroke()}
+    ctx.fillStyle='rgba(143,233,255,.95)';ctx.font='600 11px "IBM Plex Mono", monospace';
+    ctx.fillText(o.cs,x+R+5,y+o.ly)}
+  }else{
+   const age=SQ.t-o.lost;
+   if(age<1.2&&!mini){const k=age/1.2;ctx.strokeStyle='rgba(255,70,80,'+(1-k)+')';ctx.lineWidth=2.6;
+    ctx.beginPath();ctx.arc(x,y,6+k*38,0,7);ctx.stroke()}
+   const col=o.turned?'#ff2b38':'#e6eef2',r=R*.78;
+   ctx.fillStyle='rgba(6,10,13,.82)';ctx.beginPath();ctx.arc(x,y,R*1.15,0,7);ctx.fill();
+   ctx.strokeStyle=o.turned?'rgba(255,43,56,.9)':'rgba(190,210,220,.5)';ctx.lineWidth=1;
+   ctx.beginPath();ctx.arc(x,y,R*1.15,0,7);ctx.stroke();
+   ctx.strokeStyle=col;ctx.lineWidth=mini?1.6:2.8;ctx.lineCap='round';ctx.beginPath();
+   ctx.moveTo(x-r,y-r);ctx.lineTo(x+r,y+r);ctx.moveTo(x+r,y-r);ctx.lineTo(x-r,y+r);ctx.stroke();
+   ctx.lineCap='butt';
+   if(o.turned){const pz=(t*.9)%1;
+    ctx.strokeStyle='rgba(255,58,70,'+(.55+.45*Math.sin(t*7))+')';ctx.lineWidth=2.2;
+    ctx.beginPath();ctx.arc(x,y,R*1.55,0,7);ctx.stroke();
+    ctx.strokeStyle='rgba(255,58,70,'+(1-pz)+')';ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.arc(x,y,R*1.55+pz*26,0,7);ctx.stroke()}
+   if(!mini){ctx.fillStyle=o.turned?'#ff6b78':'rgba(214,228,234,.9)';
+    ctx.font='600 11px "IBM Plex Mono", monospace';ctx.fillText(o.cs,x+R*1.2+5,y+o.ly)}}}
+ if(!mini){const alive=SQ.ops.filter(o=>o.alive).length;
+  const txt='RESCUE TEAM 1   '+alive+'/'+OPN+' ACTIVE';
+  ctx.font='600 13px "IBM Plex Mono", monospace';
+  const w=ctx.measureText(txt).width;
+  ctx.fillStyle='rgba(6,10,13,.8)';ctx.fillRect(8,6,w+14,22);
+  ctx.fillStyle=alive?'rgba(143,233,255,.95)':'#ff3a46';
+  ctx.fillText(txt,15,21)}}
 'ABCDEFGHIJKLMNOP'.split('').forEach(l=>{const s=document.createElement('span');s.textContent=l;$('#cols').appendChild(s)});
 for(let i=1;i<=16;i++){const s=document.createElement('span');s.textContent=i;$('#rows').appendChild(s)}
 
@@ -1100,6 +1206,7 @@ $('#b-lab').onclick=()=>$('#f-lab').click();
 $('#f-lab').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)loadLab(f)};
 $('#b-labclr').onclick=()=>{labMedia=null;note('Lab screen: built-in cell')};
 $('#b-warm').onclick=()=>warmClips();
+$('#b-team').onclick=()=>teamFall();
 $('#feedfps').onchange=e=>{FEEDFPS=+e.target.value;feedLast=-1e9;note('Camera feeds: '+(FEEDFPS?FEEDFPS+' fps':'every frame'))};
 {const pane=$('#cell').parentElement;pane.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation()});
  pane.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();const f=e.dataTransfer.files[0];if(f&&!f.type.startsWith('audio'))loadLab(f)})}
@@ -1324,6 +1431,7 @@ const txcam=$('#txcam').getContext('2d'),mini=$('#minimap').getContext('2d'),map
 let last=performance.now(),lastClock='';
 function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;drawGfx();if(now/1000<GFX.freeze){requestAnimationFrame(frame);return}const sdt=S.paused?0:dt*S.speed;loopTick(dt);
  if(!S.paused){S.t+=dt*S.speed;stepMap(S.t);updateSensors(dt*S.speed);if(M.next>S.t+500){if(!M.doneAt)M.doneAt=S.t;else if(S.t-M.doneAt>25){M=buildMap(S.seed);seedBreach(BREACH);M.t0=S.t;logEl.innerHTML='';lastStates=[]}}}
+ if(!S.paused)stepSquad(dt*S.speed);
  const t=S.t,ck=clock(t);if(ck!==lastClock){lastClock=ck;const ds=dateStr();document.querySelectorAll('[data-clock]').forEach(e=>e.textContent=ck);document.querySelectorAll('.t-date').forEach(e=>e.textContent=ds)}
  if(S.mode==='tx'){const weak=updateTx(t-S.txT0);drawFeed(txcam,460,560,t,TXFEED,true);drawMap(mini,330,470,t,true);drawWave(t-S.txT0,weak);txAudioTick(t-S.txT0)}
  else if(S.mode==='cctv'){if(feedDue(now)){cams.forEach((c,i)=>{const lost=c.offline||camLost(i,t),sw=t-(c.swT??-9)<.35;c.lostNow=lost;
