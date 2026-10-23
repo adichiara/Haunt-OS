@@ -786,9 +786,14 @@ const OPN=6;
 const OPDEF=[['RT-1',0,0,-3],['RT-2',2.0,1.7,11],['RT-3',2.45,-1.8,-3],
              ['RT-4',4.8,1.5,11],['RT-5',5.2,-1.6,-3],['RT-6',7.4,.2,11]];
 /* [seconds, index into OPDEF] — the order they go down */
-const FALLAT=[[12.0,5],[14.6,4],[16.2,2],[17.1,3],[19.8,1],[22.2,0]];
-const TURNAT=[25.2,3];            /* one of them gets back up */
-const SPLIT=8.5;                 /* they move as one until here, then fan out */
+/* the shape of it: advance, assault, stand off under contact, get overrun,
+   break and run, and get cut down on the way out.                        */
+const T_INPOS=16.0;               /* in position, contact made, holding   */
+const T_FALLBACK=22.5;            /* they break and run for the armory    */
+const FALLAT=[[19.5,5],[21.0,4],[24.0,2],[26.5,3],[29.5,1],[33.0,0]];
+const TURNAT=[36.0,3];            /* one of them gets back up             */
+const SPLIT=6.5;                 /* they move as one until here, then fan out */
+function phaseAt(t){return t<SPLIT?'advance':t<T_INPOS?'assault':t<T_FALLBACK?'standoff':'fallback'}
 const FALLBREACH=.25;            /* how much of the map is already lost when they go in */
 function setBreach(frac){        /* pre-infect outward from the breach room, then hold */
  if(!M)return;
@@ -826,16 +831,19 @@ function armoryRoom(){      /* staging room: as far from comms AND the breach as
   const p=c(o),d=Math.min(Math.hypot(p[0]-oc[0],p[1]-oc[1]),Math.hypot(p[0]-sc[0],p[1]-sc[1]));
   if(d>bs){bs=d;best=o}}
  return best||M.rooms[0]}
-function fallRooms(){             /* six rooms spread around the breach */
+function fallRooms(){     /* six rooms around the breach, no two on top of each other */
  const sr=M.seedRoom,order=[sr],seen=new Set([sr.i]);
- for(let k=0;k<order.length&&order.length<18;k++)for(const e of order[k].n)
+ for(let k=0;k<order.length&&order.length<30;k++)for(const e of order[k].n)
   if(!seen.has(e.r.i)){seen.add(e.r.i);order.push(e.r)}
- const cand=order.filter(o=>o.w*o.h>=10),pick=[sr];
- while(pick.length<OPN){let best=null,bs=-1;
-  for(const o of cand){if(pick.indexOf(o)>=0)continue;let m=1e9;
-   for(const q of pick)m=Math.min(m,Math.hypot(o.x-q.x,o.y-q.y));
-   if(m>bs){bs=m;best=o}}
-  if(!best)break;pick.push(best)}
+ const c=o=>[o.x+o.w/2,o.y+o.h/2];
+ const cand=order.filter(o=>o.w*o.h>=12&&o!==M.origin);
+ /* take the widest spacing that still yields a full team */
+ for(let sep=7;sep>=1.5;sep-=.5){const pick=[sr];
+  for(const o of cand){if(pick.length>=OPN)break;if(pick.indexOf(o)>=0)continue;
+   const p=c(o);
+   if(pick.every(q=>{const r=c(q);return Math.hypot(p[0]-r[0],p[1]-r[1])>=sep}))pick.push(o)}
+  if(pick.length>=OPN)return pick}
+ const pick=[sr];for(const o of cand){if(pick.length>=OPN)break;if(pick.indexOf(o)<0)pick.push(o)}
  while(pick.length<OPN)pick.push(sr);
  return pick}
 function pathLen(pts){let L=0;for(let i=1;i<pts.length;i++)L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);return L}
@@ -853,8 +861,7 @@ function teamFall(){
  setBreach(FALLBREACH);
  SQ.arm=armoryRoom();
  SQ.pts=roomsToPts(roomRoute(SQ.arm,M.seedRoom));SQ.L=pathLen(SQ.pts);
- SQ.targets=fallRooms();
- SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.turned=false;SQ.split=false;
+ SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.turned=false;SQ.split=false;SQ.fb=false;SQ.held=false;SQ.phase='advance';SQ.moving=true;
  SQ.spd=.93*SQ.L/(ADVT*MOVE/BOUND);
  SQ.ops=OPDEF.map((d,i)=>({cs:d[0],back:d[1],lat:d[2],ly:d[3],i,alive:true,lost:0,turned:false,td:0,sd:0,
    pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
@@ -871,19 +878,49 @@ function setPos(o,p,dt,snap){
  if(snap||o.x===undefined){o.x=tx;o.y=ty}
  else{const k=Math.min(1,(dt||.016)*7);o.x+=(tx-o.x)*k;o.y+=(ty-o.y)*k}
  o.h=hd+(o.turned?Math.PI:0)}
+const ASSPD=2.8;                  /* assault pace, map units a second */
 function doSplit(){SQ.split=true;
  const sp=atDist(SQ.pts,SQ.s),here=roomAt(sp[0],sp[1])||M.seedRoom;
- const tg=SQ.targets.slice().sort((a,b)=>
-  Math.hypot(a.x+a.w/2-sp[0],a.y+a.h/2-sp[1])-Math.hypot(b.x+b.w/2-sp[0],b.y+b.h/2-sp[1]));
- SQ.ops.map(o=>o).sort((a,b)=>FALLT[a.i]-FALLT[b.i]).forEach((o,k)=>{
-  const from=roomAt(o.x,o.y)||here,pts=roomsToPts(roomRoute(from,tg[k]||M.seedRoom));
+ const ops=SQ.ops.map(o=>o).sort((a,b)=>FALLT[a.i]-FALLT[b.i]);
+ ops.forEach((o,k)=>o.delay=k*.45);
+ const c=o=>[o.x+o.w/2,o.y+o.h/2],sc=c(M.seedRoom),hc=c(here);
+ /* every room's real route length from where the squad stands, so each
+    operator can be given a position it can actually reach before the hold */
+ const info=M.rooms.filter(o=>o.w*o.h>=12&&o!==M.origin).map(o=>{
+  const pts=roomsToPts(roomRoute(here,o)),p=c(o);
+  return {o,p,L:pathLen(pts),d:Math.hypot(p[0]-sc[0],p[1]-sc[1])}});
+ const taken=[];
+ for(const o of ops){
+  const from=roomAt(o.x,o.y)||here;
+  const win=Math.max(1.3,T_INPOS-SPLIT-.5-o.delay);
+  const lead=Math.hypot(o.x-hc[0],o.y-hc[1]);
+  const reach=Math.max(3,ASSPD*win*(MOVE/BOUND)-lead);
+  let best=null;
+  /* push as close to the breach as it can get, without crowding anyone */
+  for(let sep=6;sep>=0&&!best;sep-=1.5){let bd=1e9;
+   for(const it of info){
+    if(taken.indexOf(it.o)>=0||it.L>reach)continue;
+    if(taken.some(q=>{const qp=c(q);return Math.hypot(qp[0]-it.p[0],qp[1]-it.p[1])<sep}))continue;
+    if(it.d<bd){bd=it.d;best=it.o}}}
+  if(!best){let bl=1e9;for(const it of info){if(taken.indexOf(it.o)>=0)continue;
+   if(it.L<bl){bl=it.L;best=it.o}}}
+  if(!best)best=M.seedRoom;
+  taken.push(best);
+  const pts=roomsToPts(roomRoute(from,best));
   pts.unshift([o.x,o.y]);            /* carry on from exactly where it stands */
   o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;
-  o.delay=k*.5;
-  const win=Math.max(1.3,FALLT[o.i]-SPLIT-1.0-o.delay);
-  o.spd=Math.min(2.6,o.L2/(win*(MOVE/BOUND)));
-  setPos(o,atDist(o.pts,0),0,true)});
+  o.spd=Math.max(.7,Math.min(ASSPD,o.L2/(win*(MOVE/BOUND))));
+  setPos(o,atDist(o.pts,0),0,true)}
  addLog('RESCUE TEAM 1 · ELEMENTS SPLITTING','SECTOR '+here.label,S.t)}
+function doFallback(){SQ.fb=true;
+ for(const o of SQ.ops){if(!o.alive)continue;
+  const from=roomAt(o.x,o.y)||SQ.arm,pts=roomsToPts(roomRoute(from,SQ.arm));
+  pts.unshift([o.x,o.y]);
+  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.delay=0;o.lat=0;
+  const win=Math.max(1.2,FALLT[o.i]-T_FALLBACK);
+  o.spd=Math.max(1.5,Math.min(2.8,o.L2/win));
+  setPos(o,atDist(o.pts,0),0,true)}
+ addLog('FALLBACK ORDERED · RESCUE TEAM 1','WITHDRAWING',S.t);glitch('shift')}
 function loseOp(o){o.alive=false;o.lost=SQ.t;o.sd=SQ.split?o.s:Math.max(0,SQ.s-o.back);
  const rm=roomAt(o.x,o.y);
  addLog('BIOSIGN LOST · '+o.cs,'SECTOR '+(rm?rm.label:'--'),S.t)}
@@ -891,20 +928,28 @@ function stepSquad(dt){
  if(!SQ.on||!SQ.ops.length)return;
  SQ.t+=dt;const t=SQ.t;
  M.next=S.t+999;                 /* no new rooms fall while the squad is on screen */
- const moving=(t%BOUND)<MOVE;
- if(!SQ.split&&t>=SPLIT)doSplit();
- if(!SQ.split&&t<ADVT&&moving)SQ.s+=dt*SQ.spd;
+ const ph=phaseAt(t);SQ.phase=ph;
+ if(ph!=='advance'&&!SQ.split)doSplit();
+ if(ph==='fallback'&&!SQ.fb)doFallback();
+ if(ph==='standoff'&&!SQ.held){SQ.held=true;
+  addLog('CONTACT · RESCUE TEAM 1','HOLDING POSITION',S.t);glitch('flicker')}
+ /* running flat out on the way back, bounding on the way in */
+ const moving=ph==='fallback'?true:(t%BOUND)<MOVE;
+ SQ.moving=ph==='standoff'?false:moving;
+ if(ph==='advance'&&moving)SQ.s+=dt*SQ.spd;
  while(SQ.fired<FALLAT.length&&t>=FALLAT[SQ.fired][0]){
-  const o=SQ.ops[FALLAT[SQ.fired][1]];
-  if(SQ.fired===0)addLog('CONTACT · RESCUE TEAM 1','SECTOR '+(roomAt(o.x,o.y)||{label:'--'}).label,S.t);
-  loseOp(o);SQ.fired++;
+  const o=SQ.ops[FALLAT[SQ.fired][1]];loseOp(o);SQ.fired++;
+  if(SQ.fired===2)addLog('RESCUE TEAM 1 · OVERRUN','MULTIPLE CASUALTIES',S.t);
   if(SQ.fired===FALLAT.length){addLog('RESCUE TEAM 1 · NO BIOSIGNS','ALL SECTORS',S.t);glitch('flicker')}}
  if(!SQ.turned&&t>=TURNAT[0]){SQ.turned=true;const o=SQ.ops[TURNAT[1]];o.turned=true;
   addLog('MOVEMENT · '+o.cs+' TAG ACTIVE','RECLASSIFIED',S.t);glitch('shift')}
  for(const o of SQ.ops){
   if(o.alive){
-   if(SQ.split){if(moving&&t>=SPLIT+(o.delay||0))o.s=Math.min(o.L2,o.s+dt*o.spd)}
-   else o.s=Math.max(0,SQ.s-o.back);
+   if(ph==='standoff'){           /* holding: no ground given, arcs covered */
+    o.h=(o.hold0===undefined?(o.hold0=o.h):o.hold0)+Math.sin(t*.9+o.i*1.7)*.75;continue}
+   if(ph==='advance')o.s=Math.max(0,SQ.s-o.back);
+   else if(moving&&t>=(ph==='fallback'?T_FALLBACK:SPLIT)+(o.delay||0))
+    o.s=Math.min(o.L2,o.s+dt*o.spd);
    setPos(o,atDist(o.pts,o.s),dt)}
   else if(o.turned){o.td+=dt*.6;setPos(o,atDist(o.pts,Math.max(0,o.sd-o.td)),dt)}}}
 function drawSquad(ctx,X,Y,cs,t,mini){
@@ -916,7 +961,7 @@ function drawSquad(ctx,X,Y,cs,t,mini){
    ctx.shadowColor='rgba(120,230,255,.95)';ctx.shadowBlur=mini?5:12;
    ctx.fillStyle='#8fe9ff';ctx.beginPath();ctx.moveTo(R,0);ctx.lineTo(-R*.7,R*.64);
    ctx.lineTo(-R*.34,0);ctx.lineTo(-R*.7,-R*.64);ctx.closePath();ctx.fill();ctx.restore();
-   if(!mini){const hold=(SQ.t%BOUND)>=MOVE&&SQ.t<ADVT;
+   if(!mini){const hold=!SQ.moving;
     if(hold){ctx.strokeStyle='rgba(143,233,255,.5)';ctx.lineWidth=1.2;
      ctx.beginPath();ctx.arc(x,y,R*1.5,0,7);ctx.stroke()}
     ctx.fillStyle='rgba(143,233,255,.95)';ctx.font='600 11px "IBM Plex Mono", monospace';
@@ -940,7 +985,8 @@ function drawSquad(ctx,X,Y,cs,t,mini){
    if(!mini){ctx.fillStyle=o.turned?'#ff6b78':'rgba(214,228,234,.9)';
     ctx.font='600 11px "IBM Plex Mono", monospace';ctx.fillText(o.cs,x+R*1.2+5,y+o.ly)}}}
  if(!mini){const alive=SQ.ops.filter(o=>o.alive).length;
-  const txt='RESCUE TEAM 1   '+alive+'/'+OPN+' ACTIVE';
+  const PW={advance:'ADVANCING',assault:'ASSAULT',standoff:'IN CONTACT',fallback:'FALLING BACK'};
+  const txt='RESCUE TEAM 1   '+(alive?PW[SQ.phase]||'':'NO BIOSIGNS')+'   '+alive+'/'+OPN+' ACTIVE';
   ctx.font='600 13px "IBM Plex Mono", monospace';
   const w=ctx.measureText(txt).width;
   ctx.fillStyle='rgba(6,10,13,.8)';ctx.fillRect(8,6,w+14,22);
