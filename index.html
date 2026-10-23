@@ -10,6 +10,7 @@
 <style>
 /* Layout: a fixed 1600x900 monitor scaled to fit, styled after the user's generated facility screens (slate panels, hairline frames, condensed caps, red alerts). Single dark look by design. */
 :root{
+  --osurl:#a9c0c9;
   --bg:#04070a; --panel:#0a0f13; --panel2:#0d1418; --line:#2c3a41; --line2:#5b6c74; --fg:#e3eaec; --dim:#8797a0;
   --red:#ff2b38; --redfill:rgba(255,43,56,.12); --green:#22d68c; --amber:#f6b437; --cyan:#86d4e6; --comms:#46e59a;
   --cond:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
@@ -30,7 +31,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--cond);margin:0;
 .tabs span{flex:none;cursor:default}
 .tabs span[data-mode]{cursor:pointer}
 .tabs .search{flex:none;margin-left:auto}
-.appbar .osurl{margin-left:18px;font-family:var(--mono);font-size:14px;letter-spacing:.03em;color:#a9c0c9;text-transform:none}
+.appbar .osurl{margin-left:18px;font-family:var(--mono);font-size:14px;letter-spacing:.03em;color:var(--osurl);text-transform:none}
 body.nourl .osurl{display:none}
 /* no on-screen date or clock: keeps cuts consistent between takes */
 
@@ -168,20 +169,20 @@ canvas{display:block;width:100%;height:100%}
 .bios .br.turned .bl .cs{color:#ff6b78}
 .bios .bl .hr{font-variant-numeric:tabular-nums}
 .bios .bl .stt{font-size:11px;letter-spacing:.15em}
-.ams{display:grid;grid-auto-rows:1fr;padding:10px 14px 12px;gap:10px;min-height:0}
-.ams .ar{display:flex;align-items:center;gap:10px}
-.ams .ar .cs{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.05em;
-  color:#8fe9ff;min-width:44px}
+.ams{display:grid;grid-auto-rows:1fr;padding:10px 16px 14px;gap:12px;min-height:0;flex:1 1 auto}
+.ams .ar{display:flex;align-items:center;gap:12px}
+.ams .ar .cs{font-family:var(--mono);font-size:17px;font-weight:600;letter-spacing:.05em;
+  color:#8fe9ff;min-width:52px}
 .ams .ar.out .cs{color:#ff6b78}
-.ams .ar i{flex:1;height:11px;background:rgba(120,150,165,.16);position:relative;overflow:hidden}
+.ams .ar i{flex:1;height:20px;background:rgba(120,150,165,.16);position:relative;overflow:hidden}
 .ams .ar i::after{content:'';position:absolute;top:0;bottom:0;left:0;width:var(--w,100%);
   background:#7ef0a8;box-shadow:0 0 9px rgba(126,240,168,.55)}
 .ams .ar.low i::after{background:#ffb347;box-shadow:0 0 9px rgba(255,179,71,.55)}
 .ams .ar.out i::after{background:var(--red);box-shadow:none}
-.ams .ar b{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.04em;
-  color:#cfe0e6;font-variant-numeric:tabular-nums;min-width:66px;text-align:right}
+.ams .ar b{font-family:var(--mono);font-size:16px;font-weight:500;letter-spacing:.04em;
+  color:#cfe0e6;font-variant-numeric:tabular-nums;min-width:82px;text-align:right}
 .bios canvas{flex:1;min-height:0}
-body.biomode .rcol{grid-template-rows:auto 1fr auto}
+body.biomode .rcol{grid-template-rows:auto 1.85fr 1fr}
 
 /* ---- alert ---- */
 #s-alert{align-items:center;justify-content:center;gap:34px;animation:redstrobe 1s steps(2) infinite}
@@ -448,7 +449,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
      <div class="pane"><div class="ph"><span>System Status</span></div><div class="status" id="status"></div></div>
      <div class="pane"><div class="ph"><span>Sensor Feed</span></div><div class="sens" id="sens"></div></div>
      <div class="pane" id="biopane" hidden><div class="ph" style="white-space:nowrap"><span>Security Team 1</span><small id="bioalarm"></small></div><div class="bios" id="bios"></div></div>
-     <div class="pane" id="ampane" hidden><div class="ph" style="white-space:nowrap"><span>Antidote Ammo Remaining</span></div><div class="ams" id="ams"></div></div>
+     <div class="pane" id="ampane" hidden><div class="ph" style="white-space:nowrap"><span>Antitoxin Ammo Remaining</span></div><div class="ams" id="ams"></div></div>
     </div>
    </div>
   </section>
@@ -547,7 +548,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
   <button id="b-audio">Load VO audio</button><input type="file" id="f-audio" accept="audio/*" tabindex="-1">
   <select id="camsel" aria-label="Camera"><option value="0">CAM 01</option><option value="1">CAM 02</option><option value="2">CAM 03</option><option value="3">CAM 04</option></select>
   <button id="b-clip">Load clip into cam</button><input type="file" id="f-clip" accept="video/*,image/*" tabindex="-1"><button id="b-warm">Warm up clips</button>
-  <button id="b-url" class="on">URL on screen</button><button id="b-hide">Hide controls</button><button id="b-full">Full screen</button>
+  <button id="b-url" class="on">URL on screen</button><span class="lbl">URL colour:</span><input type="color" id="urlcol" value="#a9c0c9" aria-label="URL colour"><input type="text" id="urlhex" value="#a9c0c9" size="8" aria-label="URL colour hex"><button id="b-hide">Hide controls</button><button id="b-full">Full screen</button>
  </div>
  <div class="grp">
   <span class="lbl">Vitals:</span><select id="vscen" aria-label="Vitals scenario"><option value="flat">Flatline</option><option value="rean">Dies, then comes back</option><option value="feral">Infected: frenzied</option><option value="husk">Infected: no pulse, still moving</option></select>
@@ -832,7 +833,7 @@ const T_READY=1.8;                /* beat on the door once everyone is up */
 const T_ENTRY=2.6;                /* time to push into the room           */
 const CLEARN=2;                   /* rooms they clear before it turns      */
 const T_TURN=6.0;                 /* how long each one lies there first    */
-/* antidote rounds. They burn at the same rate, so these decide the order
+/* antitoxin rounds. They burn at the same rate, so these decide the order
    they run dry in, and running dry is what kills them.                   */
 const AMMO0=[245,200,300];
 const FALLBREACH=.25;            /* how much of the map is already lost when they go in */
@@ -1031,7 +1032,7 @@ function burnAmmo(dt,rate){
  for(const o of SQ.ops){if(!o.alive||o.ammo<=0)continue;
   o.ammo=Math.max(0,o.ammo-rate*dt*(o.rate||1));
   if(o.ammo<=0&&!o.dry){o.dry=SQ.t;
-   addLog('ST-'+o.n+' · ANTIDOTE EXPENDED','SECTOR '+((roomAt(o.x,o.y)||{label:'--'}).label),S.t)}}}
+   addLog('ST-'+o.n+' · ANTITOXIN EXPENDED','SECTOR '+((roomAt(o.x,o.y)||{label:'--'}).label),S.t)}}}
 
 /* ---- sequence ---- */
 function nextObjective(from){        /* the nearest fallen room they can reach cleanly */
@@ -1088,7 +1089,7 @@ function fleeTo(o){
 function startFlee(o){o.fleeing=true;o.fleeT=SQ.t;o.reroute=0;
  if(!fleeTo(o)){o.pts=null;o.L2=0}
  if(!SQ.routed){SQ.routed=true;
-  addLog('SECURITY TEAM 1 · FALLING BACK','ANTIDOTE EXPENDED',S.t);glitch('shift')}}
+  addLog('SECURITY TEAM 1 · FALLING BACK','ANTITOXIN EXPENDED',S.t);glitch('shift')}}
 function loseOp(o){o.alive=false;o.lost=SQ.t;
  const rm=roomAt(o.x,o.y);o.room=rm;
  addLog('BIOSIGN LOST · ST-'+o.n,'SECTOR '+(rm?rm.label:'--'),S.t)}
@@ -1146,7 +1147,7 @@ function stepSquad(dt){
 
  /* ammo, and the men who run out of it */
  if(ph==='clear'||ph==='swarm')burnAmmo(dt,ph==='clear'?BURN.clear:BURN.swarm);
- /* out of antidote: he stops holding and runs for it */
+ /* out of antitoxin: he stops holding and runs for it */
  for(const o of SQ.ops)if(o.alive&&o.ammo<=0&&!o.fleeing)startFlee(o);
  /* and he goes down when they get on top of him, not on a timer */
  for(const o of SQ.ops){if(!o.alive||!o.fleeing)continue;
@@ -1679,6 +1680,13 @@ $('#f-lab').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)loadLa
 $('#b-labclr').onclick=()=>{labMedia=null;note('Lab screen: built-in cell')};
 $('#b-warm').onclick=()=>warmClips();
 $('#b-team').onclick=()=>teamFall();
+{const cp=$('#urlcol'),hx=$('#urlhex');
+ const setc=v=>{if(!/^#[0-9a-f]{6}$/i.test(v))return;
+  document.documentElement.style.setProperty('--osurl',v);
+  cp.value=v;hx.value=v;try{localStorage.setItem('osurl-col',v)}catch(e){}};
+ try{const v=localStorage.getItem('osurl-col');if(v)setc(v)}catch(e){}
+ cp.oninput=e=>setc(e.target.value);
+ hx.onchange=e=>setc(e.target.value.trim());}
 $('#mappanel').onchange=e=>{MAPPANEL=e.target.value;note('Map panel: '+e.target.selectedOptions[0].textContent.replace('Panel: ',''))};
 $('#feedfps').onchange=e=>{FEEDFPS=+e.target.value;feedLast=-1e9;note('Camera feeds: '+(FEEDFPS?FEEDFPS+' fps':'every frame'))};
 {const pane=$('#cell').parentElement;pane.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation()});
@@ -1700,7 +1708,14 @@ function unlockAudio(){if(!audio)return;audio.muted=true;const p=audio.play();if
 let PATS=[];const VP={get i(){return VPi}};
 function setPatient(i){VPi=(i+PATS.length)%PATS.length;const p=PATS[VPi];VB=Object.assign({hr:74,spo2:98,resp:16,bp:'118/76',temp:37},p.base||{});V.scen=SCEN[p.monitor]?p.monitor:'flat';$('#t-vbed').textContent='Patient Monitor  //  '+(p.bedline||'');vReset();S.modeT0=S.t;document.querySelectorAll('.subjchips button').forEach((b,j)=>b.classList.toggle('on',j===VPi))}
 const HINTS={files:'Pick a folder, then a message',term:'Type HELP, or tap a command',tx:'',cctv:'Pick a camera from the list · tap a feed to enlarge',map:'',alert:'',vitals:'Pick a subject top right, or tap the monitor',lab:'Tap the specimen: next stage · tap a panel to switch it',end:''};
-function goMode(m){if(m==='lab')[0,1].forEach(i=>{if(lpState[i]&&lpState[i].key==='subject')setPanel(i,'subject')});if(m==='term')setTimeout(()=>{if(matchMedia('(pointer:fine)').matches)$('#tin').focus()},60);if(m==='tx'&&S.mode!=='tx'&&(!audio||audio.ended))startTx();setMode(m);document.querySelectorAll('#webnav button[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));$('#hint2').textContent=HINTS[m]||'';$('#w-replay').hidden=m!=='tx'}
+function goMode(m){
+ if(m==='end'){                      /* Respond = send the security team in */
+  if(SQ.on)teamStop();
+  MAPPANEL='auto';setMode('map');
+  document.querySelectorAll('#webnav button[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode==='end'));
+  $('#hint2').textContent='Security Team 1 · live';$('#w-replay').hidden=true;
+  teamFall();return}
+if(m==='lab')[0,1].forEach(i=>{if(lpState[i]&&lpState[i].key==='subject')setPanel(i,'subject')});if(m==='term')setTimeout(()=>{if(matchMedia('(pointer:fine)').matches)$('#tin').focus()},60);if(m==='tx'&&S.mode!=='tx'&&(!audio||audio.ended))startTx();setMode(m);document.querySelectorAll('#webnav button[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));$('#hint2').textContent=HINTS[m]||'';$('#w-replay').hidden=m!=='tx'}
 document.querySelectorAll('#webnav button[data-mode]').forEach(b=>b.onclick=()=>{ac();goMode(b.dataset.mode)});
 $('#w-replay').onclick=()=>{ac();unlockAudio();startTx();glitch('roll')};
 function setSnd(v){soundOn=v;$('#w-snd').textContent=v?'Sound on':'Sound off';if(audio)audio.muted=!v}
