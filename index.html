@@ -666,6 +666,15 @@ function camLost(i,t){if(i===3)return (t%64)>50&&(t%64)<52.6;if(i===1)return (t%
 
 /* facility map (blueprint) */
 const MW=48,MH=34;let M;
+/* The breach always falls in the same order, so a shot recorded today and
+   one recorded tomorrow spread identically — and so the team sequence can
+   replay that exact order instead of inventing its own shape.           */
+const SPRSEED=31;let SPR=mulberry(SPRSEED);
+function resetSpread(){SPR=mulberry(SPRSEED)}
+function spreadCand(){const c=[];
+ for(const o of M.rooms){if(M.inf.has(o.i)||o===M.origin)continue;
+  const src=o.n.find(e=>M.inf.has(e.r.i));if(src)c.push([o,src.r])}
+ return c}
 /* FIXED FLOOR PLAN · Level B1, Research Wing.
    One layout, always. [x, y, w, h, rooms in this block, 1 = core block]  */
 const PLAN=[[8,0,26,11,15,1],[4,11,30,5,7,1],[0,16,34,11,20,0],[34,9,6,18,6,0],[4,27,33,10,17,0]];
@@ -704,9 +713,9 @@ let hatchPat=null;
 const msgs=(C.map&&C.map.events&&C.map.events.length)?C.map.events:['MOTION DETECTED','DOOR FORCED','CONTAINMENT FAILURE'];
 function stepMap(t){if(BREACH<=0)return;if(M.inf.size===0&&t>=.8){M.inf.set(M.seedRoom.i,t);addLog('CONTAINMENT FAILURE','SECTOR '+M.seedRoom.label,t);M.next=t+1.4;return}
  if(t<M.next||M.inf.size===0)return;
- const cand=[];for(const o of M.rooms){if(M.inf.has(o.i)||o===M.origin)continue;const src=o.n.find(e=>M.inf.has(e.r.i));if(src)cand.push([o,src.r])}
+ const cand=spreadCand();
  if(!cand.length){M.next=t+999;return}
- const [o,from]=cand[Math.random()*cand.length|0];M.inf.set(o.i,t);M.par.set(o.i,from);
+ const [o,from]=cand[SPR()*cand.length|0];M.inf.set(o.i,t);M.par.set(o.i,from);
  addLog(o.cam?'CCTV FEED LOST':msgs[Math.random()*msgs.length|0],'SECTOR '+o.label,t);M.next=t+SPREAD*(.7+Math.random()*.6)}
 function drawMap(ctx,W,H,t,mini){
  if(!hatchPat)hatchPat=ctx.createPattern(hatchC,'repeat');
@@ -790,8 +799,9 @@ const OPDEF=[['RT-1',0,0,-3],['RT-2',2.0,1.7,11],['RT-3',2.45,-1.8,-3],
    waits until everyone is set, goes in, holds, loses two inside, and the
    rest break out by separate routes and die on the way. Then they all get
    back up, and the sectors they are lying in go red.                     */
-const T_ARRIVE=9.5;               /* lead reaches the stack point         */
-const T_STACKMAX=16.0;            /* go in by now whether set or not      */
+const T_ARRIVE=11.0;              /* lead reaches the stack point         */
+const APPROACH_MAX=18;            /* how far they will walk to get there  */
+const T_STACKMAX=6.0;             /* go in this long after stacking regardless */
 const T_READY=1.8;                /* beat on the door once everyone is up */
 const T_ENTRY=2.6;                /* time to push into the room           */
 /* casualties, in seconds after the room is entered */
@@ -799,24 +809,23 @@ const DEATHS=[[3.5,5],[4.8,4],[9.5,2],[12.5,3],[16.0,1],[20.0,0]];
 const T_BREAK=5.4;                /* survivors break out, separate routes */
 const T_TURN=6.0;                 /* how long each one lies there first   */
 const FALLBREACH=.25;            /* how much of the map is already lost when they go in */
-function setBreach(frac){        /* pre-infect outward from the breach room, then hold */
+function setBreach(frac){  /* run the normal spread forward to this point, then hold */
  if(!M)return;
- M.inf.clear();M.par.clear();
+ M.inf.clear();M.par.clear();resetSpread();
  const n=Math.max(1,Math.round(frac*Math.max(1,M.reach-1)));
- const order=[M.seedRoom],par=new Map(),seen=new Set([M.seedRoom.i]);
- for(let k=0;k<order.length&&order.length<n;k++)
-  for(const e of order[k].n){if(seen.has(e.r.i)||e.r===M.origin)continue;
-   seen.add(e.r.i);par.set(e.r.i,order[k]);order.push(e.r);
-   if(order.length>=n)break}
- order.forEach((o,i)=>{M.inf.set(o.i,S.t-6+i*.02);
-  const pp=par.get(o.i);if(pp)M.par.set(o.i,pp)});
+ M.inf.set(M.seedRoom.i,S.t-6);                 /* patient zero, as the live spread does */
+ for(let k=1;k<n;k++){const cand=spreadCand();if(!cand.length)break;
+  const [o,from]=cand[SPR()*cand.length|0];     /* same rule, same sequence */
+  M.inf.set(o.i,S.t-6+k*.02);M.par.set(o.i,from)}
  M.next=S.t+999}
 const DT=[];DEATHS.forEach(f=>DT[f[1]]=f[0]);
 const SQ={on:false,t:0,s:0,L:0,spd:0,pts:[],ops:[],fired:0,phase:'advance',moving:true};
 function roomAt(x,y){for(const o of M.rooms)if(x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h)return o;return null}
-function roomRoute(from,to){      /* shortest room-to-room path */
+function roomRoute(from,to,clean){ /* shortest room-to-room path; clean = avoid fallen rooms */
  const prev=new Map();prev.set(from.i,null);const q=[from];
- for(let k=0;k<q.length&&q[k]!==to;k++)for(const e of q[k].n)if(!prev.has(e.r.i)){prev.set(e.r.i,q[k]);q.push(e.r)}
+ for(let k=0;k<q.length&&q[k]!==to;k++)for(const e of q[k].n){
+  if(clean&&e.r!==to&&M.inf.has(e.r.i))continue;
+  if(!prev.has(e.r.i)){prev.set(e.r.i,q[k]);q.push(e.r)}}
  if(!prev.has(to.i))return [from,to];
  const rooms=[];let cur=to;while(cur){rooms.unshift(cur);cur=prev.get(cur.i)}return rooms}
 function roomsToPts(rooms){       /* room centres, hugging the doorways between */
@@ -864,13 +873,29 @@ function teamFall(){
  if(SQ.on){teamStop();return}
  setBreach(FALLBREACH);
  SQ.arm=armoryRoom();
- SQ.obj=M.seedRoom;                       /* the room they are going into */
- const rt=roomRoute(SQ.arm,SQ.obj);
- SQ.stack=rt.length>1?rt[rt.length-2]:SQ.arm;   /* hold up next door      */
- SQ.pts=roomsToPts(rt.slice(0,-1));SQ.L=pathLen(SQ.pts);
+ /* hold up in clean ground and breach into the red: of every room on the
+    edge of the contamination, take the one they can reach by the longest
+    route that never passes through a fallen room                         */
+ SQ.obj=null;SQ.stack=null;SQ.pts=null;let bl=-1,sl=1e9,sh=null;
+ for(const r of M.rooms){if(!M.inf.has(r.i))continue;
+  for(const e of r.n){const c=e.r;
+   if(M.inf.has(c.i)||c===M.origin||c===SQ.arm)continue;
+   const rr=roomRoute(SQ.arm,c,true);
+   if(rr[rr.length-1]!==c)continue;             /* no clean way through */
+   const pts=roomsToPts(rr),L=pathLen(pts);
+   /* the longest approach that is still a move, not a tour of the building */
+   if(L<=APPROACH_MAX&&L>bl){bl=L;SQ.obj=r;SQ.stack=c;SQ.pts=pts}
+   if(L<sl){sl=L;sh={o:r,c:c,p:pts}}}}
+ if(!SQ.obj&&sh){SQ.obj=sh.o;SQ.stack=sh.c;SQ.pts=sh.p}
+ if(!SQ.obj){                                   /* nothing on the edge: fall back */
+  const rt=roomRoute(SQ.arm,M.seedRoom),k=rt.findIndex(r=>M.inf.has(r.i));
+  if(k>=1){SQ.obj=rt[k];SQ.stack=rt[k-1];SQ.pts=roomsToPts(rt.slice(0,k))}
+  else{SQ.obj=M.seedRoom;SQ.stack=rt.length>1?rt[rt.length-2]:SQ.arm;
+   SQ.pts=roomsToPts(rt.slice(0,-1))}}
+ SQ.L=pathLen(SQ.pts);
  SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.phase='advance';SQ.moving=true;
- SQ.readyAt=0;SQ.entryAt=0;SQ.stand0=0;SQ.broke=false;
- SQ.spd=SQ.L/(T_ARRIVE*(MOVE/BOUND));
+ SQ.readyAt=0;SQ.entryAt=0;SQ.stand0=0;SQ.broke=false;SQ.stackT=0;
+ SQ.spd=Math.min(2.2,SQ.L/(T_ARRIVE*(MOVE/BOUND)));
  SQ.ops=OPDEF.map((d,i)=>({cs:d[0],back:d[1],lat:d[2],ly:d[3],i,alive:true,lost:0,turned:false,td:0,sd:0,
    pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,set:false,mode:'',room:null,h0:undefined,
    x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
@@ -940,12 +965,12 @@ function stepSquad(dt){
  let ph=SQ.phase;
 
  /* ---------- phase transitions ---------- */
- if(ph==='advance'&&SQ.s>=SQ.L-.01){ph='stack';
+ if(ph==='advance'&&SQ.s>=SQ.L-.01){ph='stack';SQ.stackT=t;
   addLog('RESCUE TEAM 1 · STACKING','SECTOR '+SQ.stack.label,S.t)}
  if(ph==='stack'){
   const set=SQ.ops.every(o=>!o.alive||o.set);
   if(set&&!SQ.readyAt){SQ.readyAt=t;addLog('RESCUE TEAM 1 · SET','READY TO ENTER',S.t)}
-  if((SQ.readyAt&&t>=SQ.readyAt+T_READY)||t>=T_STACKMAX){ph='entry';SQ.entryAt=t;
+  if((SQ.readyAt&&t>=SQ.readyAt+T_READY)||t>=SQ.stackT+T_STACKMAX){ph='entry';SQ.entryAt=t;
    addLog('RESCUE TEAM 1 · ENTERING','SECTOR '+SQ.obj.label,S.t);glitch('flicker')}}
  if(ph==='entry'&&t>=SQ.entryAt+T_ENTRY){ph='standoff';SQ.stand0=t;
   addLog('CONTACT · RESCUE TEAM 1','SECTOR '+SQ.obj.label,S.t);glitch('flicker')}
@@ -1158,7 +1183,7 @@ function syncTabs(){document.querySelectorAll('.tabs span[data-mode]').forEach(e
 const screens={tx:$('#s-tx'),cctv:$('#s-cctv'),map:$('#s-map'),alert:$('#s-alert'),vitals:$('#s-vitals'),lab:$('#s-lab'),end:$('#s-end')};
 const MODES=['tx','cctv','map','alert','vitals','lab','end'];
 function setMode(m){S.mode=m;S.modeT0=S.t;syncTabs();if(m==='vitals')vReset();if(m==='end')endReset();for(const k in screens)screens[k].hidden=k!==m;document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));syncVideos();glitch()}
-function restart(){S.t=0;S.modeT0=0;if(S.mode==='vitals')vReset();if(S.mode==='end')endReset();S.nextGlitch=5;M=buildMap(S.seed);logEl.innerHTML='';lastStates=[];sens.forEach(s=>s.arr.fill(null));hist.fill(0);if(audio){audio.currentTime=0;audio.play().catch(()=>{})}}
+function restart(){S.t=0;S.modeT0=0;resetSpread();if(S.mode==='vitals')vReset();if(S.mode==='end')endReset();S.nextGlitch=5;M=buildMap(S.seed);logEl.innerHTML='';lastStates=[];sens.forEach(s=>s.arr.fill(null));hist.fill(0);if(audio){audio.currentTime=0;audio.play().catch(()=>{})}}
 const GFX={until:0,start:0,kind:'',freeze:0,seed:0};const gfxc=$('#gfx').getContext('2d');
 const GKINDS=['shift','rgb','roll','stutter','flash','flicker','punch','crt'];
 const GNAMES={shift:'Shift',rgb:'RGB',roll:'Roll',stutter:'Stutter',flash:'Flash',flicker:'Flicker',punch:'Punch',crt:'CRT'};
