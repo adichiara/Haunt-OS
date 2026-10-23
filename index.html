@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--cond);margin:0;
 .tabs span{flex:none;cursor:default}
 .tabs span[data-mode]{cursor:pointer}
 .tabs .search{flex:none;margin-left:auto}
-.appbar .osurl{margin-left:18px;font-family:var(--mono);font-size:14px;letter-spacing:.03em;color:#53646b;text-transform:none}
+.appbar .osurl{margin-left:18px;font-family:var(--mono);font-size:14px;letter-spacing:.03em;color:#8ea4ad;text-transform:none}
 body.nourl .osurl{display:none}
 /* no on-screen date or clock: keeps cuts consistent between takes */
 
@@ -771,20 +771,41 @@ const OPDEF=[['RT-1',0,0,-3],['RT-2',2.0,1.7,11],['RT-3',2.45,-1.8,-3],
 /* [seconds, index into OPDEF] — the order they go down */
 const FALLAT=[[12.0,5],[14.6,4],[16.2,2],[17.1,3],[19.8,1],[22.2,0]];
 const TURNAT=[25.2,3];            /* one of them gets back up */
-const SQ={on:false,t:0,s:0,L:0,spd:0,pts:[],ops:[],fired:0,turned:false};
+const SPLIT=8.5;                 /* they move as one until here, then fan out */
+const FALLT=[];FALLAT.forEach(f=>FALLT[f[1]]=f[0]);
+const SQ={on:false,t:0,s:0,L:0,spd:0,pts:[],ops:[],fired:0,turned:false,split:false,targets:[]};
 function roomAt(x,y){for(const o of M.rooms)if(x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h)return o;return null}
-function squadPath(){            /* armory -> breach, hugging the doorways */
- const from=M.origin,to=M.seedRoom;
+function roomRoute(from,to){      /* shortest room-to-room path */
  const prev=new Map();prev.set(from.i,null);const q=[from];
  for(let k=0;k<q.length&&q[k]!==to;k++)for(const e of q[k].n)if(!prev.has(e.r.i)){prev.set(e.r.i,q[k]);q.push(e.r)}
+ if(!prev.has(to.i))return [from,to];
+ const rooms=[];let cur=to;while(cur){rooms.unshift(cur);cur=prev.get(cur.i)}return rooms}
+function roomsToPts(rooms){       /* room centres, hugging the doorways between */
  const ctr=o=>[o.x+o.w/2,o.y+o.h/2];
- if(!prev.has(to.i))return [ctr(from),ctr(to)];
- const rooms=[];let cur=to;while(cur){rooms.unshift(cur);cur=prev.get(cur.i)}
+ if(!rooms.length)return [[0,0],[0,0]];
+ if(rooms.length<2)return [ctr(rooms[0]),ctr(rooms[0])];
  const pts=[ctr(rooms[0])];
  for(let i=0;i<rooms.length-1;i++){const a=rooms[i],b=rooms[i+1],e=a.n.find(q=>q.r===b);
   if(e)pts.push(e.side==='v'?[e.p,e.c]:[e.c,e.p]);
   pts.push(ctr(b))}
  return pts}
+function armoryRoom(){            /* staging room, away from comms and the breach */
+ const B=M.bb,tx=B.x+B.w*.14,ty=B.y+B.h*.8;let best=null,bd=1e9;
+ for(const o of M.rooms){if(o===M.origin||o===M.seedRoom||o.w*o.h<12)continue;
+  const d=Math.hypot(o.x+o.w/2-tx,o.y+o.h/2-ty);if(d<bd){bd=d;best=o}}
+ return best||M.rooms[0]}
+function fallRooms(){             /* six rooms spread around the breach */
+ const sr=M.seedRoom,order=[sr],seen=new Set([sr.i]);
+ for(let k=0;k<order.length&&order.length<18;k++)for(const e of order[k].n)
+  if(!seen.has(e.r.i)){seen.add(e.r.i);order.push(e.r)}
+ const cand=order.filter(o=>o.w*o.h>=10),pick=[sr];
+ while(pick.length<OPN){let best=null,bs=-1;
+  for(const o of cand){if(pick.indexOf(o)>=0)continue;let m=1e9;
+   for(const q of pick)m=Math.min(m,Math.hypot(o.x-q.x,o.y-q.y));
+   if(m>bs){bs=m;best=o}}
+  if(!best)break;pick.push(best)}
+ while(pick.length<OPN)pick.push(sr);
+ return pick}
 function pathLen(pts){let L=0;for(let i=1;i<pts.length;i++)L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);return L}
 function atDist(pts,d){
  if(pts.length<2)return [pts[0]?pts[0][0]:0,pts[0]?pts[0][1]:0,0];
@@ -797,22 +818,38 @@ function atDist(pts,d){
 const ADVT=20,BOUND=4.6,MOVE=3.2;      /* advance for 20s, in 3.2s bounds */
 function teamFall(){
  if(SQ.on){teamStop();return}
- SQ.pts=squadPath();SQ.L=pathLen(SQ.pts);
- SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.turned=false;
+ SQ.arm=armoryRoom();
+ SQ.pts=roomsToPts(roomRoute(SQ.arm,M.seedRoom));SQ.L=pathLen(SQ.pts);
+ SQ.targets=fallRooms();
+ SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.turned=false;SQ.split=false;
  SQ.spd=.93*SQ.L/(ADVT*MOVE/BOUND);
  SQ.ops=OPDEF.map((d,i)=>({cs:d[0],back:d[1],lat:d[2],ly:d[3],i,alive:true,lost:0,turned:false,td:0,sd:0,
-   x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
+   pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
  if(S.mode!=='map')setMode('map');
- addLog('RESCUE TEAM 1 · '+OPN+' OPERATORS','ARMORY',S.t);
+ addLog('RESCUE TEAM 1 · '+OPN+' OPERATORS','SECTOR '+SQ.arm.label,S.t);
  const b=$('#b-team');if(b){b.textContent='Stop team fall';b.classList.add('on')}}
 function teamStop(){SQ.on=false;SQ.ops=[];const b=$('#b-team');if(b){b.textContent='Play team fall';b.classList.remove('on')}}
-function loseOp(o){o.alive=false;o.lost=SQ.t;o.sd=Math.max(0,SQ.s-o.back);
+function setPos(o,p){const n=p[2]+Math.PI/2;
+ o.x=p[0]+Math.cos(n)*o.lat;o.y=p[1]+Math.sin(n)*o.lat;o.h=p[2]+(o.turned?Math.PI:0)}
+function doSplit(){SQ.split=true;
+ const sp=atDist(SQ.pts,SQ.s),here=roomAt(sp[0],sp[1])||M.seedRoom;
+ const tg=SQ.targets.slice().sort((a,b)=>
+  Math.hypot(a.x+a.w/2-sp[0],a.y+a.h/2-sp[1])-Math.hypot(b.x+b.w/2-sp[0],b.y+b.h/2-sp[1]));
+ SQ.ops.map(o=>o).sort((a,b)=>FALLT[a.i]-FALLT[b.i]).forEach((o,k)=>{
+  o.pts=roomsToPts(roomRoute(here,tg[k]||M.seedRoom));o.L2=pathLen(o.pts);o.s=0;
+  o.delay=k*.5;
+  const win=Math.max(1.3,FALLT[o.i]-SPLIT-1.0-o.delay);
+  o.spd=Math.min(2.6,o.L2/(win*(MOVE/BOUND)));o.lat*=.55});
+ addLog('RESCUE TEAM 1 · ELEMENTS SPLITTING','SECTOR '+here.label,S.t)}
+function loseOp(o){o.alive=false;o.lost=SQ.t;o.sd=SQ.split?o.s:Math.max(0,SQ.s-o.back);
  const rm=roomAt(o.x,o.y);
  addLog('BIOSIGN LOST · '+o.cs,'SECTOR '+(rm?rm.label:'--'),S.t)}
 function stepSquad(dt){
  if(!SQ.on||!SQ.ops.length)return;
  SQ.t+=dt;const t=SQ.t;
- if(t<ADVT&&(t%BOUND)<MOVE)SQ.s+=dt*SQ.spd;
+ const moving=(t%BOUND)<MOVE;
+ if(!SQ.split&&t>=SPLIT)doSplit();
+ if(!SQ.split&&t<ADVT&&moving)SQ.s+=dt*SQ.spd;
  while(SQ.fired<FALLAT.length&&t>=FALLAT[SQ.fired][0]){
   const o=SQ.ops[FALLAT[SQ.fired][1]];
   if(SQ.fired===0)addLog('CONTACT · RESCUE TEAM 1','SECTOR '+(roomAt(o.x,o.y)||{label:'--'}).label,S.t);
@@ -821,12 +858,11 @@ function stepSquad(dt){
  if(!SQ.turned&&t>=TURNAT[0]){SQ.turned=true;const o=SQ.ops[TURNAT[1]];o.turned=true;
   addLog('MOVEMENT · '+o.cs+' TAG ACTIVE','RECLASSIFIED',S.t);glitch('shift')}
  for(const o of SQ.ops){
-  let p;
-  if(o.alive)p=atDist(SQ.pts,Math.max(0,SQ.s-o.back));
-  else if(o.turned){o.td+=dt*.6;p=atDist(SQ.pts,Math.max(0,o.sd-o.td))}
-  else continue;
-  const n=p[2]+Math.PI/2;
-  o.x=p[0]+Math.cos(n)*o.lat;o.y=p[1]+Math.sin(n)*o.lat;o.h=p[2]+(o.turned?Math.PI:0)}}
+  if(o.alive){
+   if(SQ.split){if(moving&&t>=SPLIT+(o.delay||0))o.s=Math.min(o.L2,o.s+dt*o.spd)}
+   else o.s=Math.max(0,SQ.s-o.back);
+   setPos(o,atDist(o.pts,o.s))}
+  else if(o.turned){o.td+=dt*.6;setPos(o,atDist(o.pts,Math.max(0,o.sd-o.td)))}}}
 function drawSquad(ctx,X,Y,cs,t,mini){
  if(!SQ.on||!SQ.ops.length)return;
  const R=(mini?.44:.8)*cs;

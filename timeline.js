@@ -3,7 +3,7 @@
    The site works out how many days are left until the party and shows
    that day's state. Nothing needs to be updated by hand.
 
-   DAYS COUNT DOWN. 11 means "11 days before the party". 0 is party day.
+   DAYS COUNT DOWN. 5 means "5 days before the party". 0 is party day.
    Before the countdown starts, the earliest day below is shown.
    After the party, day 0 is shown forever (it freezes at the worst).
 
@@ -23,44 +23,28 @@
 window.TIMELINE = {
 
   partyDate: '2026-10-30',   // day 0. Change this and everything shifts with it.
-  firstDay: 14,              // the countdown starts this many days out
+  firstDay: 5,               // the countdown starts this many days out — Oct 25
 
   days: {
 
-    14: { breach: 0,    spread: 999, lab: 'early',
-          alert:  { title: 'NOTICE', subtitle: 'ROUTINE MONITORING', line: 'All systems nominal' },
-          status: 'ALL CHANNELS CLEAR' },
-
-    8: { breach: 0,    spread: 998, lab: 'early',
+     5: { breach: 0,    spread: 998, lab: 'early',
           alert:  { title: 'NOTICE', subtitle: 'SENSOR FAULT', line: 'Maintenance ticket raised' },
           status: 'ALL CHANNELS CLEAR' },
 
-    7: { breach: 0.04, spread: 90, lab: 'early',
+     4: { breach: 0.06, spread: 80, lab: 'early',
           alert:  { title: 'ADVISORY', subtitle: 'AIR QUALITY DEVIATION', line: 'Monitoring' },
           status: 'MINOR SIGNAL INTERFERENCE' },
 
-     6: { breach: 0.10, spread: 60, lab: 'early',
-          alert:  { title: 'ADVISORY', subtitle: 'CONTAINMENT DEGRADED', line: 'Lab B sealed pending review' },
-          status: 'MINOR SIGNAL INTERFERENCE' },
-
-     5: { breach: 0.16, spread: 48, lab: 'spread',
-          alert:  { title: 'CAUTION', subtitle: 'SEAL INTEGRITY 61%', line: 'Access restricted · Level 4 only' },
+     3: { breach: 0.22, spread: 40, lab: 'spread',
+          alert:  { title: 'CAUTION', subtitle: 'CONTAINMENT DEGRADED', line: 'Lab B sealed pending review' },
           status: 'SIGNAL DEGRADED' },
 
-     4: { breach: 0.40, spread: 36, lab: 'spread',
-          alert:  { title: 'CAUTION', subtitle: 'BIOHAZARD SENSORS ACTIVE', line: 'Isolation bays at capacity' },
-          status: 'SIGNAL DEGRADED' },
-
-     3: { breach: 0.50, spread: 28, lab: 'spread',
-          alert:  { title: 'WARNING', subtitle: 'CONTAINMENT FAILING', line: 'Evacuation request pending review' },
+     2: { breach: 0.48, spread: 24, lab: 'spread',
+          alert:  { title: 'WARNING', subtitle: 'CONTAINMENT FAILING', line: 'Evacuation request DENIED' },
           status: 'SIGNAL WEAK' },
 
-     2: { breach: 0.64, spread: 14, lab: 'full',
-          alert:  { title: 'WARNING', subtitle: 'MULTIPLE SECTORS LOST', line: 'Shelter in place' },
-          status: 'SIGNAL FAILING' },
-
-     1: { breach: 0.82, spread: 9, lab: 'full',
-          alert:  { title: 'ALERT', subtitle: 'CONTAINMENT BREACH', line: 'Quarantine protocol engaged' },
+     1: { breach: 0.78, spread: 11, lab: 'full',
+          alert:  { title: 'ALERT', subtitle: 'MULTIPLE SECTORS LOST', line: 'Shelter in place' },
           status: 'SIGNAL FAILING' },
 
      0: { breach: 0.94, spread: 5, lab: 'full',

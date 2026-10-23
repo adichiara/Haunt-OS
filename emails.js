@@ -525,7 +525,7 @@ P.S. — I promise I'm not a bot! 🙂` },
      These arrive one day at a time. `day` is how many days before the
      party. Copy a block, change the day, and it slots into place.     */
 
-  { folder: 'inbox', day: 11, time: '09:14', from: 'Maintenance', addr: 'maintenance@exresfac.org',
+  { folder: 'inbox', day: 5, time: '09:14', from: 'Maintenance', addr: 'maintenance@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Work order 4471 closed — vent 7',
     body:
 `Attended. No fault found. Ductwork sound, dampers operating, no
@@ -536,7 +536,7 @@ Bait stations placed.
 
 Closing as resolved. Please reopen if the noise persists.` },
 
-  { folder: 'inbox', day: 10, time: '07:32', from: 'Air Handling (automated)', addr: 'alarms@exresfac.org',
+  { folder: 'inbox', day: 5, time: '07:32', from: 'Air Handling (automated)', addr: 'alarms@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Advisory: particulate deviation — Sublevel B',
     body:
 `ZONE:      SUBLEVEL B
@@ -547,7 +547,7 @@ SOURCE:    UNDETERMINED
 Advisory only. No action required at this level.
 Filters were replaced 9 days ago.` },
 
-  { folder: 'inbox', day: 10, time: '16:48', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
+  { folder: 'inbox', day: 5, time: '16:48', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
     to: 'Principal Investigator', subject: 'B-07 overnight plate counts',
     body:
 `The overnight counts are wrong. I ran them twice.
@@ -558,11 +558,11 @@ by an order of magnitude since Friday.
 I would like someone to check my arithmetic before I put this anywhere
 official.` },
 
-  { folder: 'sent', day: 9, time: '08:05', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+  { folder: 'sent', day: 4, time: '08:05', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
     to: 'Lab B Floor Lead', subject: 'RE: B-07 overnight plate counts',
     body: 'Your arithmetic is fine.\n\nRun it again tonight. Alone, and on the sealed bench.' },
 
-  { folder: 'inbox', day: 9, time: '13:27', from: 'Security', addr: 'security@exresfac.org',
+  { folder: 'inbox', day: 4, time: '13:27', from: 'Security', addr: 'security@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Door sensor fault — Lab B',
     body:
 `The Lab B door is reporting OPEN while physically closed. Engineering
@@ -571,7 +571,7 @@ has been notified.
 In the meantime the access log for that door should be treated as
 unreliable. Please badge in as normal regardless.` },
 
-  { folder: 'inbox', day: 8, time: '06:51', from: 'Occupational Health', addr: 'occhealth@exresfac.org',
+  { folder: 'inbox', day: 4, time: '06:51', from: 'Occupational Health', addr: 'occhealth@exresfac.org',
     to: 'Principal Investigator', subject: 'Exposure report — Lab B (1 of 1)',
     body:
 `An exposure incident was logged at 04:40.
@@ -581,7 +581,7 @@ wound is minor. Standard protocol is 48 hours.
 
 We anticipate a routine discharge.` },
 
-  { folder: 'inbox', day: 8, time: '11:02', from: 'Environmental Health & Safety', addr: 'ehs@exresfac.org',
+  { folder: 'inbox', day: 4, time: '11:02', from: 'Environmental Health & Safety', addr: 'ehs@exresfac.org',
     to: 'All Laboratory Personnel', subject: 'Reminder: respirator fit testing this week',
     body:
 `Fit testing is available Tuesday and Wednesday in the training room.
@@ -592,7 +592,7 @@ Level 4 spaces.
 Sublevel B personnel: your scheduled slot conflicts with the all-hands
 meeting. Please attend both.` },
 
-  { folder: 'inbox', day: 7, time: '09:40', from: 'Security Systems (automated)', addr: 'alarms@exresfac.org',
+  { folder: 'inbox', day: 3, time: '09:40', from: 'Security Systems (automated)', addr: 'alarms@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Camera offline — CAM 13 (Vent 7 Access)',
     body:
 `CAM 13 has stopped reporting. Last frame 09:38.
@@ -602,7 +602,7 @@ camera faults is 6 weeks.
 
 CAM 08 (Freight Lift) remains offline from 14 August.` },
 
-  { folder: 'inbox', day: 7, time: '15:19', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
+  { folder: 'inbox', day: 3, time: '15:19', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
     to: 'Principal Investigator', subject: 'Ran it again. Alone. Sealed bench.',
     body:
 `Doubling time is down by a factor of nine from the figures in the
@@ -613,7 +613,7 @@ on the underside of the plate lid.
 
 I have sealed Lab B. Nobody in or out until you have seen this.` },
 
-  { folder: 'inbox', day: 6, time: '07:15', from: 'Occupational Health', addr: 'occhealth@exresfac.org',
+  { folder: 'inbox', day: 3, time: '07:15', from: 'Occupational Health', addr: 'occhealth@exresfac.org',
     to: 'Principal Investigator', subject: 'Exposure report — Lab B (2 of 2)',
     body:
 `A second exposure was logged overnight during restraint of the first
@@ -624,7 +624,7 @@ repeatedly for the return of her duty weapon.
 
 Observation extended to 96 hours.` },
 
-  { folder: 'spam', day: 6, time: '02:58', from: 'World Summit on Emerging Pathogens', addr: 'secretariat@wsep-global.info',
+  { folder: 'spam', day: 3, time: '02:58', from: 'World Summit on Emerging Pathogens', addr: 'secretariat@wsep-global.info',
     to: 'Undisclosed recipients', subject: 'Final Call — Abstract deadline EXTENDED (3rd extension)',
     body:
 `Dear Dr. Pricipal Invesitgator,
@@ -637,7 +637,7 @@ discount on the registration fee of 1,490 USD.
 
 Topics of interest include but are not limited to: all topics.` },
 
-  { folder: 'inbox', day: 5, time: '05:44', from: 'Occupational Health', addr: 'occhealth@exresfac.org',
+  { folder: 'inbox', day: 2, time: '05:44', from: 'Occupational Health', addr: 'occhealth@exresfac.org',
     to: 'Principal Investigator', subject: 'Isolation census — 4 occupied',
     body:
 `Bay occupancy has doubled overnight. Two further admissions:
@@ -650,7 +650,7 @@ We are now at 4 of 6 beds. Please advise whether to open Bay 2.
 The custodian has asked whether the knocking in vent 7 was ever
 investigated. I did not have an answer for him.` },
 
-  { folder: 'sent', day: 4, time: '08:30', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+  { folder: 'sent', day: 2, time: '08:30', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
     to: 'Facility Director', subject: 'Request: evacuate and seal Sublevel B',
     files: ['B-07_incident_summary.pdf'],
     body:
@@ -663,7 +663,7 @@ its route.
 
 I am aware of what this does to the quarter. I am asking anyway.` },
 
-  { folder: 'inbox', day: 3, time: '10:12', from: 'Facility Director', addr: 'director@exresfac.org',
+  { folder: 'inbox', day: 1, time: '10:12', from: 'Facility Director', addr: 'director@exresfac.org',
     to: 'Principal Investigator', subject: 'RE: Request: evacuate and seal Sublevel B',
     body:
 `Request reviewed and denied.
@@ -676,7 +676,7 @@ Continue containment at the local level. Keep it off email.
 
 I have every confidence in your team.` },
 
-  { folder: 'inbox', day: 3, time: '18:55', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
+  { folder: 'inbox', day: 1, time: '18:55', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
     to: 'Principal Investigator', subject: 'The custodian',
     body:
 `He stopped breathing at 22:31 last night.
@@ -686,7 +686,7 @@ in a rhythm I have not seen before.
 
 I have not turned it off. I would like instructions.` },
 
-  { folder: 'inbox', day: 2, time: '04:03', from: 'Containment Systems (automated)', addr: 'alarms@exresfac.org',
+  { folder: 'inbox', day: 1, time: '04:03', from: 'Containment Systems (automated)', addr: 'alarms@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Seal integrity 61% — Sublevel B',
     body:
 `PRIMARY SEAL:   61% (threshold 85%)
@@ -696,7 +696,7 @@ VENT 7 DAMPER:  OPEN — MANUAL OVERRIDE AT PANEL
 
 The manual override was engaged at 03:51 from inside the level.` },
 
-  { folder: 'inbox', day: 2, time: '12:30', from: 'Human Resources', addr: 'hr@exresfac.org',
+  { folder: 'inbox', day: 1, time: '12:30', from: 'Human Resources', addr: 'hr@exresfac.org',
     to: 'All Staff', subject: 'Halloween costume guidelines',
     body:
 `A reminder that costumes are welcome but must not include:
@@ -710,7 +710,7 @@ reasons.
 
 Prizes will be awarded for best costume.` },
 
-  { folder: 'inbox', day: 1, time: '03:21', from: 'Security Systems (automated)', addr: 'alarms@exresfac.org',
+  { folder: 'inbox', day: 0, time: '03:21', from: 'Security Systems (automated)', addr: 'alarms@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Multiple cameras offline — Sublevel B',
     body:
 `The following feeds have stopped reporting within the last 40 minutes:
@@ -724,7 +724,7 @@ power.
 
 Service request raised.` },
 
-  { folder: 'inbox', day: 1, time: '19:47', from: 'Lab A Night Lead', addr: 'lab-a-night@exresfac.org',
+  { folder: 'inbox', day: 0, time: '19:47', from: 'Lab A Night Lead', addr: 'lab-a-night@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Who is on tonight',
     body:
 `I need an honest count of who is actually on the level tonight.
