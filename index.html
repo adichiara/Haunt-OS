@@ -24,13 +24,13 @@ body{background:var(--bg);color:var(--fg);font-family:var(--cond);margin:0;
 .stage{position:absolute;top:0;left:0;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:var(--bg)}
 .layer{position:absolute;inset:0}
 [hidden]{display:none!important}
-.appbar .brand{text-transform:none}
+.appbar .brand{text-transform:none;color:#f4f9fa}
 .tabs{overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tabs span{flex:none;cursor:default}
 .tabs span[data-mode]{cursor:pointer}
 .tabs .search{flex:none;margin-left:auto}
-.appbar .osurl{margin-left:18px;font-family:var(--mono);font-size:14px;letter-spacing:.03em;color:#8ea4ad;text-transform:none}
+.appbar .osurl{margin-left:18px;font-family:var(--mono);font-size:14px;letter-spacing:.03em;color:#a9c0c9;text-transform:none}
 body.nourl .osurl{display:none}
 /* no on-screen date or clock: keeps cuts consistent between takes */
 
@@ -168,6 +168,15 @@ canvas{display:block;width:100%;height:100%}
 .bios .br.turned .bl .cs{color:#ff6b78}
 .bios .bl .hr{font-variant-numeric:tabular-nums}
 .bios .bl .stt{font-size:11px;letter-spacing:.15em}
+.bios .am{display:flex;align-items:center;gap:7px;margin-top:4px;height:12px}
+.bios .am i{flex:1;height:7px;background:rgba(120,150,165,.18);position:relative;overflow:hidden}
+.bios .am i::after{content:'';position:absolute;top:0;bottom:0;left:0;width:var(--w,100%);
+  background:#7ef0a8;box-shadow:0 0 7px rgba(126,240,168,.6)}
+.bios .br.low .am i::after{background:#ffb347;box-shadow:0 0 7px rgba(255,179,71,.6)}
+.bios .br.out .am i::after{background:var(--red);box-shadow:none}
+.bios .am .al{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:#67797f}
+.bios .am b{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.04em;
+  color:#9fb3bb;font-variant-numeric:tabular-nums;min-width:58px;text-align:right}
 .bios canvas{flex:1;min-height:0}
 body.biomode .rcol{grid-template-rows:auto 1fr}
 
@@ -435,7 +444,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
      <div class="alertbox" id="alertbox"><img class="bioimg" alt=""><div><b class="t-alert">ALERT</b><span class="t-alertsub">CONTAINMENT BREACH</span></div></div>
      <div class="pane"><div class="ph"><span>System Status</span></div><div class="status" id="status"></div></div>
      <div class="pane"><div class="ph"><span>Sensor Feed</span></div><div class="sens" id="sens"></div></div>
-     <div class="pane" id="biopane" hidden><div class="ph"><span>Rescue Team 1</span><small id="bioalarm"></small></div><div class="bios" id="bios"></div></div>
+     <div class="pane" id="biopane" hidden><div class="ph" style="white-space:nowrap"><span>Security Team 1</span><small id="bioalarm"></small></div><div class="bios" id="bios"></div></div>
     </div>
    </div>
   </section>
@@ -518,13 +527,13 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
 </div>
 
 <nav id="webnav" aria-label="Screens">
- <button data-mode="tx" class="on">Transmission</button><button data-mode="cctv">Cameras</button><button data-mode="map">Breach map</button><button data-mode="alert">Alert</button><button data-mode="vitals">Vitals</button><button data-mode="lab">Lab</button><button data-mode="files">Files</button><button data-mode="term">Terminal</button><button data-mode="end" class="resp">Respond</button>
+ <button data-mode="tx" class="on">Transmission</button><button data-mode="cctv">Cameras</button><button data-mode="map">Map</button><button data-mode="alert">Alert</button><button data-mode="vitals">Vitals</button><button data-mode="lab">Lab</button><button data-mode="files">Files</button><button data-mode="term">Terminal</button><button data-mode="end" class="resp">Respond</button>
  <span class="sp"></span><span class="hint2" id="hint2"></span><button class="mini" id="w-replay">Replay</button><button class="mini" id="w-snd">Sound on</button><button class="mini" id="w-full" aria-label="Full screen">⛶</button>
 </nav>
 <div id="connect"><img class="bioimg" alt=""><div class="k" id="c-kick">INCOMING TRANSMISSION</div><h1 id="c-title">CHANNEL 07</h1><button id="c-go">Connect</button><small id="c-note"></small></div>
 <div class="ctl" id="ctl">
  <div class="grp" id="modes">
-  <button data-mode="tx" class="on">1 Transmission</button><button data-mode="cctv">2 Cameras</button><button data-mode="map">3 Breach map</button><button data-mode="alert">4 Alert</button><button data-mode="vitals">5 Vitals</button><button data-mode="lab">6 Lab</button><button data-mode="end">7 End card</button>
+  <button data-mode="tx" class="on">1 Transmission</button><button data-mode="cctv">2 Cameras</button><button data-mode="map">3 Map</button><button data-mode="alert">4 Alert</button><button data-mode="vitals">5 Vitals</button><button data-mode="lab">6 Lab</button><button data-mode="end">7 End card</button>
  </div>
  <div class="grp">
   <button id="b-restart">Restart</button><button id="b-glitch">Glitch</button><button id="b-auto" class="on">Auto glitch</button><select id="gstyle" aria-label="Glitch style"><option value="mix">Glitch: mix</option><option value="shift">Glitch: shift</option><option value="rgb">Glitch: RGB split</option><option value="roll">Glitch: vertical roll</option><option value="stutter">Glitch: stutter</option><option value="flash">Glitch: flash</option><option value="flicker">Glitch: power flicker</option><option value="punch">Glitch: lens punch</option><option value="crt">Glitch: CRT collapse</option></select><span class="lbl">Auto uses:</span><span class="grp" id="autok" style="gap:4px"></span><button id="b-pause">Pause</button><button id="b-team">Play team fall</button><select id="mappanel" aria-label="Map side panel"><option value="auto">Panel: auto (biosigns on fall)</option><option value="bio">Panel: squad biosigns</option><option value="def">Panel: status + sensors</option></select><button id="b-new">New map</button><button id="b-sound" class="on">Sound on</button><button id="b-loop">Party loop</button>
@@ -799,7 +808,7 @@ function drawMap(ctx,W,H,t,mini){
  if(!mini){ctx.fillStyle='#22d68c';ctx.font='500 12px "IBM Plex Mono", monospace';ctx.fillText('TX',cx+9,cy-7)}
  drawSquad(ctx,X,Y,cs,t,mini);
 }
-/* ---------- RESCUE TEAM · tactical markers and the scripted fall ----------
+/* ---------- SECURITY TEAM · tactical markers and the scripted fall --------
    Six operators route room to room from the armory to the breach, moving in
    bounds (half the element moves while half holds), then their biosigns drop
    out one at a time. Nothing about the attack is shown; only the readout.  */
@@ -815,11 +824,11 @@ const APPROACH_MAX=18;            /* how far they will walk to get there  */
 const T_STACKMAX=6.0;             /* go in this long after stacking regardless */
 const T_READY=1.8;                /* beat on the door once everyone is up */
 const T_ENTRY=2.6;                /* time to push into the room           */
-/* casualties, in seconds after the room is entered */
-/* one goes down inside the room, the other two are caught on the way out */
-const DEATHS=[[3.5,2],[9.5,1],[13.0,0]];
-const T_BREAK=5.4;                /* survivors break out, separate routes */
-const T_TURN=6.0;                 /* how long each one lies there first   */
+const CLEARN=2;                   /* rooms they clear before it turns      */
+const T_TURN=6.0;                 /* how long each one lies there first    */
+/* antidote rounds. They burn at the same rate, so these decide the order
+   they run dry in, and running dry is what kills them.                   */
+const AMMO0=[240,205,268];
 const FALLBREACH=.25;            /* how much of the map is already lost when they go in */
 function setBreach(frac){  /* run the normal spread forward to this point, then hold */
  if(!M)return;
@@ -830,8 +839,8 @@ function setBreach(frac){  /* run the normal spread forward to this point, then 
   const [o,from]=cand[SPR()*cand.length|0];     /* same rule, same sequence */
   M.inf.set(o.i,S.t-6+k*.02);M.par.set(o.i,from)}
  M.next=S.t+999}
-const DT=[];DEATHS.forEach(f=>DT[f[1]]=f[0]);
-const SQ={on:false,t:0,s:0,L:0,spd:0,pts:[],ops:[],fired:0,phase:'advance',moving:true,doors:null};
+const SQ={on:false,t:0,s:0,L:0,spd:0,pts:[],ops:[],phase:'advance',moving:true,doors:null,
+ host:[],hid:0,done:0,lastKill:0,lastSpawn:0,swarmT:0,clearT:0,cleared:false,wiped:false};
 const dkey=(a,b)=>Math.min(a.i,b.i)+'|'+Math.max(a.i,b.i);
 function roomAt(x,y){for(const o of M.rooms)if(x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h)return o;return null}
 function roomRoute(from,to,clean){ /* shortest room-to-room path; clean = avoid fallen rooms */
@@ -910,14 +919,16 @@ function teamFall(){
   for(let i=0;i<rr.length-1;i++)SQ.doors.add(dkey(rr[i],rr[i+1]));
   SQ.doors.add(dkey(SQ.stack,SQ.obj));}
  SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.phase='advance';SQ.moving=true;
- SQ.readyAt=0;SQ.entryAt=0;SQ.stand0=0;SQ.broke=false;SQ.stackT=0;
+ SQ.readyAt=0;SQ.entryAt=0;SQ.broke=false;SQ.stackT=0;SQ.host=[];SQ.hid=1;SQ.done=0;
+ SQ.lastKill=0;SQ.lastSpawn=0;SQ.swarmT=0;SQ.cleared=false;SQ.wiped=false;
  SQ.spd=Math.min(2.2,SQ.L/(T_ARRIVE*(MOVE/BOUND)));
  SQ.ops=OPDEF.map((d,i)=>({cs:d[0],back:d[1],lat:d[2],ly:d[3],i,alive:true,lost:0,turned:false,td:0,sd:0,
-   pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,set:false,mode:'',room:null,h0:undefined,
+   n:i+1,ammo:AMMO0[i]||240,ammo0:AMMO0[i]||240,dry:0,
+   pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,set:false,room:null,
    x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
  BIO.forEach(b=>{b.buf.fill(0);b.state='';b.shown='';b.row.className='br'});
  if(S.mode!=='map')setMode('map');
- addLog('RESCUE TEAM 1 · '+OPN+' OPERATORS','SECTOR '+SQ.arm.label,S.t);
+ addLog('SECURITY TEAM 1 · '+OPN+' OPERATORS','SECTOR '+SQ.arm.label,S.t);
  const b=$('#b-team');if(b){b.textContent='Stop team fall';b.classList.add('on')}}
 function teamStop(){SQ.on=false;SQ.ops=[];if(M)M.next=S.t+1.5;const b=$('#b-team');if(b){b.textContent='Play team fall';b.classList.remove('on')}}
 function headAt(pts,d){const a=atDist(pts,Math.max(0,d-.8)),b=atDist(pts,d+.8);
@@ -928,114 +939,186 @@ function setPos(o,p,dt,snap){
  if(snap||o.x===undefined){o.x=tx;o.y=ty}
  else{const k=Math.min(1,(dt||.016)*18);o.x+=(tx-o.x)*k;o.y+=(ty-o.y)*k}
  o.h=hd+(o.turned?Math.PI:0)}
-const SEEK=2.5, RUNSPD=2.9;
-/* ---- small helpers for the close-quarters beats ---- */
+const SEEK=2.3, RUNSPD=2.9;
+/* ---- close-quarters helpers ---- */
 function seek(o,tx,ty,spd,dt){const dx=tx-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);
  if(d<.04){o.x=tx;o.y=ty;return true}
  const st=Math.min(d,spd*dt);o.x+=dx/d*st;o.y+=dy/d*st;return d-st<.04}
 function faceTo(o,px,py){o.h=Math.atan2(py-o.y,px-o.x)}
-/* a stack outside the door: two short files along the approach */
-const STACKOFF=[[.1,0],[-.9,.5],[-.9,-.5]];
-const ENTRYOFF=[[.9,0],[-.2,.7],[-.2,-.7]];
 function clampIn(r,px,py){const m=.7;
  return [Math.max(r.x+m,Math.min(r.x+r.w-m,px)),Math.max(r.y+m,Math.min(r.y+r.h-m,py))]}
+function ctrOf(r){return [r.x+r.w/2,r.y+r.h/2]}
+const STACKOFF=[[.1,0],[-.9,.5],[-.9,-.5]];
 function slotPt(room,base,off,ang){const c=Math.cos(ang),sn=Math.sin(ang);
  return clampIn(room,base[0]+off[0]*c-off[1]*sn, base[1]+off[0]*sn+off[1]*c)}
-function ctrOf(r){return [r.x+r.w/2,r.y+r.h/2]}
-/* they get one or two rooms out, by different doors, and no further */
-function nearExits(from,n,taken){
- const seen=new Set([from.i]),out=[];
- let layer=[from];
- for(let hop=1;hop<=2&&out.length<n;hop++){const next=[];
-  for(const r of layer)for(const e of r.n){const c=e.r;
-   if(seen.has(c.i))continue;seen.add(c.i);next.push(c);
-   if(M.inf.has(c.i)||c===M.origin||taken.indexOf(c)>=0)continue;
-   out.push({r:c,hop})}
-  layer=next}
- out.sort((a,b)=>b.hop-a.hop);          /* two rooms out if it can manage it */
- return out}
+/* they take the sides of the room rather than piling onto the middle */
+function flankPt(room,k,n,ang){const c=ctrOf(room),
+ rad=Math.max(1.1,Math.min(room.w,room.h)*.34),
+ a=ang+(k-(n-1)/2)*1.55;
+ return clampIn(room,c[0]+Math.cos(a)*rad,c[1]+Math.sin(a)*rad)}
+
+/* ---- hostiles ---- */
+function spawnHostiles(room,n,from){
+ for(let k=0;k<n;k++){const c=ctrOf(room);
+  const a=hash(SQ.hid++)*6.283,r=Math.min(room.w,room.h)*.3;
+  const p=from?[from[0],from[1]]:clampIn(room,c[0]+Math.cos(a)*r,c[1]+Math.sin(a)*r);
+  SQ.host.push({x:p[0],y:p[1],room:room,t:0})}}
+function nearestOp(x,y){let b=null,bd=1e9;
+ for(const o of SQ.ops){if(!o.alive)continue;
+  const d=Math.hypot(o.x-x,o.y-y);if(d<bd){bd=d;b=o}}
+ return b}
+function stepHostiles(dt){
+ for(const h of SQ.host){const o=nearestOp(h.x,h.y);if(!o)continue;
+  const dx=o.x-h.x,dy=o.y-h.y,d=Math.hypot(dx,dy);
+  if(d>1.0){const sp=.55*dt;h.x+=dx/d*sp;h.y+=dy/d*sp}}}
+function killHostile(){if(!SQ.host.length)return false;
+ let bi=0,bd=1e9;
+ for(let i=0;i<SQ.host.length;i++){const o=nearestOp(SQ.host[i].x,SQ.host[i].y);if(!o)continue;
+  const d=Math.hypot(o.x-SQ.host[i].x,o.y-SQ.host[i].y);if(d<bd){bd=d;bi=i}}
+ SQ.host.splice(bi,1);return true}
+
+/* ---- ammo ---- */
+const BURN={clear:7,swarm:26,breakout:11};
+function burnAmmo(dt,rate){
+ for(const o of SQ.ops){if(!o.alive||o.ammo<=0)continue;
+  o.ammo=Math.max(0,o.ammo-rate*dt*(o.rate||1));
+  if(o.ammo<=0&&!o.dry){o.dry=SQ.t;
+   addLog('ST-'+o.n+' · ANTIDOTE EXPENDED','SECTOR '+((roomAt(o.x,o.y)||{label:'--'}).label),S.t)}}}
+
+/* ---- sequence ---- */
+function nextObjective(from){        /* the nearest fallen room they can reach cleanly */
+ let best=null,bl=1e9,bs=null;
+ for(const r of M.rooms){if(!M.inf.has(r.i))continue;
+  for(const e of r.n){const c=e.r;
+   if(M.inf.has(c.i)||c===M.origin)continue;
+   const rr=roomRoute(from,c,true);
+   if(rr[rr.length-1]!==c)continue;
+   const L=pathLen(roomsToPts(rr));
+   if(L<bl){bl=L;best=r;bs=c}}}
+ return best?{obj:best,stack:bs,len:bl}:null}
+function setRoute(o,fromRoom,toRoom,extra,spd){
+ const pts=roomsToPts(roomRoute(fromRoom,toRoom));pts.unshift([o.x,o.y]);
+ if(extra)pts.push(extra);
+ o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;o.spd=spd;
+ if(SQ.doors){const rr=roomRoute(fromRoom,toRoom);
+  for(let i=0;i<rr.length-1;i++)SQ.doors.add(dkey(rr[i],rr[i+1]))}}
+function enterRoom(room,ang){
+ SQ.obj=room;SQ.cleared=false;
+ const alive=SQ.ops.filter(o=>o.alive);
+ alive.forEach((o,k)=>setRoute(o,roomAt(o.x,o.y)||room,room,
+   flankPt(room,k,alive.length,ang),Math.max(1.1,2.2)));
+ spawnHostiles(room,4);SQ.lastKill=SQ.t+.6;
+ addLog('SECURITY TEAM 1 · ENTERING','SECTOR '+room.label,S.t);glitch('flicker')}
+function clearRoom(){
+ if(SQ.obj&&M.inf.has(SQ.obj.i)){M.inf.delete(SQ.obj.i);M.par.delete(SQ.obj.i)}
+ SQ.done++;addLog('SECTOR '+SQ.obj.label+' CLEAR','SECURITY TEAM 1',S.t)}
+function doSwarm(){SQ.swarmT=SQ.t;
+ addLog('MULTIPLE CONTACTS · CONVERGING','SECTOR '+SQ.obj.label,S.t);glitch('shift')}
 function doBreak(){SQ.broke=true;
  const taken=[];
  for(const o of SQ.ops){if(!o.alive)continue;
   const from=roomAt(o.x,o.y)||SQ.obj;
-  const opts=nearExits(from,4,taken);
-  const pick=opts.length?opts[0].r:SQ.arm;
-  taken.push(pick);
-  const pts=roomsToPts(roomRoute(from,pick));pts.unshift([o.x,o.y]);
-  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;o.spd=RUNSPD;o.mode='run';
-  if(SQ.doors)for(let i=0;i<1;i++)SQ.doors.add(dkey(from,pick))}
- addLog('RESCUE TEAM 1 · BREAKING OUT','SEPARATE ROUTES',S.t);glitch('shift')}
-function loseOp(o){o.alive=false;o.lost=SQ.t;o.mode='down';
+  const seen=new Set([from.i]);let layer=[from],pick=null;
+  for(let hop=1;hop<=2;hop++){const nx=[];
+   for(const r of layer)for(const e of r.n){const c=e.r;
+    if(seen.has(c.i))continue;seen.add(c.i);nx.push(c);
+    if(!M.inf.has(c.i)&&c!==M.origin&&taken.indexOf(c)<0)pick=c}
+   layer=nx}
+  if(!pick)pick=SQ.arm;
+  taken.push(pick);setRoute(o,from,pick,null,RUNSPD)}
+ addLog('SECURITY TEAM 1 · FALLING BACK','ANTIDOTE LOW',S.t);glitch('shift')}
+function loseOp(o){o.alive=false;o.lost=SQ.t;
  const rm=roomAt(o.x,o.y);o.room=rm;
- addLog('BIOSIGN LOST · '+o.cs,'SECTOR '+(rm?rm.label:'--'),S.t)}
+ addLog('BIOSIGN LOST · ST-'+o.n,'SECTOR '+(rm?rm.label:'--'),S.t)}
 function turnOp(o){o.turned=true;
  const rm=o.room||roomAt(o.x,o.y);
- /* he gets up where he fell and shambles off, so give him a fresh route */
  const pts=roomsToPts(roomRoute(rm||SQ.obj,SQ.arm));pts.unshift([o.x,o.y]);
  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;
- if(rm&&!M.inf.has(rm.i)){               /* the sector he is lying in goes red */
-  M.inf.set(rm.i,S.t);
+ if(rm&&!M.inf.has(rm.i)){M.inf.set(rm.i,S.t);
   const src=rm.n.find(e=>M.inf.has(e.r.i));if(src)M.par.set(rm.i,src.r)}
- addLog('MOVEMENT · '+o.cs+' TAG ACTIVE','SECTOR '+(rm?rm.label:'--')+' RECLASSIFIED',S.t)}
+ addLog('MOVEMENT · ST-'+o.n+' TAG ACTIVE','SECTOR '+(rm?rm.label:'--')+' RECLASSIFIED',S.t)}
+
 function stepSquad(dt){
  if(!SQ.on||!SQ.ops.length)return;
  SQ.t+=dt;const t=SQ.t;
- M.next=S.t+999;                 /* no new rooms fall while the squad is on screen */
- const sc=ctrOf(SQ.stack),oc=ctrOf(SQ.obj);
- const ang=Math.atan2(oc[1]-sc[1],oc[0]-sc[0]);   /* approach direction */
+ M.next=S.t+999;
+ const sc=ctrOf(SQ.stack),oc=SQ.obj?ctrOf(SQ.obj):sc;
+ const ang=Math.atan2(oc[1]-sc[1],oc[0]-sc[0]);
  let ph=SQ.phase;
 
- /* ---------- phase transitions ---------- */
  if(ph==='advance'&&SQ.s>=SQ.L-.01){ph='stack';SQ.stackT=t;
-  addLog('RESCUE TEAM 1 · STACKING','SECTOR '+SQ.stack.label,S.t)}
+  addLog('SECURITY TEAM 1 · STACKING','SECTOR '+SQ.stack.label,S.t)}
  if(ph==='stack'){
   const set=SQ.ops.every(o=>!o.alive||o.set);
-  if(set&&!SQ.readyAt){SQ.readyAt=t;addLog('RESCUE TEAM 1 · SET','READY TO ENTER',S.t)}
-  if((SQ.readyAt&&t>=SQ.readyAt+T_READY)||t>=SQ.stackT+T_STACKMAX){ph='entry';SQ.entryAt=t;
-   /* go in through the door, not through the wall beside it */
-   for(const o of SQ.ops){if(!o.alive)continue;
-    const rr=roomRoute(roomAt(o.x,o.y)||SQ.stack,SQ.obj);
-    const pts=roomsToPts(rr);pts.unshift([o.x,o.y]);
-    pts.push(slotPt(SQ.obj,oc,ENTRYOFF[o.i],ang));
-    o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;
-    o.spd=o.L2/Math.max(.7,T_ENTRY-.25)}
-   addLog('RESCUE TEAM 1 · ENTERING','SECTOR '+SQ.obj.label,S.t);glitch('flicker')}}
- if(ph==='entry'&&t>=SQ.entryAt+T_ENTRY){ph='standoff';SQ.stand0=t;
-  addLog('CONTACT · RESCUE TEAM 1','SECTOR '+SQ.obj.label,S.t);glitch('flicker')}
- if(ph==='standoff'&&SQ.stand0&&t>=SQ.stand0+T_BREAK&&SQ.ops.some(o=>o.alive)){
-  ph='breakout';doBreak()}
+  if(set&&!SQ.readyAt){SQ.readyAt=t;addLog('SECURITY TEAM 1 · SET','READY TO ENTER',S.t)}
+  if((SQ.readyAt&&t>=SQ.readyAt+T_READY)||t>=SQ.stackT+T_STACKMAX){
+   ph='entry';SQ.entryAt=t;enterRoom(SQ.obj,ang)}}
+ if(ph==='entry'&&SQ.ops.every(o=>!o.alive||o.s>=o.L2-.05)){ph='clear';SQ.clearT=t;
+  addLog('CONTACT · SECURITY TEAM 1','SECTOR '+SQ.obj.label,S.t)}
+ if(ph==='clear'){
+  if(t-SQ.lastKill>1.35&&SQ.host.length){SQ.lastKill=t;killHostile()}
+  if(!SQ.host.length&&!SQ.cleared){SQ.cleared=true;clearRoom();
+   if(SQ.done>=CLEARN){ph='swarm';doSwarm()}
+   else{const nx=nextObjective(roomAt(SQ.ops.find(o=>o.alive).x,SQ.ops.find(o=>o.alive).y)||SQ.obj);
+    if(nx){SQ.stack=nx.stack;ph='entry';SQ.entryAt=t;enterRoom(nx.obj,
+      Math.atan2(ctrOf(nx.obj)[1]-ctrOf(nx.stack)[1],ctrOf(nx.obj)[0]-ctrOf(nx.stack)[0]))}
+    else{ph='swarm';doSwarm()}}}}
+ if(ph==='swarm'){
+  if(t-SQ.lastSpawn>.34){SQ.lastSpawn=t;
+   const src=SQ.obj.n[(SQ.hid)%SQ.obj.n.length];
+   spawnHostiles(SQ.obj,1,src?ctrOf(src.r):null)}
+  if(t-SQ.lastKill>.5&&SQ.host.length){SQ.lastKill=t;killHostile()}
+  const low=SQ.ops.some(o=>o.alive&&o.ammo<o.ammo0*.18);
+  if(low||t>SQ.swarmT+12){ph='breakout';doBreak()}}
+
+ /* ammo, and the men who run out of it */
+ if(ph==='clear')burnAmmo(dt,BURN.clear);
+ else if(ph==='swarm')burnAmmo(dt,BURN.swarm);
+ else if(ph==='breakout')burnAmmo(dt,BURN.breakout);
+ for(const o of SQ.ops)if(o.alive&&o.dry&&t>=o.dry+1.1)loseOp(o);
+ for(const o of SQ.ops)if(!o.alive&&!o.turned&&t>=o.lost+T_TURN)turnOp(o);
+ if(SQ.ops.every(o=>!o.alive)&&!SQ.wiped){SQ.wiped=true;
+  addLog('SECURITY TEAM 1 · NO BIOSIGNS','ALL SECTORS',S.t);glitch('flicker')}
  SQ.phase=ph;
 
- /* ---------- casualties, keyed off the entry ---------- */
- if(SQ.stand0)while(SQ.fired<DEATHS.length&&t>=SQ.stand0+DEATHS[SQ.fired][0]){
-  const o=SQ.ops[DEATHS[SQ.fired][1]];loseOp(o);SQ.fired++;
-  if(SQ.fired===1)addLog('RESCUE TEAM 1 · OVERRUN','CASUALTY IN SECTOR '+SQ.obj.label,S.t);
-  if(SQ.fired===DEATHS.length){addLog('RESCUE TEAM 1 · NO BIOSIGNS','ALL SECTORS',S.t);glitch('flicker')}}
- /* ---------- and they all get up again ---------- */
- for(const o of SQ.ops)if(!o.alive&&!o.turned&&t>=o.lost+T_TURN)turnOp(o);
-
  const bounding=(t%BOUND)<MOVE;
- SQ.moving=ph==='advance'?bounding:ph==='breakout';
+ SQ.moving=ph==='advance'?bounding:(ph==='entry'||ph==='breakout');
  if(ph==='advance'&&bounding)SQ.s=Math.min(SQ.L,SQ.s+dt*SQ.spd);
+ if(ph==='swarm'||ph==='clear')stepHostiles(dt);
 
- /* ---------- move everyone ---------- */
  for(const o of SQ.ops){
   if(!o.alive){
    if(o.turned){o.s=Math.min(o.L2,o.s+dt*.55);setPos(o,atDist(o.pts,o.s),dt)}
    continue}
   if(ph==='advance'){o.s=Math.max(0,SQ.s-o.back);setPos(o,atDist(o.pts,o.s),dt)}
   else if(ph==='stack'){
-   if(roomAt(o.x,o.y)!==SQ.stack){      /* still in the corridor: keep walking it */
-    o.s=Math.min(o.L2,o.s+dt*SQ.spd);setPos(o,atDist(o.pts,o.s),dt);o.set=false}
+   if(roomAt(o.x,o.y)!==SQ.stack){o.s=Math.min(o.L2,o.s+dt*SQ.spd);
+    setPos(o,atDist(o.pts,o.s),dt);o.set=false}
    else{const tp=slotPt(SQ.stack,sc,STACKOFF[o.i],ang);
     o.set=seek(o,tp[0],tp[1],SEEK,dt);faceTo(o,oc[0],oc[1])}}
-  else if(ph==='entry'){o.s=Math.min(o.L2,o.s+dt*o.spd);
-   setPos(o,atDist(o.pts,o.s),dt)}
-  else if(ph==='standoff'){o.h=(o.h0===undefined?(o.h0=o.h):o.h0)+Math.sin(t*.9+o.i*1.7)*.75}
+  else if(ph==='entry'){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt);
+   faceTo(o,oc[0],oc[1])}
+  else if(ph==='clear'||ph==='swarm'){      /* hold the flank, weapon on the room */
+   const h=SQ.host.length?SQ.host.reduce((a,b)=>
+     Math.hypot(a.x-o.x,a.y-o.y)<Math.hypot(b.x-o.x,b.y-o.y)?a:b):null;
+   if(h)faceTo(o,h.x,h.y);else faceTo(o,oc[0],oc[1])}
   else if(ph==='breakout'){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt)}}}
 function drawSquad(ctx,X,Y,cs,t,mini){
  if(!SQ.on||!SQ.ops.length)return;
  const R=(mini?.44:.8)*cs;
+ /* hostiles in the room they are working */
+ for(const h of SQ.host){const x=X(h.x),y=Y(h.y),r=(mini?.24:.44)*cs;
+  ctx.fillStyle='rgba(255,43,56,.95)';ctx.beginPath();
+  ctx.moveTo(x,y-r);ctx.lineTo(x+r,y);ctx.lineTo(x,y+r);ctx.lineTo(x-r,y);ctx.closePath();ctx.fill();
+  if(!mini){ctx.strokeStyle='rgba(255,43,56,'+(.3+.3*Math.sin(t*5+h.x))+')';ctx.lineWidth=1.2;
+   ctx.beginPath();ctx.arc(x,y,r*2.1,0,7);ctx.stroke()}}
+ /* tracers while the engagement is live */
+ if(!mini&&(SQ.phase==='clear'||SQ.phase==='swarm')&&SQ.host.length){
+  for(const o of SQ.ops){if(!o.alive||o.ammo<=0)continue;
+   if(hash(Math.floor(t*14)+o.i*31)>.5)continue;
+   const h=SQ.host.reduce((a,b)=>Math.hypot(a.x-o.x,a.y-o.y)<Math.hypot(b.x-o.x,b.y-o.y)?a:b);
+   ctx.strokeStyle='rgba(150,255,170,.8)';ctx.lineWidth=1.7;
+   ctx.beginPath();ctx.moveTo(X(o.x),Y(o.y));ctx.lineTo(X(h.x),Y(h.y));ctx.stroke()}}
  /* in file they sit a callsign's width apart, so nudge labels off each other */
  const lab=[];
  function putLabel(x,y,txt,col){
@@ -1052,7 +1135,7 @@ function drawSquad(ctx,X,Y,cs,t,mini){
     if(hold){ctx.strokeStyle='rgba(143,233,255,.5)';ctx.lineWidth=1.2;
      ctx.beginPath();ctx.arc(x,y,R*1.5,0,7);ctx.stroke()}
     ctx.font='600 11px "IBM Plex Mono", monospace';
-    putLabel(x+R+5,y+o.ly,o.cs,'rgba(143,233,255,.95)')}
+    putLabel(x+R+5,y+o.ly,String(o.n),'rgba(143,233,255,.95)')}
   }else{
    const age=SQ.t-o.lost;
    if(age<1.2&&!mini){const k=age/1.2;ctx.strokeStyle='rgba(255,70,80,'+(1-k)+')';ctx.lineWidth=2.6;
@@ -1070,10 +1153,11 @@ function drawSquad(ctx,X,Y,cs,t,mini){
     ctx.strokeStyle='rgba(255,58,70,'+(1-pz)+')';ctx.lineWidth=1.8;
     ctx.beginPath();ctx.arc(x,y,R*1.55+pz*26,0,7);ctx.stroke()}
    if(!mini){ctx.font='600 11px "IBM Plex Mono", monospace';
-    putLabel(x+R*1.2+5,y+o.ly,o.cs,o.turned?'#ff6b78':'rgba(214,228,234,.9)')}}}
+    putLabel(x+R*1.2+5,y+o.ly,String(o.n),o.turned?'#ff6b78':'rgba(214,228,234,.9)')}}}
  if(!mini){const alive=SQ.ops.filter(o=>o.alive).length;
-  const PW={advance:'ADVANCING',stack:'STACKING',entry:'ENTERING',standoff:'IN CONTACT',breakout:'BREAKING OUT'};
-  const txt='RESCUE TEAM 1   '+(alive?PW[SQ.phase]||'':'NO BIOSIGNS')+'   '+alive+'/'+OPN+' ACTIVE';
+  const PW={advance:'ADVANCING',stack:'STACKING',entry:'ENTERING',clear:'ENGAGING',
+            swarm:'OVERRUN',breakout:'FALLING BACK'};
+  const txt='SECURITY TEAM 1   '+(alive?PW[SQ.phase]||'':'NO BIOSIGNS')+'   '+alive+'/'+OPN+' ACTIVE';
   ctx.font='600 13px "IBM Plex Mono", monospace';
   const w=ctx.measureText(txt).width;
   ctx.fillStyle='rgba(6,10,13,.8)';ctx.fillRect(8,6,w+14,22);
@@ -1084,13 +1168,15 @@ const BIOW=390,BIOH=64,BIOLEN=150;
 function ecg(ph){const g=(c,w,a)=>a*Math.exp(-Math.pow((ph-c)/w,2));
  return g(.18,.035,.14)+g(.40,.013,-.2)+g(.44,.012,1)+g(.485,.016,-.28)+g(.68,.055,.24)}
 const BIO=OPDEF.map((d,i)=>{const w=document.createElement('div');w.className='br';
- w.innerHTML='<div class="bl"><span class="cs">'+d[0]+'</span><span class="hr"></span><span class="stt"></span></div>'+
-  '<canvas width="'+BIOW+'" height="'+BIOH+'"></canvas>';
+ w.innerHTML='<div class="bl"><span class="cs">ST-'+(i+1)+'</span><span class="hr"></span><span class="stt"></span></div>'+
+  '<canvas width="'+BIOW+'" height="'+BIOH+'"></canvas>'+
+  '<div class="am"><span class="al">ANTIDOTE</span><i></i><b></b></div>';
  $('#bios').appendChild(w);
  $('#bios').style.gridTemplateRows='repeat('+OPDEF.length+',1fr)';
  return {cs:d[0],bpm:72+i*3.4,ph:i*.37,buf:new Array(BIOLEN).fill(0),
   row:w,hr:w.querySelector('.hr'),st:w.querySelector('.stt'),ctx:w.querySelector('canvas').getContext('2d'),
-  state:'',shown:'',hrv:0}});
+  bar:w.querySelector('.am i'),amv:w.querySelector('.am b'),
+  state:'',shown:'',hrv:0,ashown:''}});
 let bioAcc=0;
 function bioState(i){if(!SQ.on||!SQ.ops.length)return 'alive';
  const o=SQ.ops[i];if(!o)return 'alive';
@@ -1121,11 +1207,20 @@ function updateBios(dt){
   else if(st==='dying'){hr=Math.round(120+Math.random()*80)+' BPM';sw='CRITICAL';cl='#ffb347'}
   else if(st==='turned'){hr='-- BPM';sw='ANOMALOUS';cl='#ff2b38'}
   else{hr='-- BPM';sw='NO SIGNAL';cl='#9aa8ae'}
-  const key=hr+sw;if(key!==b.shown){b.shown=key;b.hr.textContent=hr;b.st.textContent=sw;b.st.style.color=cl}}
+  const key=hr+sw;if(key!==b.shown){b.shown=key;b.hr.textContent=hr;b.st.textContent=sw;b.st.style.color=cl}
+  const op=SQ.on?SQ.ops[i]:null;
+  const am=op?Math.max(0,Math.round(op.ammo)):(AMMO0[i]||240);
+  const mx=op?op.ammo0:(AMMO0[i]||240),fr=mx?am/mx:1;
+  const ak=am+'|'+(fr<.01?'o':fr<.25?'l':'n');
+  if(ak!==b.ashown){b.ashown=ak;
+   b.bar.style.setProperty('--w',(fr*100).toFixed(1)+'%');
+   b.amv.textContent=am+' RDS';
+   b.row.classList.toggle('low',fr<.25&&fr>=.01);
+   b.row.classList.toggle('out',fr<.01)}}
  const lost=BIO.filter(b=>b.state==='lost'||b.state==='dying'||b.state==='turned').length;
  const al=$('#bioalarm');
  if(al){const txt=lost?lost+' LOST':'';
-  if(al.textContent!==txt){al.textContent=txt;al.style.color='#ff2b38'}}}
+  if(al.textContent!==txt){al.textContent=txt;al.style.color=lost?'#ff2b38':'#7f939b'}}}
 function drawBios(t){
  for(const b of BIO){const c=b.ctx,W=BIOW,H=BIOH,st=b.state;
   c.clearRect(0,0,W,H);
@@ -1212,7 +1307,7 @@ function updateTx(t){bootLines.forEach(([t0,txt],i)=>{const s=typ(txt,t0,t,34);i
  return weak}
 
 /* ---------- one menu bar on every screen, same names as the web version ---------- */
-const TABS=[['Transmission','tx'],['Cameras','cctv'],['Breach map','map'],['Alert','alert'],['Vitals','vitals'],['Lab','lab'],['Mail','files'],['Terminal','term'],['Respond','end']];
+const TABS=[['Transmission','tx'],['Cameras','cctv'],['Map','map'],['Alert','alert'],['Vitals','vitals'],['Lab','lab'],['Mail','files'],['Terminal','term'],['Respond','end']];
 const SEARCHPH={tx:'Search channels, frequencies\u2026',cctv:'Search cameras, feeds, events\u2026',map:'Search modules, cameras, systems\u2026',vitals:'Search patients, bays, monitors\u2026',lab:'Search samples, sequences, subjects\u2026'};
 const SICO='<svg class="ico" viewBox="0 0 24 24" style="width:14px"><circle cx="10" cy="10" r="6"/><path d="M15 15l5 5"/></svg>';
 function syncTabs(){document.querySelectorAll('.tabs span[data-mode]').forEach(e=>e.classList.toggle('on',e.dataset.mode===S.mode))}

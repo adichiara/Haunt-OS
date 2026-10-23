@@ -84,7 +84,7 @@ window.CONTENT = {
     { name: 'ALL CAMERAS', cams: ['CAM 01', 'CAM 02', 'CAM 03', 'CAM 04'] }
   ],
 
-  /* ---------- Breach map ----------
+  /* ---------- Map ----------
      The floor plan is fixed (the facility only has the one), so there is
      nothing to set here but the wording.                               */
   map: {
@@ -165,6 +165,6 @@ window.CONTENT = {
   },
 
   /* ---------- bottom menu labels ---------- */
-  nav: { tx: 'Transmission', cctv: 'Cameras', map: 'Breach map', alert: 'Alert', vitals: 'Vitals', lab: 'Lab',
+  nav: { tx: 'Transmission', cctv: 'Cameras', map: 'Map', alert: 'Alert', vitals: 'Vitals', lab: 'Lab',
          files: 'Mail', term: 'Terminal', end: 'Respond' }
 };
