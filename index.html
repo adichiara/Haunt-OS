@@ -154,6 +154,22 @@ canvas{display:block;width:100%;height:100%}
 .sens .sl b{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--red);font-variant-numeric:tabular-nums}
 .sens > div{display:flex;flex-direction:column;min-height:0}
 .sens canvas{flex:1;min-height:0}
+.bios{display:grid;grid-template-rows:repeat(6,1fr);padding:4px 14px 10px;min-height:0;gap:5px}
+.bios .br{display:flex;flex-direction:column;min-height:0;padding-left:9px;
+  border-left:3px solid rgba(143,233,255,.55);transition:border-color .25s,background .25s}
+.bios .br.lost{border-left-color:rgba(205,220,228,.4)}
+.bios .br.turned{border-left-color:var(--red)}
+.bios .br.hit{background:rgba(255,43,56,.22)}
+.bios .bl{display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:14px;letter-spacing:.05em;color:#cfe0e6}
+.bios .bl .cs{font-weight:600;color:#8fe9ff}
+.bios .br.lost .bl{color:#8d9aa0}
+.bios .br.lost .bl .cs{color:#aab8be}
+.bios .br.turned .bl .cs{color:#ff6b78}
+.bios .bl .hr{font-variant-numeric:tabular-nums}
+.bios .bl .stt{font-size:11px;letter-spacing:.15em}
+.bios canvas{flex:1;min-height:0}
+body.biomode .rcol{grid-template-rows:auto 1fr}
 
 /* ---- alert ---- */
 #s-alert{align-items:center;justify-content:center;gap:34px;animation:redstrobe 1s steps(2) infinite}
@@ -419,6 +435,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
      <div class="alertbox" id="alertbox"><img class="bioimg" alt=""><div><b class="t-alert">ALERT</b><span class="t-alertsub">CONTAINMENT BREACH</span></div></div>
      <div class="pane"><div class="ph"><span>System Status</span></div><div class="status" id="status"></div></div>
      <div class="pane"><div class="ph"><span>Sensor Feed</span></div><div class="sens" id="sens"></div></div>
+     <div class="pane" id="biopane" hidden><div class="ph"><span>Rescue Team 1</span><small id="bioalarm"></small></div><div class="bios" id="bios"></div></div>
     </div>
    </div>
   </section>
@@ -510,7 +527,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
   <button data-mode="tx" class="on">1 Transmission</button><button data-mode="cctv">2 Cameras</button><button data-mode="map">3 Breach map</button><button data-mode="alert">4 Alert</button><button data-mode="vitals">5 Vitals</button><button data-mode="lab">6 Lab</button><button data-mode="end">7 End card</button>
  </div>
  <div class="grp">
-  <button id="b-restart">Restart</button><button id="b-glitch">Glitch</button><button id="b-auto" class="on">Auto glitch</button><select id="gstyle" aria-label="Glitch style"><option value="mix">Glitch: mix</option><option value="shift">Glitch: shift</option><option value="rgb">Glitch: RGB split</option><option value="roll">Glitch: vertical roll</option><option value="stutter">Glitch: stutter</option><option value="flash">Glitch: flash</option><option value="flicker">Glitch: power flicker</option><option value="punch">Glitch: lens punch</option><option value="crt">Glitch: CRT collapse</option></select><span class="lbl">Auto uses:</span><span class="grp" id="autok" style="gap:4px"></span><button id="b-pause">Pause</button><button id="b-team">Play team fall</button><button id="b-new">New map</button><button id="b-sound" class="on">Sound on</button><button id="b-loop">Party loop</button>
+  <button id="b-restart">Restart</button><button id="b-glitch">Glitch</button><button id="b-auto" class="on">Auto glitch</button><select id="gstyle" aria-label="Glitch style"><option value="mix">Glitch: mix</option><option value="shift">Glitch: shift</option><option value="rgb">Glitch: RGB split</option><option value="roll">Glitch: vertical roll</option><option value="stutter">Glitch: stutter</option><option value="flash">Glitch: flash</option><option value="flicker">Glitch: power flicker</option><option value="punch">Glitch: lens punch</option><option value="crt">Glitch: CRT collapse</option></select><span class="lbl">Auto uses:</span><span class="grp" id="autok" style="gap:4px"></span><button id="b-pause">Pause</button><button id="b-team">Play team fall</button><select id="mappanel" aria-label="Map side panel"><option value="auto">Panel: auto (biosigns on fall)</option><option value="bio">Panel: squad biosigns</option><option value="def">Panel: status + sensors</option></select><button id="b-new">New map</button><button id="b-sound" class="on">Sound on</button><button id="b-loop">Party loop</button>
   <select id="speed" aria-label="Speed"><option value="0.5">0.5× speed</option><option value="1" selected>1× speed</option><option value="2">2× speed</option></select>
  </div>
  <div class="grp">
@@ -825,6 +842,7 @@ function teamFall(){
  SQ.spd=.93*SQ.L/(ADVT*MOVE/BOUND);
  SQ.ops=OPDEF.map((d,i)=>({cs:d[0],back:d[1],lat:d[2],ly:d[3],i,alive:true,lost:0,turned:false,td:0,sd:0,
    pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
+ BIO.forEach(b=>{b.buf.fill(0);b.state='';b.shown='';b.row.className='br'});
  if(S.mode!=='map')setMode('map');
  addLog('RESCUE TEAM 1 · '+OPN+' OPERATORS','SECTOR '+SQ.arm.label,S.t);
  const b=$('#b-team');if(b){b.textContent='Stop team fall';b.classList.add('on')}}
@@ -902,6 +920,71 @@ function drawSquad(ctx,X,Y,cs,t,mini){
   ctx.fillStyle='rgba(6,10,13,.8)';ctx.fillRect(8,6,w+14,22);
   ctx.fillStyle=alive?'rgba(143,233,255,.95)':'#ff3a46';
   ctx.fillText(txt,15,21)}}
+/* ---------- squad biosign monitors (map screen, right panel) ---------- */
+const BIOW=390,BIOH=64,BIOLEN=150;
+function ecg(ph){const g=(c,w,a)=>a*Math.exp(-Math.pow((ph-c)/w,2));
+ return g(.18,.035,.14)+g(.40,.013,-.2)+g(.44,.012,1)+g(.485,.016,-.28)+g(.68,.055,.24)}
+const BIO=OPDEF.map((d,i)=>{const w=document.createElement('div');w.className='br';
+ w.innerHTML='<div class="bl"><span class="cs">'+d[0]+'</span><span class="hr"></span><span class="stt"></span></div>'+
+  '<canvas width="'+BIOW+'" height="'+BIOH+'"></canvas>';
+ $('#bios').appendChild(w);
+ return {cs:d[0],bpm:72+i*3.4,ph:i*.37,buf:new Array(BIOLEN).fill(0),
+  row:w,hr:w.querySelector('.hr'),st:w.querySelector('.stt'),ctx:w.querySelector('canvas').getContext('2d'),
+  state:'',shown:'',hrv:0}});
+let bioAcc=0;
+function bioState(i){if(!SQ.on||!SQ.ops.length)return 'alive';
+ const o=SQ.ops[i];if(!o)return 'alive';
+ if(o.alive)return 'alive';
+ if(o.turned)return 'turned';
+ return (SQ.t-o.lost)<1.1?'dying':'lost'}
+function updateBios(dt){
+ bioAcc+=dt;if(bioAcc<.022)return;const n=Math.min(6,Math.floor(bioAcc/.022));bioAcc=0;
+ for(let k=0;k<n;k++)for(let i=0;i<BIO.length;i++){const b=BIO[i],st=bioState(i);
+  if(st!==b.state){
+   if(st==='dying'){b.row.classList.add('hit');setTimeout(()=>b.row.classList.remove('hit'),620)}
+   b.row.classList.toggle('lost',st==='lost'||st==='dying');
+   b.row.classList.toggle('turned',st==='turned');
+   b.state=st}
+  let v;
+  if(st==='alive'){b.ph+=.022*b.bpm/60;v=ecg(b.ph%1)+(Math.random()-.5)*.045}
+  else if(st==='dying'){const age=SQ.t-SQ.ops[i].lost;
+   v=age<.3?(Math.random()-.5)*2.4:(Math.random()-.5)*.9*Math.max(0,1-(age-.3)/.8)}
+  else if(st==='turned'){b.ph+=.022*.45;
+   v=.42*Math.sin(b.ph*6.3)+.26*Math.sin(b.ph*17.1+1.3)+(Math.random()-.5)*.22;
+   if(Math.random()<.012)v+=(Math.random()<.5?-1:1)*(.7+Math.random()*.6)}
+  else v=(Math.random()-.5)*.035;
+  b.buf.push(v);b.buf.shift()}
+ for(let i=0;i<BIO.length;i++){const b=BIO[i],st=b.state;
+  let hr='',sw='',cl='';
+  if(st==='alive'){b.hrv=b.hrv||b.bpm;b.hrv+=(Math.random()-.5)*1.4;
+   hr=Math.round(Math.max(58,Math.min(132,b.hrv)))+' BPM';sw='ACTIVE';cl='#8fe9ff'}
+  else if(st==='dying'){hr=Math.round(120+Math.random()*80)+' BPM';sw='CRITICAL';cl='#ffb347'}
+  else if(st==='turned'){hr='-- BPM';sw='ANOMALOUS';cl='#ff2b38'}
+  else{hr='-- BPM';sw='NO SIGNAL';cl='#9aa8ae'}
+  const key=hr+sw;if(key!==b.shown){b.shown=key;b.hr.textContent=hr;b.st.textContent=sw;b.st.style.color=cl}}
+ const lost=BIO.filter(b=>b.state==='lost'||b.state==='dying'||b.state==='turned').length;
+ const al=$('#bioalarm');
+ if(al){const txt=lost?lost+' LOST':'';
+  if(al.textContent!==txt){al.textContent=txt;al.style.color='#ff2b38'}}}
+function drawBios(t){
+ for(const b of BIO){const c=b.ctx,W=BIOW,H=BIOH,st=b.state;
+  c.clearRect(0,0,W,H);
+  c.strokeStyle='rgba(140,165,175,.14)';c.lineWidth=1;
+  c.beginPath();c.moveTo(0,H/2);c.lineTo(W,H/2);c.stroke();
+  const col=st==='alive'?'#8fe9ff':st==='dying'?'#ffb347':st==='turned'?'#ff2b38':'rgba(190,205,212,.5)';
+  c.strokeStyle=col;c.lineWidth=st==='lost'?1.2:1.8;c.shadowColor=col;c.shadowBlur=st==='lost'?0:7;
+  c.beginPath();
+  for(let i=0;i<b.buf.length;i++){const x=i/(b.buf.length-1)*W,
+   y=H/2-Math.max(-1.6,Math.min(1.6,b.buf[i]))*(H*.4);
+   i?c.lineTo(x,y):c.moveTo(x,y)}
+  c.stroke();c.shadowBlur=0;
+  if(st!=='lost'){const lx=W-1,ly=H/2-Math.max(-1.6,Math.min(1.6,b.buf[b.buf.length-1]))*(H*.4);
+   c.fillStyle=col;c.beginPath();c.arc(lx,ly,2.2,0,7);c.fill()}}}
+let MAPPANEL='auto';
+function setBioMode(on){
+ const bp=$('#biopane'),sp=$('#sens').parentElement,st=$('#status').parentElement;
+ if(bp.hidden===!on)return;   /* already in the right state */
+ bp.hidden=!on;sp.hidden=on;st.hidden=on;document.body.classList.toggle('biomode',on)}
 'ABCDEFGHIJKLMNOP'.split('').forEach(l=>{const s=document.createElement('span');s.textContent=l;$('#cols').appendChild(s)});
 for(let i=1;i<=16;i++){const s=document.createElement('span');s.textContent=i;$('#rows').appendChild(s)}
 
@@ -1243,6 +1326,7 @@ $('#f-lab').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)loadLa
 $('#b-labclr').onclick=()=>{labMedia=null;note('Lab screen: built-in cell')};
 $('#b-warm').onclick=()=>warmClips();
 $('#b-team').onclick=()=>teamFall();
+$('#mappanel').onchange=e=>{MAPPANEL=e.target.value;note('Map panel: '+e.target.selectedOptions[0].textContent.replace('Panel: ',''))};
 $('#feedfps').onchange=e=>{FEEDFPS=+e.target.value;feedLast=-1e9;note('Camera feeds: '+(FEEDFPS?FEEDFPS+' fps':'every frame'))};
 {const pane=$('#cell').parentElement;pane.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation()});
  pane.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();const f=e.dataTransfer.files[0];if(f&&!f.type.startsWith('audio'))loadLab(f)})}
@@ -1477,7 +1561,9 @@ function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;drawGfx();if(
    if(acq)c.lostEl.textContent='ACQUIRING'+'.'.repeat(Math.floor(t*2)%4);else if(lost)c.lostEl.textContent='SIGNAL LOST';
    c.recEl.style.visibility=lost?'hidden':'visible';
    if(lost||acq||sw)drawLost(c.ctx,800,400);else drawFeed(c.ctx,800,400,t,c,false)});updateCamList()}}
- else if(S.mode==='map'){drawMap(mapc,1000,560,t,false);drawSens();updateStatus()}
+ else if(S.mode==='map'){drawMap(mapc,1000,560,t,false);
+  const bio=MAPPANEL==='bio'||(MAPPANEL==='auto'&&SQ.on);setBioMode(bio);
+  if(bio){updateBios(sdt||dt);drawBios(t)}else{drawSens();updateStatus()}}
  else if(S.mode==='vitals')drawVitals(t-S.modeT0,sdt);
  else if(S.mode==='lab')drawLab(t-S.modeT0,sdt);
  else if(S.mode==='end')updateEnd(t-S.modeT0);
