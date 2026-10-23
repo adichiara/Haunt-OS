@@ -677,7 +677,7 @@ function spreadCand(){const c=[];
  return c}
 /* FIXED FLOOR PLAN · Level B1, Research Wing.
    One layout, always. [x, y, w, h, rooms in this block, 1 = core block]  */
-const PLAN=[[8,0,26,11,15,1],[4,11,30,5,7,1],[0,16,34,11,20,0],[34,9,6,18,6,0],[4,27,33,10,17,0]];
+const PLAN=[[8,0,26,11,9,1],[4,11,30,5,4,1],[0,16,34,11,12,0],[34,9,6,18,4,0],[4,27,33,10,10,0]];
 function buildMap(seed){const r=mulberry(9);const R=(a,b)=>a+Math.round(r()*(b-a));
  const blocks=PLAN.map(p=>({x:p[0],y:p[1],w:p[2],h:p[3]})),cnt=PLAN.map(p=>p[4]);
  let rooms=[];
@@ -740,7 +740,7 @@ function drawMap(ctx,W,H,t,mini){
    if(!has(e=>e.side==='v'&&e.p===o.x+o.w)){ctx.beginPath();ctx.moveTo(X(o.x+o.w),Y(o.y));ctx.lineTo(X(o.x+o.w),Y(o.y+o.h));ctx.stroke()}}
   // doors: gaps + swing arcs
   ctx.lineWidth=1;
-  for(const o of M.rooms)for(const e of o.n){if(e.r.i<o.i)continue;const dw=cs*.9;
+  for(const o of M.rooms)for(const e of o.n){if(e.r.i<o.i)continue;const dw=cs*1.8;
    ctx.fillStyle='#0a0f13';
    if(e.side==='v'){const px=X(e.p),py=Y(e.c);ctx.fillRect(px-2,py-dw/2,4,dw);ctx.strokeStyle='rgba(200,215,220,.45)';ctx.beginPath();ctx.arc(px,py-dw/2,dw,Math.PI/2,Math.PI);ctx.stroke()}
    else{const px=X(e.c),py=Y(e.p);ctx.fillRect(px-dw/2,py-2,dw,4);ctx.strokeStyle='rgba(200,215,220,.45)';ctx.beginPath();ctx.arc(px-dw/2,py,dw,0,Math.PI/2);ctx.stroke()}}
@@ -778,8 +778,14 @@ function drawMap(ctx,W,H,t,mini){
   // seed target
   const sr=M.seedRoom,sx=X(sr.x+sr.w/2),sy=Y(sr.y+sr.h/2);if(M.inf.size){ctx.strokeStyle='#ff3a46';ctx.lineWidth=2;for(const rr of [7,14]){ctx.beginPath();ctx.arc(sx,sy,rr+pulse*2,0,7);ctx.stroke()}
    const pr=(t*.8)%1;ctx.strokeStyle=`rgba(255,58,70,${1-pr})`;ctx.beginPath();ctx.arc(sx,sy,14+pr*40,0,7);ctx.stroke()}
-  // tracking blips
-  for(const d of M.dots){const on=Math.sin(t*2+d[2])>.2;if(!on)continue;ctx.fillStyle='rgba(255,58,70,.85)';ctx.beginPath();ctx.arc(X(d[0]),Y(d[1]),2.4,0,7);ctx.fill()}
+  // contacts: one per fallen room, drifting slowly inside it
+  {let k=0;
+   for(const o of M.rooms){if(!M.inf.has(o.i))continue;if(++k>24)break;
+    const a=hash(o.i*7+3)*6.283,b2=hash(o.i*13+9)*6.283;
+    const px=o.x+o.w/2+Math.sin(t*.26+a)*(o.w*.26),
+          py=o.y+o.h/2+Math.cos(t*.21+b2)*(o.h*.26);
+    ctx.fillStyle='rgba(255,58,70,'+(.62+.22*Math.sin(t*1.5+a))+')';
+    ctx.beginPath();ctx.arc(X(px),Y(py),2.6,0,7);ctx.fill()}}
  }
  const o=M.origin,cx=X(o.x+o.w/2),cy=Y(o.y+o.h/2),pr=(t*1.2)%1;
  ctx.beginPath();ctx.arc(cx,cy,mini?3:4.5,0,7);ctx.fillStyle='#22d68c';ctx.fill();
@@ -792,8 +798,8 @@ function drawMap(ctx,W,H,t,mini){
    bounds (half the element moves while half holds), then their biosigns drop
    out one at a time. Nothing about the attack is shown; only the readout.  */
 const OPN=6;
-const OPDEF=[['RT-1',0,0,-3],['RT-2',2.0,1.7,11],['RT-3',2.45,-1.8,-3],
-             ['RT-4',4.8,1.5,11],['RT-5',5.2,-1.6,-3],['RT-6',7.4,.2,11]];
+const OPDEF=[['RT-1',0,0,-3],['RT-2',1.9,.4,11],['RT-3',2.5,-.4,-3],
+             ['RT-4',4.6,.35,11],['RT-5',5.3,-.35,-3],['RT-6',7.4,0,11]];
 /* [seconds, index into OPDEF] — the order they go down */
 /* the shape of it: the squad moves up together, stacks outside the room,
    waits until everyone is set, goes in, holds, loses two inside, and the
@@ -910,7 +916,7 @@ function setPos(o,p,dt,snap){
  const hd=o.pts?headAt(o.pts,o.s):p[2],n=hd+Math.PI/2;
  const tx=p[0]+Math.cos(n)*o.lat,ty=p[1]+Math.sin(n)*o.lat;
  if(snap||o.x===undefined){o.x=tx;o.y=ty}
- else{const k=Math.min(1,(dt||.016)*7);o.x+=(tx-o.x)*k;o.y+=(ty-o.y)*k}
+ else{const k=Math.min(1,(dt||.016)*18);o.x+=(tx-o.x)*k;o.y+=(ty-o.y)*k}
  o.h=hd+(o.turned?Math.PI:0)}
 const SEEK=2.5, RUNSPD=2.9;
 /* ---- small helpers for the close-quarters beats ---- */
@@ -919,10 +925,12 @@ function seek(o,tx,ty,spd,dt){const dx=tx-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);
  const st=Math.min(d,spd*dt);o.x+=dx/d*st;o.y+=dy/d*st;return d-st<.04}
 function faceTo(o,px,py){o.h=Math.atan2(py-o.y,px-o.x)}
 /* a stack outside the door: two short files along the approach */
-const STACKOFF=[[0,0],[-1.15,.6],[-1.15,-.6],[-2.3,.6],[-2.3,-.6],[-3.45,0]];
-const ENTRYOFF=[[.8,0],[-.1,.85],[-.1,-.85],[-1,.75],[-1,-.75],[-1.8,0]];
-function slotPt(o,base,off,ang){const c=Math.cos(ang),sn=Math.sin(ang);
- return [base[0]+off[0]*c-off[1]*sn, base[1]+off[0]*sn+off[1]*c]}
+const STACKOFF=[[0,0],[-.95,.55],[-.95,-.55],[-1.9,.55],[-1.9,-.55],[-2.85,0]];
+const ENTRYOFF=[[.9,0],[-.05,.8],[-.05,-.8],[-1,.7],[-1,-.7],[-1.9,0]];
+function clampIn(r,px,py){const m=.7;
+ return [Math.max(r.x+m,Math.min(r.x+r.w-m,px)),Math.max(r.y+m,Math.min(r.y+r.h-m,py))]}
+function slotPt(room,base,off,ang){const c=Math.cos(ang),sn=Math.sin(ang);
+ return clampIn(room,base[0]+off[0]*c-off[1]*sn, base[1]+off[0]*sn+off[1]*c)}
 function ctrOf(r){return [r.x+r.w/2,r.y+r.h/2]}
 /* retreat destinations: far rooms spread around the compass from the objective */
 function exitRooms(n){
@@ -996,15 +1004,21 @@ function stepSquad(dt){
    if(o.turned){o.s=Math.min(o.L2,o.s+dt*.55);setPos(o,atDist(o.pts,o.s),dt)}
    continue}
   if(ph==='advance'){o.s=Math.max(0,SQ.s-o.back);setPos(o,atDist(o.pts,o.s),dt)}
-  else if(ph==='stack'){const tp=slotPt(o,sc,STACKOFF[o.i],ang);
+  else if(ph==='stack'){const tp=slotPt(SQ.stack,sc,STACKOFF[o.i],ang);
    o.set=seek(o,tp[0],tp[1],SEEK,dt);faceTo(o,oc[0],oc[1])}
-  else if(ph==='entry'){const tp=slotPt(o,oc,ENTRYOFF[o.i],ang);
+  else if(ph==='entry'){const tp=slotPt(SQ.obj,oc,ENTRYOFF[o.i],ang);
    seek(o,tp[0],tp[1],SEEK*.8,dt);faceTo(o,oc[0]+Math.cos(ang)*3,oc[1]+Math.sin(ang)*3)}
   else if(ph==='standoff'){o.h=(o.h0===undefined?(o.h0=o.h):o.h0)+Math.sin(t*.9+o.i*1.7)*.75}
   else if(ph==='breakout'){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt)}}}
 function drawSquad(ctx,X,Y,cs,t,mini){
  if(!SQ.on||!SQ.ops.length)return;
  const R=(mini?.44:.8)*cs;
+ /* in file they sit a callsign's width apart, so nudge labels off each other */
+ const lab=[];
+ function putLabel(x,y,txt,col){
+  for(let k=0;k<3;k++){const yy=y+k*12;
+   if(!lab.some(l=>Math.abs(l.x-x)<30&&Math.abs(l.y-yy)<11)){
+    lab.push({x:x,y:yy});ctx.fillStyle=col;ctx.fillText(txt,x,yy);return}}}
  for(const o of SQ.ops){const x=X(o.x),y=Y(o.y);
   if(o.alive){
    ctx.save();ctx.translate(x,y);ctx.rotate(o.h);
@@ -1014,8 +1028,8 @@ function drawSquad(ctx,X,Y,cs,t,mini){
    if(!mini){const hold=!SQ.moving;
     if(hold){ctx.strokeStyle='rgba(143,233,255,.5)';ctx.lineWidth=1.2;
      ctx.beginPath();ctx.arc(x,y,R*1.5,0,7);ctx.stroke()}
-    ctx.fillStyle='rgba(143,233,255,.95)';ctx.font='600 11px "IBM Plex Mono", monospace';
-    ctx.fillText(o.cs,x+R+5,y+o.ly)}
+    ctx.font='600 11px "IBM Plex Mono", monospace';
+    putLabel(x+R+5,y+o.ly,o.cs,'rgba(143,233,255,.95)')}
   }else{
    const age=SQ.t-o.lost;
    if(age<1.2&&!mini){const k=age/1.2;ctx.strokeStyle='rgba(255,70,80,'+(1-k)+')';ctx.lineWidth=2.6;
@@ -1032,8 +1046,8 @@ function drawSquad(ctx,X,Y,cs,t,mini){
     ctx.beginPath();ctx.arc(x,y,R*1.55,0,7);ctx.stroke();
     ctx.strokeStyle='rgba(255,58,70,'+(1-pz)+')';ctx.lineWidth=1.8;
     ctx.beginPath();ctx.arc(x,y,R*1.55+pz*26,0,7);ctx.stroke()}
-   if(!mini){ctx.fillStyle=o.turned?'#ff6b78':'rgba(214,228,234,.9)';
-    ctx.font='600 11px "IBM Plex Mono", monospace';ctx.fillText(o.cs,x+R*1.2+5,y+o.ly)}}}
+   if(!mini){ctx.font='600 11px "IBM Plex Mono", monospace';
+    putLabel(x+R*1.2+5,y+o.ly,o.cs,o.turned?'#ff6b78':'rgba(214,228,234,.9)')}}}
  if(!mini){const alive=SQ.ops.filter(o=>o.alive).length;
   const PW={advance:'ADVANCING',stack:'STACKING',entry:'ENTERING',standoff:'IN CONTACT',breakout:'BREAKING OUT'};
   const txt='RESCUE TEAM 1   '+(alive?PW[SQ.phase]||'':'NO BIOSIGNS')+'   '+alive+'/'+OPN+' ACTIVE';
