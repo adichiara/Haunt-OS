@@ -834,7 +834,7 @@ const CLEARN=2;                   /* rooms they clear before it turns      */
 const T_TURN=6.0;                 /* how long each one lies there first    */
 /* antidote rounds. They burn at the same rate, so these decide the order
    they run dry in, and running dry is what kills them.                   */
-const AMMO0=[240,205,268];
+const AMMO0=[245,200,300];
 const FALLBREACH=.25;            /* how much of the map is already lost when they go in */
 function setBreach(frac){  /* run the normal spread forward to this point, then hold */
  if(!M)return;
@@ -926,10 +926,10 @@ function teamFall(){
   SQ.doors.add(dkey(SQ.stack,SQ.obj));}
  SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.phase='advance';SQ.moving=true;
  SQ.readyAt=0;SQ.entryAt=0;SQ.broke=false;SQ.stackT=0;SQ.host=[];SQ.hid=1;SQ.done=0;
- SQ.lastKill=0;SQ.lastSpawn=0;SQ.swarmT=0;SQ.cleared=false;SQ.wiped=false;
+ SQ.lastKill=0;SQ.lastSpawn=0;SQ.lastCut=0;SQ.swarmT=0;SQ.cleared=false;SQ.wiped=false;SQ.routed=false;
  SQ.spd=Math.min(2.2,SQ.L/(T_ARRIVE*(MOVE/BOUND)));
  SQ.ops=OPDEF.map((d,i)=>({cs:d[0],back:d[1],lat:d[2],ly:d[3],i,alive:true,lost:0,turned:false,td:0,sd:0,
-   n:i+1,ammo:AMMO0[i]||240,ammo0:AMMO0[i]||240,dry:0,
+   n:i+1,ammo:AMMO0[i]||240,ammo0:AMMO0[i]||240,dry:0,fleeing:false,fleeT:0,reroute:0,cutoff:false,
    pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,set:false,room:null,
    x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
  BIO.forEach(b=>{b.buf.fill(0);b.state='';b.shown='';b.row.className='br'});
@@ -945,7 +945,7 @@ function setPos(o,p,dt,snap){
  if(snap||o.x===undefined){o.x=tx;o.y=ty}
  else{const k=Math.min(1,(dt||.016)*18);o.x+=(tx-o.x)*k;o.y+=(ty-o.y)*k}
  o.h=hd+(o.turned?Math.PI:0)}
-const SEEK=2.3, RUNSPD=2.9;
+const SEEK=2.3, RUNSPD=2.9, FLEESPD=1.5;
 /* ---- close-quarters helpers ---- */
 function seek(o,tx,ty,spd,dt){const dx=tx-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);
  if(d<.04){o.x=tx;o.y=ty;return true}
@@ -997,15 +997,28 @@ function spawnHostiles(room,n,from){
  for(let k=0;k<n;k++){const c=ctrOf(room);
   const a=hash(SQ.hid++)*6.283,r=Math.min(room.w,room.h)*.3;
   const p=from?[from[0],from[1]]:clampIn(room,c[0]+Math.cos(a)*r,c[1]+Math.sin(a)*r);
-  SQ.host.push({x:p[0],y:p[1],room:room,t:0})}}
+  SQ.host.push({x:p[0],y:p[1],room:room,t:0,a:hash(SQ.hid*3+7)*6.283,r:.55+hash(SQ.hid*5+2)*.7})}}
 function nearestOp(x,y){let b=null,bd=1e9;
  for(const o of SQ.ops){if(!o.alive)continue;
   const d=Math.hypot(o.x-x,o.y-y);if(d<bd){bd=d;b=o}}
  return b}
-function stepHostiles(dt){
+const HSPD={clear:.8,swarm:1.95};
+function stepHostiles(dt,fast){
+ const sp=fast?HSPD.swarm:HSPD.clear;
  for(const h of SQ.host){const o=nearestOp(h.x,h.y);if(!o)continue;
-  const dx=o.x-h.x,dy=o.y-h.y,d=Math.hypot(dx,dy);
-  if(d>.55){const sp=.62*dt;h.x+=dx/d*sp;h.y+=dy/d*sp}}}
+  const d=Math.hypot(o.x-h.x,o.y-h.y);
+  if(d<.5)continue;
+  const hr=roomAt(h.x,h.y),orr=roomAt(o.x,o.y);
+  if(hr&&orr&&hr===orr){            /* same room: in on his own side */
+   const tx=o.x+Math.cos(h.a||0)*(h.r||.6),ty=o.y+Math.sin(h.a||0)*(h.r||.6);
+   const dd=Math.hypot(tx-h.x,ty-h.y);
+   if(dd>.05){h.x+=(tx-h.x)/dd*sp*dt;h.y+=(ty-h.y)/dd*sp*dt}
+   h.pts=null;continue}
+  if(!h.pts||SQ.t-(h.rt||0)>1.2){h.rt=SQ.t;
+   if(hr&&orr){const pts=roomsToPts(roomRoute(hr,orr));
+    pts.unshift([h.x,h.y]);pts.push([o.x,o.y]);
+    h.pts=pts;h.L=pathLen(pts);h.s=0}}
+  if(h.pts){h.s=Math.min(h.L,h.s+sp*dt);const p=atDist(h.pts,h.s);h.x=p[0];h.y=p[1]}}}
 function killHostile(){if(!SQ.host.length)return false;
  let bi=0,bd=1e9;
  for(let i=0;i<SQ.host.length;i++){const o=nearestOp(SQ.host[i].x,SQ.host[i].y);if(!o)continue;
@@ -1049,19 +1062,33 @@ function clearRoom(){
  SQ.done++;addLog('SECTOR '+SQ.obj.label+' CLEAR','SECURITY TEAM 1',S.t)}
 function doSwarm(){SQ.swarmT=SQ.t;
  addLog('MULTIPLE CONTACTS · CONVERGING','SECTOR '+SQ.obj.label,S.t);glitch('shift')}
-function doBreak(){SQ.broke=true;
- const taken=[];
- for(const o of SQ.ops){if(!o.alive)continue;
-  const from=roomAt(o.x,o.y)||SQ.obj;
-  const seen=new Set([from.i]);let layer=[from],pick=null;
-  for(let hop=1;hop<=2;hop++){const nx=[];
-   for(const r of layer)for(const e of r.n){const c=e.r;
-    if(seen.has(c.i))continue;seen.add(c.i);nx.push(c);
-    if(!M.inf.has(c.i)&&c!==M.origin&&taken.indexOf(c)<0)pick=c}
-   layer=nx}
-  if(!pick)pick=SQ.arm;
-  taken.push(pick);setRoute(o,from,pick,null,RUNSPD)}
- addLog('SECURITY TEAM 1 · FALLING BACK','ANTIDOTE LOW',S.t);glitch('shift')}
+function hostIn(room){let n=0;for(const h of SQ.host)if(roomAt(h.x,h.y)===room)n++;return n}
+/* a route that will not walk him into anything */
+function safeRoute(from,to){
+ const prev=new Map();prev.set(from.i,null);const q=[from];
+ for(let k=0;k<q.length&&q[k]!==to;k++)for(const e of q[k].n){
+  if(e.r!==to&&(M.inf.has(e.r.i)||hostIn(e.r)))continue;
+  if(!prev.has(e.r.i)){prev.set(e.r.i,q[k]);q.push(e.r)}}
+ if(!prev.has(to.i))return null;
+ const rooms=[];let cur=to;while(cur){rooms.unshift(cur);cur=prev.get(cur.i)}return rooms}
+function fleeTo(o){
+ const from=roomAt(o.x,o.y)||SQ.obj;
+ const seen=new Set([from.i]);let layer=[from],best=null;
+ for(let hop=1;hop<=3;hop++){const nx=[];
+  for(const r of layer)for(const e of r.n){const c=e.r;
+   if(seen.has(c.i))continue;seen.add(c.i);nx.push(c);
+   if(!M.inf.has(c.i)&&c!==M.origin&&!hostIn(c))best=c}
+  layer=nx}
+ const rooms=best?safeRoute(from,best):null;
+ if(rooms&&rooms.length>1){const pts=roomsToPts(rooms);pts.unshift([o.x,o.y]);
+  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;o.spd=FLEESPD;
+  if(SQ.doors)for(let i=0;i<rooms.length-1;i++)SQ.doors.add(dkey(rooms[i],rooms[i+1]));
+  return true}
+ return false}
+function startFlee(o){o.fleeing=true;o.fleeT=SQ.t;o.reroute=0;
+ if(!fleeTo(o)){o.pts=null;o.L2=0}
+ if(!SQ.routed){SQ.routed=true;
+  addLog('SECURITY TEAM 1 · FALLING BACK','ANTIDOTE EXPENDED',S.t);glitch('shift')}}
 function loseOp(o){o.alive=false;o.lost=SQ.t;
  const rm=roomAt(o.x,o.y);o.room=rm;
  addLog('BIOSIGN LOST · ST-'+o.n,'SECTOR '+(rm?rm.label:'--'),S.t)}
@@ -1106,31 +1133,53 @@ function stepSquad(dt){
     if(nx){SQ.stack=nx.stack;enterRoom(nx.obj);ph='stage';SQ.stackT=t;SQ.readyAt=0}
     else{ph='swarm';doSwarm()}}}}
  if(ph==='swarm'){
-  if(t-SQ.lastSpawn>.34){SQ.lastSpawn=t;
+  if(t-SQ.lastSpawn>.26&&SQ.host.length<16){SQ.lastSpawn=t;
    const src=SQ.obj.n[(SQ.hid)%SQ.obj.n.length];
    spawnHostiles(SQ.obj,1,src?ctrOf(src.r):null)}
-  if(t-SQ.lastKill>.5&&SQ.host.length){SQ.lastKill=t;killHostile()}
-  const low=SQ.ops.some(o=>o.alive&&o.ammo<o.ammo0*.18);
-  if(low||t>SQ.swarmT+12){ph='breakout';doBreak()}}
+  if(t-SQ.lastKill>.95&&SQ.host.length){SQ.lastKill=t;killHostile()}
+  /* and they keep coming at whoever is running */
+  if(t-SQ.lastCut>1.3){SQ.lastCut=t;
+   for(const o of SQ.ops){if(!o.alive||!o.fleeing)continue;
+    const r=roomAt(o.x,o.y);if(!r||SQ.host.length>=18)continue;
+    const nb=r.n[(SQ.hid+o.i)%r.n.length];
+    spawnHostiles(r,1,nb?ctrOf(nb.r):null)}}}
 
  /* ammo, and the men who run out of it */
- if(ph==='clear')burnAmmo(dt,BURN.clear);
- else if(ph==='swarm')burnAmmo(dt,BURN.swarm);
- else if(ph==='breakout')burnAmmo(dt,BURN.breakout);
- for(const o of SQ.ops)if(o.alive&&o.dry&&t>=o.dry+1.1)loseOp(o);
+ if(ph==='clear'||ph==='swarm')burnAmmo(dt,ph==='clear'?BURN.clear:BURN.swarm);
+ /* out of antidote: he stops holding and runs for it */
+ for(const o of SQ.ops)if(o.alive&&o.ammo<=0&&!o.fleeing)startFlee(o);
+ /* and he goes down when they get on top of him, not on a timer */
+ for(const o of SQ.ops){if(!o.alive||!o.fleeing)continue;
+  if(t<o.fleeT+2.0)continue;                 /* a moment to break contact */
+  let near=0;for(const h of SQ.host)if(Math.hypot(h.x-o.x,h.y-o.y)<1.6)near++;
+  if(near>=2){loseOp(o);continue}
+  /* if he is somehow clear, they find him rather than him dying alone */
+  if(t>o.fleeT+6+o.i*3&&near<2&&!o.cutoff){o.cutoff=true;
+   const r=roomAt(o.x,o.y);if(r){spawnHostiles(r,2);
+    for(const h of SQ.host.slice(-2)){h.x=o.x+(Math.random()-.5)*3;h.y=o.y+(Math.random()-.5)*3;
+     const c=clampIn(r,h.x,h.y);h.x=c[0];h.y=c[1]}}}}
  for(const o of SQ.ops)if(!o.alive&&!o.turned&&t>=o.lost+T_TURN)turnOp(o);
  if(SQ.ops.every(o=>!o.alive)&&!SQ.wiped){SQ.wiped=true;
   addLog('SECURITY TEAM 1 · NO BIOSIGNS','ALL SECTORS',S.t);glitch('flicker')}
  SQ.phase=ph;
 
  const bounding=(t%BOUND)<MOVE;
- SQ.moving=ph==='advance'?bounding:(ph==='stage'||ph==='breach'||ph==='breakout');
+ SQ.moving=ph==='advance'?bounding:(ph==='stage'||ph==='breach'||SQ.ops.some(o=>o.alive&&o.fleeing));
  if(ph==='advance'&&bounding)SQ.s=Math.min(SQ.L,SQ.s+dt*SQ.spd);
- if(ph==='swarm'||ph==='clear')stepHostiles(dt);
+ if(ph==='swarm'||ph==='clear')stepHostiles(dt,ph==='swarm');
 
  for(const o of SQ.ops){
   if(!o.alive){
    if(o.turned){o.s=Math.min(o.L2,o.s+dt*.55);setPos(o,atDist(o.pts,o.s),dt)}
+   continue}
+  if(o.fleeing){                  /* running, and re-routing away from them */
+   if(t-o.reroute>1.1){o.reroute=t;
+    const nxt=o.pts?roomAt(atDist(o.pts,Math.min(o.L2,o.s+2))[0],atDist(o.pts,Math.min(o.L2,o.s+2))[1]):null;
+    if(!o.pts||o.s>=o.L2-.1||(nxt&&hostIn(nxt)))fleeTo(o)}
+   if(o.pts&&o.s<o.L2){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt)}
+   const h=SQ.host.length?SQ.host.reduce((a,b)=>
+     Math.hypot(a.x-o.x,a.y-o.y)<Math.hypot(b.x-o.x,b.y-o.y)?a:b):null;
+   if(h)faceTo(o,o.x*2-h.x,o.y*2-h.y);
    continue}
   if(ph==='advance'){o.s=Math.max(0,SQ.s-o.back);setPos(o,atDist(o.pts,o.s),dt)}
   else if(ph==='stage'){          /* hold just short of the doorway */
@@ -1148,7 +1197,7 @@ function stepSquad(dt){
     else if(d>3.2)seek(o,o.inPt[0],o.inPt[1],1.1,dt);     /* retake the threshold */
     faceTo(o,h.x,h.y)}
    else{seek(o,o.inPt[0],o.inPt[1],1.1,dt);faceTo(o,oc[0],oc[1])}}
-  else if(ph==='breakout'){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt)}}}
+  }}
 function drawSquad(ctx,X,Y,cs,t,mini){
  if(!SQ.on||!SQ.ops.length)return;
  const R=(mini?.44:.8)*cs;
@@ -1202,7 +1251,8 @@ function drawSquad(ctx,X,Y,cs,t,mini){
     putLabel(x+R*1.2+5,y+o.ly,String(o.n),o.turned?'#ff6b78':'rgba(214,228,234,.9)')}}}
  if(!mini){const alive=SQ.ops.filter(o=>o.alive).length;
   const PW={advance:'ADVANCING',stage:'STACKING',breach:'ENTERING',clear:'ENGAGING',
-            swarm:'OVERRUN',breakout:'FALLING BACK'};
+            swarm:'OVERRUN'};
+  if(SQ.ops.some(o=>o.alive&&o.fleeing))PW[SQ.phase]='FALLING BACK';
   const txt='SECURITY TEAM 1   '+(alive?PW[SQ.phase]||'':'NO BIOSIGNS')+'   '+alive+'/'+OPN+' ACTIVE';
   ctx.font='600 13px "IBM Plex Mono", monospace';
   const w=ctx.measureText(txt).width;
