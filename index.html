@@ -168,17 +168,20 @@ canvas{display:block;width:100%;height:100%}
 .bios .br.turned .bl .cs{color:#ff6b78}
 .bios .bl .hr{font-variant-numeric:tabular-nums}
 .bios .bl .stt{font-size:11px;letter-spacing:.15em}
-.bios .am{display:flex;align-items:center;gap:7px;margin-top:4px;height:12px}
-.bios .am i{flex:1;height:7px;background:rgba(120,150,165,.18);position:relative;overflow:hidden}
-.bios .am i::after{content:'';position:absolute;top:0;bottom:0;left:0;width:var(--w,100%);
-  background:#7ef0a8;box-shadow:0 0 7px rgba(126,240,168,.6)}
-.bios .br.low .am i::after{background:#ffb347;box-shadow:0 0 7px rgba(255,179,71,.6)}
-.bios .br.out .am i::after{background:var(--red);box-shadow:none}
-.bios .am .al{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:#67797f}
-.bios .am b{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.04em;
-  color:#9fb3bb;font-variant-numeric:tabular-nums;min-width:58px;text-align:right}
+.ams{display:grid;grid-auto-rows:1fr;padding:10px 14px 12px;gap:10px;min-height:0}
+.ams .ar{display:flex;align-items:center;gap:10px}
+.ams .ar .cs{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.05em;
+  color:#8fe9ff;min-width:44px}
+.ams .ar.out .cs{color:#ff6b78}
+.ams .ar i{flex:1;height:11px;background:rgba(120,150,165,.16);position:relative;overflow:hidden}
+.ams .ar i::after{content:'';position:absolute;top:0;bottom:0;left:0;width:var(--w,100%);
+  background:#7ef0a8;box-shadow:0 0 9px rgba(126,240,168,.55)}
+.ams .ar.low i::after{background:#ffb347;box-shadow:0 0 9px rgba(255,179,71,.55)}
+.ams .ar.out i::after{background:var(--red);box-shadow:none}
+.ams .ar b{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.04em;
+  color:#cfe0e6;font-variant-numeric:tabular-nums;min-width:66px;text-align:right}
 .bios canvas{flex:1;min-height:0}
-body.biomode .rcol{grid-template-rows:auto 1fr}
+body.biomode .rcol{grid-template-rows:auto 1fr auto}
 
 /* ---- alert ---- */
 #s-alert{align-items:center;justify-content:center;gap:34px;animation:redstrobe 1s steps(2) infinite}
@@ -445,6 +448,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
      <div class="pane"><div class="ph"><span>System Status</span></div><div class="status" id="status"></div></div>
      <div class="pane"><div class="ph"><span>Sensor Feed</span></div><div class="sens" id="sens"></div></div>
      <div class="pane" id="biopane" hidden><div class="ph" style="white-space:nowrap"><span>Security Team 1</span><small id="bioalarm"></small></div><div class="bios" id="bios"></div></div>
+     <div class="pane" id="ampane" hidden><div class="ph" style="white-space:nowrap"><span>Antidote Ammo Remaining</span></div><div class="ams" id="ams"></div></div>
     </div>
    </div>
   </section>
@@ -777,25 +781,27 @@ function drawMap(ctx,W,H,t,mini){
    ctx.beginPath();ctx.moveTo(X(b.x),y);ctx.lineTo(X(b.x+b.w),y);ctx.moveTo(X(b.x),y-5);ctx.lineTo(X(b.x),y+5);ctx.moveTo(X(b.x+b.w),y-5);ctx.lineTo(X(b.x+b.w),y+5);
    ctx.moveTo(x,Y(b.y));ctx.lineTo(x,Y(b.y+b.h));ctx.moveTo(x-5,Y(b.y));ctx.lineTo(x+5,Y(b.y));ctx.moveTo(x-5,Y(b.y+b.h));ctx.lineTo(x+5,Y(b.y+b.h));ctx.stroke();
    ctx.textAlign='center';ctx.fillText((b.w*1.75).toFixed(1)+' m',X(b.x+b.w/2),y-6);ctx.save();ctx.translate(x-6,Y(b.y+b.h/2));ctx.rotate(-Math.PI/2);ctx.fillText((b.h*1.75).toFixed(1)+' m',0,0);ctx.restore();ctx.textAlign='left'}}
- // infection paths
+ // infection paths — hidden while the team is on screen so the only red
+ // shapes are hostiles
+ if(!SQ.on){
  ctx.strokeStyle='rgba(255,60,72,.95)';ctx.fillStyle='#ff3a46';ctx.lineWidth=mini?1:1.8;
  for(const [i,from] of M.par){const o=M.rooms[i];const ax=X(from.x+from.w/2),ay=Y(from.y+from.h/2),bx=X(o.x+o.w/2),by=Y(o.y+o.h/2);
   const age=t-M.inf.get(i),k=Math.min(1,age*2);ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax,ay+(by-ay)*k);ctx.lineTo(ax+(bx-ax)*k,ay+(by-ay)*k);ctx.stroke();
-  if(!mini){ctx.beginPath();ctx.arc(bx,by,3.2,0,7);ctx.fill()}}
+  if(!mini){ctx.beginPath();ctx.arc(bx,by,3.2,0,7);ctx.fill()}}}
  // infected outlines
  ctx.strokeStyle=`rgba(255,55,66,${.75+.25*pulse})`;ctx.lineWidth=mini?1:1.6;
  for(const o of M.rooms)if(M.inf.has(o.i))ctx.strokeRect(X(o.x)+1,Y(o.y)+1,o.w*cs-2,o.h*cs-2);
  if(!mini){
   for(const o of M.rooms){const inf=M.inf.has(o.i),w=o.w*cs,h=o.h*cs;
    if(o.cam){ctx.beginPath();ctx.arc(X(o.x)+w-8,Y(o.y)+8,3.5,0,7);ctx.fillStyle=inf?'#ff2b38':'#86d4e6';ctx.fill()}
-   if(inf&&o.warn&&w>26&&h>26){const cx=X(o.x)+w/2,cy=Y(o.y)+h/2,s=Math.min(w,h)*.2+4;ctx.beginPath();ctx.moveTo(cx,cy-s);ctx.lineTo(cx+s*1.12,cy+s*.85);ctx.lineTo(cx-s*1.12,cy+s*.85);ctx.closePath();
+   if(!SQ.on&&inf&&o.warn&&w>26&&h>26){const cx=X(o.x)+w/2,cy=Y(o.y)+h/2,s=Math.min(w,h)*.2+4;ctx.beginPath();ctx.moveTo(cx,cy-s);ctx.lineTo(cx+s*1.12,cy+s*.85);ctx.lineTo(cx-s*1.12,cy+s*.85);ctx.closePath();
     ctx.strokeStyle='#ff3a46';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#ff3a46';ctx.fillRect(cx-1.2,cy-s*.45,2.4,s*.75);ctx.fillRect(cx-1.2,cy+s*.42,2.4,2.4)}}
   // seed target
   const sr=M.seedRoom,sx=X(sr.x+sr.w/2),sy=Y(sr.y+sr.h/2);if(M.inf.size){ctx.strokeStyle='#ff3a46';ctx.lineWidth=2;for(const rr of [7,14]){ctx.beginPath();ctx.arc(sx,sy,rr+pulse*2,0,7);ctx.stroke()}
    const pr=(t*.8)%1;ctx.strokeStyle=`rgba(255,58,70,${1-pr})`;ctx.beginPath();ctx.arc(sx,sy,14+pr*40,0,7);ctx.stroke()}
   // contacts: one per fallen room, drifting slowly inside it
   {let k=0;
-   for(const o of M.rooms){if(!M.inf.has(o.i))continue;if(++k>24)break;
+   for(const o of M.rooms){if(SQ.on)break;if(!M.inf.has(o.i))continue;if(++k>24)break;
     const a=hash(o.i*7+3)*6.283,b2=hash(o.i*13+9)*6.283;
     const px=o.x+o.w/2+Math.sin(t*.26+a)*(o.w*.26),
           py=o.y+o.h/2+Math.cos(t*.21+b2)*(o.h*.26);
@@ -951,6 +957,35 @@ function ctrOf(r){return [r.x+r.w/2,r.y+r.h/2]}
 const STACKOFF=[[.1,0],[-.9,.5],[-.9,-.5]];
 function slotPt(room,base,off,ang){const c=Math.cos(ang),sn=Math.sin(ang);
  return clampIn(room,base[0]+off[0]*c-off[1]*sn, base[1]+off[0]*sn+off[1]*c)}
+/* ---- doorways: where they hold, outside and in ---- */
+function doorGeom(room,e){const c=ctrOf(room);
+ const dp=e.side==='v'?[e.p,e.c]:[e.c,e.p];
+ let nx=0,ny=0;
+ if(e.side==='v')nx=dp[0]>c[0]?1:-1;else ny=dp[1]>c[1]?1:-1;
+ return {dp:dp,nx:nx,ny:ny,px:-ny,py:nx}}
+/* two ways in, both close to where the squad already is — a second entrance
+   is only worth using if the other element can get to it quickly */
+function doorsFor(room,from){
+ const ds=room.n.filter(e=>!M.inf.has(e.r.i)&&e.r!==M.origin);
+ if(!ds.length)return room.n.slice(0,1);
+ const main=ds.find(e=>e.r===from)||ds[0];
+ const rest=ds.filter(e=>e!==main).map(e=>{
+   const rr=roomRoute(main.r,e.r,true);
+   return {e:e,L:(rr[rr.length-1]===e.r)?pathLen(roomsToPts(rr)):1e9}})
+  .filter(x=>x.L<=11).sort((a,b)=>a.L-b.L);
+ return rest.length?[main,rest[0].e]:[main]}
+function assignDoors(room,from){
+ const ds=doorsFor(room,from),alive=SQ.ops.filter(o=>o.alive);
+ const perDoor=ds.map(()=>[]);
+ alive.forEach((o,k)=>perDoor[k%ds.length].push(o));
+ ds.forEach((e,di)=>{const g=doorGeom(room,e),grp=perDoor[di];
+  grp.forEach((o,k)=>{const off=(k-(grp.length-1)/2)*.85;
+   o.door=e;o.outR=e.r;
+   o.outPt=clampIn(e.r,g.dp[0]+g.nx*1.35+g.px*off,g.dp[1]+g.ny*1.35+g.py*off);
+   o.inPt =clampIn(room,g.dp[0]-g.nx*1.0+g.px*off,g.dp[1]-g.ny*1.0+g.py*off);
+   o.staged=false;o.breached=false})});
+ if(SQ.doors)for(const e of ds)SQ.doors.add(dkey(room,e.r));
+ return ds}
 /* they take the sides of the room rather than piling onto the middle */
 function flankPt(room,k,n,ang){const c=ctrOf(room),
  rad=Math.max(1.1,Math.min(room.w,room.h)*.34),
@@ -970,7 +1005,7 @@ function nearestOp(x,y){let b=null,bd=1e9;
 function stepHostiles(dt){
  for(const h of SQ.host){const o=nearestOp(h.x,h.y);if(!o)continue;
   const dx=o.x-h.x,dy=o.y-h.y,d=Math.hypot(dx,dy);
-  if(d>1.0){const sp=.55*dt;h.x+=dx/d*sp;h.y+=dy/d*sp}}}
+  if(d>.55){const sp=.62*dt;h.x+=dx/d*sp;h.y+=dy/d*sp}}}
 function killHostile(){if(!SQ.host.length)return false;
  let bi=0,bd=1e9;
  for(let i=0;i<SQ.host.length;i++){const o=nearestOp(SQ.host[i].x,SQ.host[i].y);if(!o)continue;
@@ -1002,13 +1037,13 @@ function setRoute(o,fromRoom,toRoom,extra,spd){
  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;o.spd=spd;
  if(SQ.doors){const rr=roomRoute(fromRoom,toRoom);
   for(let i=0;i<rr.length-1;i++)SQ.doors.add(dkey(rr[i],rr[i+1]))}}
-function enterRoom(room,ang){
+function enterRoom(room){
  SQ.obj=room;SQ.cleared=false;
- const alive=SQ.ops.filter(o=>o.alive);
- alive.forEach((o,k)=>setRoute(o,roomAt(o.x,o.y)||room,room,
-   flankPt(room,k,alive.length,ang),Math.max(1.1,2.2)));
+ assignDoors(room,roomAt(SQ.ops.find(o=>o.alive).x,SQ.ops.find(o=>o.alive).y));
+ for(const o of SQ.ops){if(!o.alive)continue;
+  setRoute(o,roomAt(o.x,o.y)||room,o.outR,o.outPt,2.2)}
  spawnHostiles(room,4);SQ.lastKill=SQ.t+.6;
- addLog('SECURITY TEAM 1 · ENTERING','SECTOR '+room.label,S.t);glitch('flicker')}
+ addLog('SECURITY TEAM 1 · MOVING ON','SECTOR '+room.label,S.t)}
 function clearRoom(){
  if(SQ.obj&&M.inf.has(SQ.obj.i)){M.inf.delete(SQ.obj.i);M.par.delete(SQ.obj.i)}
  SQ.done++;addLog('SECTOR '+SQ.obj.label+' CLEAR','SECURITY TEAM 1',S.t)}
@@ -1046,22 +1081,29 @@ function stepSquad(dt){
  const ang=Math.atan2(oc[1]-sc[1],oc[0]-sc[0]);
  let ph=SQ.phase;
 
- if(ph==='advance'&&SQ.s>=SQ.L-.01){ph='stack';SQ.stackT=t;
-  addLog('SECURITY TEAM 1 · STACKING','SECTOR '+SQ.stack.label,S.t)}
- if(ph==='stack'){
-  const set=SQ.ops.every(o=>!o.alive||o.set);
+ if(ph==='advance'&&SQ.s>=SQ.L-.01){ph='stage';SQ.stackT=t;
+  assignDoors(SQ.obj,SQ.stack);
+  for(const o of SQ.ops){if(!o.alive)continue;
+   setRoute(o,roomAt(o.x,o.y)||SQ.stack,o.outR,o.outPt,2.1)}
+  spawnHostiles(SQ.obj,4);SQ.lastKill=t+.6;
+  const nd=new Set(SQ.ops.filter(o=>o.alive).map(o=>o.outR.label)).size;
+  addLog('SECURITY TEAM 1 · STACKING ON '+(nd>1?nd+' ENTRANCES':'ENTRANCE'),
+   'SECTOR '+SQ.obj.label,S.t)}
+ if(ph==='stage'){
+  const set=SQ.ops.every(o=>!o.alive||o.staged);
   if(set&&!SQ.readyAt){SQ.readyAt=t;addLog('SECURITY TEAM 1 · SET','READY TO ENTER',S.t)}
-  if((SQ.readyAt&&t>=SQ.readyAt+T_READY)||t>=SQ.stackT+T_STACKMAX){
-   ph='entry';SQ.entryAt=t;enterRoom(SQ.obj,ang)}}
- if(ph==='entry'&&SQ.ops.every(o=>!o.alive||o.s>=o.L2-.05)){ph='clear';SQ.clearT=t;
+  if((SQ.readyAt&&t>=SQ.readyAt+T_READY)||t>=SQ.stackT+T_STACKMAX+6){
+   ph='breach';SQ.entryAt=t;
+   addLog('SECURITY TEAM 1 · ENTERING','SECTOR '+SQ.obj.label,S.t);glitch('flicker')}}
+ if(ph==='breach'&&SQ.ops.every(o=>!o.alive||o.breached)){ph='clear';SQ.clearT=t;
   addLog('CONTACT · SECURITY TEAM 1','SECTOR '+SQ.obj.label,S.t)}
  if(ph==='clear'){
   if(t-SQ.lastKill>1.35&&SQ.host.length){SQ.lastKill=t;killHostile()}
   if(!SQ.host.length&&!SQ.cleared){SQ.cleared=true;clearRoom();
    if(SQ.done>=CLEARN){ph='swarm';doSwarm()}
-   else{const nx=nextObjective(roomAt(SQ.ops.find(o=>o.alive).x,SQ.ops.find(o=>o.alive).y)||SQ.obj);
-    if(nx){SQ.stack=nx.stack;ph='entry';SQ.entryAt=t;enterRoom(nx.obj,
-      Math.atan2(ctrOf(nx.obj)[1]-ctrOf(nx.stack)[1],ctrOf(nx.obj)[0]-ctrOf(nx.stack)[0]))}
+   else{const a0=SQ.ops.find(o=>o.alive);
+    const nx=a0?nextObjective(roomAt(a0.x,a0.y)||SQ.obj):null;
+    if(nx){SQ.stack=nx.stack;enterRoom(nx.obj);ph='stage';SQ.stackT=t;SQ.readyAt=0}
     else{ph='swarm';doSwarm()}}}}
  if(ph==='swarm'){
   if(t-SQ.lastSpawn>.34){SQ.lastSpawn=t;
@@ -1082,7 +1124,7 @@ function stepSquad(dt){
  SQ.phase=ph;
 
  const bounding=(t%BOUND)<MOVE;
- SQ.moving=ph==='advance'?bounding:(ph==='entry'||ph==='breakout');
+ SQ.moving=ph==='advance'?bounding:(ph==='stage'||ph==='breach'||ph==='breakout');
  if(ph==='advance'&&bounding)SQ.s=Math.min(SQ.L,SQ.s+dt*SQ.spd);
  if(ph==='swarm'||ph==='clear')stepHostiles(dt);
 
@@ -1091,17 +1133,21 @@ function stepSquad(dt){
    if(o.turned){o.s=Math.min(o.L2,o.s+dt*.55);setPos(o,atDist(o.pts,o.s),dt)}
    continue}
   if(ph==='advance'){o.s=Math.max(0,SQ.s-o.back);setPos(o,atDist(o.pts,o.s),dt)}
-  else if(ph==='stack'){
-   if(roomAt(o.x,o.y)!==SQ.stack){o.s=Math.min(o.L2,o.s+dt*SQ.spd);
-    setPos(o,atDist(o.pts,o.s),dt);o.set=false}
-   else{const tp=slotPt(SQ.stack,sc,STACKOFF[o.i],ang);
-    o.set=seek(o,tp[0],tp[1],SEEK,dt);faceTo(o,oc[0],oc[1])}}
-  else if(ph==='entry'){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt);
-   faceTo(o,oc[0],oc[1])}
-  else if(ph==='clear'||ph==='swarm'){      /* hold the flank, weapon on the room */
+  else if(ph==='stage'){          /* hold just short of the doorway */
+   if(o.s<o.L2-.05){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt);o.staged=false}
+   else{o.staged=seek(o,o.outPt[0],o.outPt[1],SEEK,dt);faceTo(o,oc[0],oc[1])}}
+  else if(ph==='breach'){         /* step into the threshold, no further */
+   o.breached=seek(o,o.inPt[0],o.inPt[1],1.7,dt);faceTo(o,oc[0],oc[1])}
+  else if(ph==='clear'||ph==='swarm'){
+   /* they work the room from the doorway. Nothing advances toward a
+      hostile; if one closes, they give ground back out of the door.  */
    const h=SQ.host.length?SQ.host.reduce((a,b)=>
      Math.hypot(a.x-o.x,a.y-o.y)<Math.hypot(b.x-o.x,b.y-o.y)?a:b):null;
-   if(h)faceTo(o,h.x,h.y);else faceTo(o,oc[0],oc[1])}
+   if(h){const d=Math.hypot(h.x-o.x,h.y-o.y);
+    if(d<1.9)seek(o,o.outPt[0],o.outPt[1],2.0,dt);        /* back out */
+    else if(d>3.2)seek(o,o.inPt[0],o.inPt[1],1.1,dt);     /* retake the threshold */
+    faceTo(o,h.x,h.y)}
+   else{seek(o,o.inPt[0],o.inPt[1],1.1,dt);faceTo(o,oc[0],oc[1])}}
   else if(ph==='breakout'){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt)}}}
 function drawSquad(ctx,X,Y,cs,t,mini){
  if(!SQ.on||!SQ.ops.length)return;
@@ -1155,7 +1201,7 @@ function drawSquad(ctx,X,Y,cs,t,mini){
    if(!mini){ctx.font='600 11px "IBM Plex Mono", monospace';
     putLabel(x+R*1.2+5,y+o.ly,String(o.n),o.turned?'#ff6b78':'rgba(214,228,234,.9)')}}}
  if(!mini){const alive=SQ.ops.filter(o=>o.alive).length;
-  const PW={advance:'ADVANCING',stack:'STACKING',entry:'ENTERING',clear:'ENGAGING',
+  const PW={advance:'ADVANCING',stage:'STACKING',breach:'ENTERING',clear:'ENGAGING',
             swarm:'OVERRUN',breakout:'FALLING BACK'};
   const txt='SECURITY TEAM 1   '+(alive?PW[SQ.phase]||'':'NO BIOSIGNS')+'   '+alive+'/'+OPN+' ACTIVE';
   ctx.font='600 13px "IBM Plex Mono", monospace';
@@ -1169,13 +1215,15 @@ function ecg(ph){const g=(c,w,a)=>a*Math.exp(-Math.pow((ph-c)/w,2));
  return g(.18,.035,.14)+g(.40,.013,-.2)+g(.44,.012,1)+g(.485,.016,-.28)+g(.68,.055,.24)}
 const BIO=OPDEF.map((d,i)=>{const w=document.createElement('div');w.className='br';
  w.innerHTML='<div class="bl"><span class="cs">ST-'+(i+1)+'</span><span class="hr"></span><span class="stt"></span></div>'+
-  '<canvas width="'+BIOW+'" height="'+BIOH+'"></canvas>'+
-  '<div class="am"><span class="al">ANTIDOTE</span><i></i><b></b></div>';
+  '<canvas width="'+BIOW+'" height="'+BIOH+'"></canvas>';
  $('#bios').appendChild(w);
  $('#bios').style.gridTemplateRows='repeat('+OPDEF.length+',1fr)';
+ const a=document.createElement('div');a.className='ar';
+ a.innerHTML='<span class="cs">ST-'+(i+1)+'</span><i></i><b></b>';
+ $('#ams').appendChild(a);
  return {cs:d[0],bpm:72+i*3.4,ph:i*.37,buf:new Array(BIOLEN).fill(0),
   row:w,hr:w.querySelector('.hr'),st:w.querySelector('.stt'),ctx:w.querySelector('canvas').getContext('2d'),
-  bar:w.querySelector('.am i'),amv:w.querySelector('.am b'),
+  arow:a,bar:a.querySelector('i'),amv:a.querySelector('b'),
   state:'',shown:'',hrv:0,ashown:''}});
 let bioAcc=0;
 function bioState(i){if(!SQ.on||!SQ.ops.length)return 'alive';
@@ -1215,8 +1263,8 @@ function updateBios(dt){
   if(ak!==b.ashown){b.ashown=ak;
    b.bar.style.setProperty('--w',(fr*100).toFixed(1)+'%');
    b.amv.textContent=am+' RDS';
-   b.row.classList.toggle('low',fr<.25&&fr>=.01);
-   b.row.classList.toggle('out',fr<.01)}}
+   b.arow.classList.toggle('low',fr<.25&&fr>=.01);
+   b.arow.classList.toggle('out',fr<.01)}}
  const lost=BIO.filter(b=>b.state==='lost'||b.state==='dying'||b.state==='turned').length;
  const al=$('#bioalarm');
  if(al){const txt=lost?lost+' LOST':'';
@@ -1237,9 +1285,9 @@ function drawBios(t){
    c.fillStyle=col;c.beginPath();c.arc(lx,ly,2.2,0,7);c.fill()}}}
 let MAPPANEL='auto';
 function setBioMode(on){
- const bp=$('#biopane'),sp=$('#sens').parentElement,st=$('#status').parentElement;
+ const bp=$('#biopane'),ap=$('#ampane'),sp=$('#sens').parentElement,st=$('#status').parentElement;
  if(bp.hidden===!on)return;   /* already in the right state */
- bp.hidden=!on;sp.hidden=on;st.hidden=on;document.body.classList.toggle('biomode',on)}
+ bp.hidden=!on;ap.hidden=!on;sp.hidden=on;st.hidden=on;document.body.classList.toggle('biomode',on)}
 'ABCDEFGHIJKLMNOP'.split('').forEach(l=>{const s=document.createElement('span');s.textContent=l;$('#cols').appendChild(s)});
 for(let i=1;i<=16;i++){const s=document.createElement('span');s.textContent=i;$('#rows').appendChild(s)}
 
