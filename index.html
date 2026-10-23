@@ -786,14 +786,18 @@ const OPN=6;
 const OPDEF=[['RT-1',0,0,-3],['RT-2',2.0,1.7,11],['RT-3',2.45,-1.8,-3],
              ['RT-4',4.8,1.5,11],['RT-5',5.2,-1.6,-3],['RT-6',7.4,.2,11]];
 /* [seconds, index into OPDEF] — the order they go down */
-/* the shape of it: advance, assault, stand off under contact, get overrun,
-   break and run, and get cut down on the way out.                        */
-const T_INPOS=16.0;               /* in position, contact made, holding   */
-const T_FALLBACK=22.5;            /* they break and run for the armory    */
-const FALLAT=[[19.5,5],[21.0,4],[24.0,2],[26.5,3],[29.5,1],[33.0,0]];
-const TURNAT=[36.0,3];            /* one of them gets back up             */
-const SPLIT=6.5;                 /* they move as one until here, then fan out */
-function phaseAt(t){return t<SPLIT?'advance':t<T_INPOS?'assault':t<T_FALLBACK?'standoff':'fallback'}
+/* the shape of it: the squad moves up together, stacks outside the room,
+   waits until everyone is set, goes in, holds, loses two inside, and the
+   rest break out by separate routes and die on the way. Then they all get
+   back up, and the sectors they are lying in go red.                     */
+const T_ARRIVE=9.5;               /* lead reaches the stack point         */
+const T_STACKMAX=16.0;            /* go in by now whether set or not      */
+const T_READY=1.8;                /* beat on the door once everyone is up */
+const T_ENTRY=2.6;                /* time to push into the room           */
+/* casualties, in seconds after the room is entered */
+const DEATHS=[[3.5,5],[4.8,4],[9.5,2],[12.5,3],[16.0,1],[20.0,0]];
+const T_BREAK=5.4;                /* survivors break out, separate routes */
+const T_TURN=6.0;                 /* how long each one lies there first   */
 const FALLBREACH=.25;            /* how much of the map is already lost when they go in */
 function setBreach(frac){        /* pre-infect outward from the breach room, then hold */
  if(!M)return;
@@ -807,8 +811,8 @@ function setBreach(frac){        /* pre-infect outward from the breach room, the
  order.forEach((o,i)=>{M.inf.set(o.i,S.t-6+i*.02);
   const pp=par.get(o.i);if(pp)M.par.set(o.i,pp)});
  M.next=S.t+999}
-const FALLT=[];FALLAT.forEach(f=>FALLT[f[1]]=f[0]);
-const SQ={on:false,t:0,s:0,L:0,spd:0,pts:[],ops:[],fired:0,turned:false,split:false,targets:[]};
+const DT=[];DEATHS.forEach(f=>DT[f[1]]=f[0]);
+const SQ={on:false,t:0,s:0,L:0,spd:0,pts:[],ops:[],fired:0,phase:'advance',moving:true};
 function roomAt(x,y){for(const o of M.rooms)if(x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h)return o;return null}
 function roomRoute(from,to){      /* shortest room-to-room path */
  const prev=new Map();prev.set(from.i,null);const q=[from];
@@ -860,11 +864,16 @@ function teamFall(){
  if(SQ.on){teamStop();return}
  setBreach(FALLBREACH);
  SQ.arm=armoryRoom();
- SQ.pts=roomsToPts(roomRoute(SQ.arm,M.seedRoom));SQ.L=pathLen(SQ.pts);
- SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.turned=false;SQ.split=false;SQ.fb=false;SQ.held=false;SQ.phase='advance';SQ.moving=true;
- SQ.spd=.93*SQ.L/(ADVT*MOVE/BOUND);
+ SQ.obj=M.seedRoom;                       /* the room they are going into */
+ const rt=roomRoute(SQ.arm,SQ.obj);
+ SQ.stack=rt.length>1?rt[rt.length-2]:SQ.arm;   /* hold up next door      */
+ SQ.pts=roomsToPts(rt.slice(0,-1));SQ.L=pathLen(SQ.pts);
+ SQ.on=true;SQ.t=0;SQ.s=0;SQ.fired=0;SQ.phase='advance';SQ.moving=true;
+ SQ.readyAt=0;SQ.entryAt=0;SQ.stand0=0;SQ.broke=false;
+ SQ.spd=SQ.L/(T_ARRIVE*(MOVE/BOUND));
  SQ.ops=OPDEF.map((d,i)=>({cs:d[0],back:d[1],lat:d[2],ly:d[3],i,alive:true,lost:0,turned:false,td:0,sd:0,
-   pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
+   pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,set:false,mode:'',room:null,h0:undefined,
+   x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
  BIO.forEach(b=>{b.buf.fill(0);b.state='';b.shown='';b.row.className='br'});
  if(S.mode!=='map')setMode('map');
  addLog('RESCUE TEAM 1 · '+OPN+' OPERATORS','SECTOR '+SQ.arm.label,S.t);
@@ -878,80 +887,96 @@ function setPos(o,p,dt,snap){
  if(snap||o.x===undefined){o.x=tx;o.y=ty}
  else{const k=Math.min(1,(dt||.016)*7);o.x+=(tx-o.x)*k;o.y+=(ty-o.y)*k}
  o.h=hd+(o.turned?Math.PI:0)}
-const ASSPD=2.8;                  /* assault pace, map units a second */
-function doSplit(){SQ.split=true;
- const sp=atDist(SQ.pts,SQ.s),here=roomAt(sp[0],sp[1])||M.seedRoom;
- const ops=SQ.ops.map(o=>o).sort((a,b)=>FALLT[a.i]-FALLT[b.i]);
- ops.forEach((o,k)=>o.delay=k*.45);
- const c=o=>[o.x+o.w/2,o.y+o.h/2],sc=c(M.seedRoom),hc=c(here);
- /* every room's real route length from where the squad stands, so each
-    operator can be given a position it can actually reach before the hold */
- const info=M.rooms.filter(o=>o.w*o.h>=12&&o!==M.origin).map(o=>{
-  const pts=roomsToPts(roomRoute(here,o)),p=c(o);
-  return {o,p,L:pathLen(pts),d:Math.hypot(p[0]-sc[0],p[1]-sc[1])}});
- const taken=[];
- for(const o of ops){
-  const from=roomAt(o.x,o.y)||here;
-  const win=Math.max(1.3,T_INPOS-SPLIT-.5-o.delay);
-  const lead=Math.hypot(o.x-hc[0],o.y-hc[1]);
-  const reach=Math.max(3,ASSPD*win*(MOVE/BOUND)-lead);
-  let best=null;
-  /* push as close to the breach as it can get, without crowding anyone */
-  for(let sep=6;sep>=0&&!best;sep-=1.5){let bd=1e9;
-   for(const it of info){
-    if(taken.indexOf(it.o)>=0||it.L>reach)continue;
-    if(taken.some(q=>{const qp=c(q);return Math.hypot(qp[0]-it.p[0],qp[1]-it.p[1])<sep}))continue;
-    if(it.d<bd){bd=it.d;best=it.o}}}
-  if(!best){let bl=1e9;for(const it of info){if(taken.indexOf(it.o)>=0)continue;
-   if(it.L<bl){bl=it.L;best=it.o}}}
-  if(!best)best=M.seedRoom;
-  taken.push(best);
-  const pts=roomsToPts(roomRoute(from,best));
-  pts.unshift([o.x,o.y]);            /* carry on from exactly where it stands */
-  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;
-  o.spd=Math.max(.7,Math.min(ASSPD,o.L2/(win*(MOVE/BOUND))));
-  setPos(o,atDist(o.pts,0),0,true)}
- addLog('RESCUE TEAM 1 · ELEMENTS SPLITTING','SECTOR '+here.label,S.t)}
-function doFallback(){SQ.fb=true;
- for(const o of SQ.ops){if(!o.alive)continue;
-  const from=roomAt(o.x,o.y)||SQ.arm,pts=roomsToPts(roomRoute(from,SQ.arm));
-  pts.unshift([o.x,o.y]);
-  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.delay=0;o.lat=0;
-  const win=Math.max(1.2,FALLT[o.i]-T_FALLBACK);
-  o.spd=Math.max(1.5,Math.min(2.8,o.L2/win));
-  setPos(o,atDist(o.pts,0),0,true)}
- addLog('FALLBACK ORDERED · RESCUE TEAM 1','WITHDRAWING',S.t);glitch('shift')}
-function loseOp(o){o.alive=false;o.lost=SQ.t;o.sd=SQ.split?o.s:Math.max(0,SQ.s-o.back);
- const rm=roomAt(o.x,o.y);
+const SEEK=2.5, RUNSPD=2.9;
+/* ---- small helpers for the close-quarters beats ---- */
+function seek(o,tx,ty,spd,dt){const dx=tx-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);
+ if(d<.04){o.x=tx;o.y=ty;return true}
+ const st=Math.min(d,spd*dt);o.x+=dx/d*st;o.y+=dy/d*st;return d-st<.04}
+function faceTo(o,px,py){o.h=Math.atan2(py-o.y,px-o.x)}
+/* a stack outside the door: two short files along the approach */
+const STACKOFF=[[0,0],[-1.15,.6],[-1.15,-.6],[-2.3,.6],[-2.3,-.6],[-3.45,0]];
+const ENTRYOFF=[[.8,0],[-.1,.85],[-.1,-.85],[-1,.75],[-1,-.75],[-1.8,0]];
+function slotPt(o,base,off,ang){const c=Math.cos(ang),sn=Math.sin(ang);
+ return [base[0]+off[0]*c-off[1]*sn, base[1]+off[0]*sn+off[1]*c]}
+function ctrOf(r){return [r.x+r.w/2,r.y+r.h/2]}
+/* retreat destinations: far rooms spread around the compass from the objective */
+function exitRooms(n){
+ const oc=ctrOf(SQ.obj);
+ const cand=M.rooms.filter(r=>r.w*r.h>=12&&r!==SQ.obj&&r!==M.origin&&!M.inf.has(r.i))
+  .map(r=>{const c=ctrOf(r);return {r,c,d:Math.hypot(c[0]-oc[0],c[1]-oc[1]),
+   a:Math.atan2(c[1]-oc[1],c[0]-oc[0])}})
+  .filter(x=>x.d>7).sort((a,b)=>b.d-a.d);
+ const out=[];
+ for(let sep=2.0;sep>=.2&&out.length<n;sep-=.3){out.length=0;
+  for(const x of cand){if(out.length>=n)break;
+   if(out.every(q=>Math.abs(((x.a-q.a+Math.PI*3)%(Math.PI*2))-Math.PI)>sep))out.push(x)}}
+ while(out.length<n&&cand.length)out.push(cand[out.length%cand.length]);
+ return out.map(x=>x.r)}
+function doBreak(){SQ.broke=true;
+ const alive=SQ.ops.filter(o=>o.alive);
+ const ex=exitRooms(alive.length);
+ alive.forEach((o,k)=>{const from=roomAt(o.x,o.y)||SQ.obj;
+  const pts=roomsToPts(roomRoute(from,ex[k]||SQ.arm));pts.unshift([o.x,o.y]);
+  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;o.spd=RUNSPD;o.mode='run'});
+ addLog('RESCUE TEAM 1 · BREAKING OUT','SEPARATE ROUTES',S.t);glitch('shift')}
+function loseOp(o){o.alive=false;o.lost=SQ.t;o.mode='down';
+ const rm=roomAt(o.x,o.y);o.room=rm;
  addLog('BIOSIGN LOST · '+o.cs,'SECTOR '+(rm?rm.label:'--'),S.t)}
+function turnOp(o){o.turned=true;
+ const rm=o.room||roomAt(o.x,o.y);
+ /* he gets up where he fell and shambles off, so give him a fresh route */
+ const pts=roomsToPts(roomRoute(rm||SQ.obj,SQ.arm));pts.unshift([o.x,o.y]);
+ o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;
+ if(rm&&!M.inf.has(rm.i)){               /* the sector he is lying in goes red */
+  M.inf.set(rm.i,S.t);
+  const src=rm.n.find(e=>M.inf.has(e.r.i));if(src)M.par.set(rm.i,src.r)}
+ addLog('MOVEMENT · '+o.cs+' TAG ACTIVE','SECTOR '+(rm?rm.label:'--')+' RECLASSIFIED',S.t)}
 function stepSquad(dt){
  if(!SQ.on||!SQ.ops.length)return;
  SQ.t+=dt;const t=SQ.t;
  M.next=S.t+999;                 /* no new rooms fall while the squad is on screen */
- const ph=phaseAt(t);SQ.phase=ph;
- if(ph!=='advance'&&!SQ.split)doSplit();
- if(ph==='fallback'&&!SQ.fb)doFallback();
- if(ph==='standoff'&&!SQ.held){SQ.held=true;
-  addLog('CONTACT · RESCUE TEAM 1','HOLDING POSITION',S.t);glitch('flicker')}
- /* running flat out on the way back, bounding on the way in */
- const moving=ph==='fallback'?true:(t%BOUND)<MOVE;
- SQ.moving=ph==='standoff'?false:moving;
- if(ph==='advance'&&moving)SQ.s+=dt*SQ.spd;
- while(SQ.fired<FALLAT.length&&t>=FALLAT[SQ.fired][0]){
-  const o=SQ.ops[FALLAT[SQ.fired][1]];loseOp(o);SQ.fired++;
+ const sc=ctrOf(SQ.stack),oc=ctrOf(SQ.obj);
+ const ang=Math.atan2(oc[1]-sc[1],oc[0]-sc[0]);   /* approach direction */
+ let ph=SQ.phase;
+
+ /* ---------- phase transitions ---------- */
+ if(ph==='advance'&&SQ.s>=SQ.L-.01){ph='stack';
+  addLog('RESCUE TEAM 1 · STACKING','SECTOR '+SQ.stack.label,S.t)}
+ if(ph==='stack'){
+  const set=SQ.ops.every(o=>!o.alive||o.set);
+  if(set&&!SQ.readyAt){SQ.readyAt=t;addLog('RESCUE TEAM 1 · SET','READY TO ENTER',S.t)}
+  if((SQ.readyAt&&t>=SQ.readyAt+T_READY)||t>=T_STACKMAX){ph='entry';SQ.entryAt=t;
+   addLog('RESCUE TEAM 1 · ENTERING','SECTOR '+SQ.obj.label,S.t);glitch('flicker')}}
+ if(ph==='entry'&&t>=SQ.entryAt+T_ENTRY){ph='standoff';SQ.stand0=t;
+  addLog('CONTACT · RESCUE TEAM 1','SECTOR '+SQ.obj.label,S.t);glitch('flicker')}
+ if(ph==='standoff'&&SQ.stand0&&t>=SQ.stand0+T_BREAK&&SQ.ops.some(o=>o.alive)){
+  ph='breakout';doBreak()}
+ SQ.phase=ph;
+
+ /* ---------- casualties, keyed off the entry ---------- */
+ if(SQ.stand0)while(SQ.fired<DEATHS.length&&t>=SQ.stand0+DEATHS[SQ.fired][0]){
+  const o=SQ.ops[DEATHS[SQ.fired][1]];loseOp(o);SQ.fired++;
   if(SQ.fired===2)addLog('RESCUE TEAM 1 · OVERRUN','MULTIPLE CASUALTIES',S.t);
-  if(SQ.fired===FALLAT.length){addLog('RESCUE TEAM 1 · NO BIOSIGNS','ALL SECTORS',S.t);glitch('flicker')}}
- if(!SQ.turned&&t>=TURNAT[0]){SQ.turned=true;const o=SQ.ops[TURNAT[1]];o.turned=true;
-  addLog('MOVEMENT · '+o.cs+' TAG ACTIVE','RECLASSIFIED',S.t);glitch('shift')}
+  if(SQ.fired===DEATHS.length){addLog('RESCUE TEAM 1 · NO BIOSIGNS','ALL SECTORS',S.t);glitch('flicker')}}
+ /* ---------- and they all get up again ---------- */
+ for(const o of SQ.ops)if(!o.alive&&!o.turned&&t>=o.lost+T_TURN)turnOp(o);
+
+ const bounding=(t%BOUND)<MOVE;
+ SQ.moving=ph==='advance'?bounding:ph==='breakout';
+ if(ph==='advance'&&bounding)SQ.s=Math.min(SQ.L,SQ.s+dt*SQ.spd);
+
+ /* ---------- move everyone ---------- */
  for(const o of SQ.ops){
-  if(o.alive){
-   if(ph==='standoff'){           /* holding: no ground given, arcs covered */
-    o.h=(o.hold0===undefined?(o.hold0=o.h):o.hold0)+Math.sin(t*.9+o.i*1.7)*.75;continue}
-   if(ph==='advance')o.s=Math.max(0,SQ.s-o.back);
-   else if(moving&&t>=(ph==='fallback'?T_FALLBACK:SPLIT)+(o.delay||0))
-    o.s=Math.min(o.L2,o.s+dt*o.spd);
-   setPos(o,atDist(o.pts,o.s),dt)}
-  else if(o.turned){o.td+=dt*.6;setPos(o,atDist(o.pts,Math.max(0,o.sd-o.td)),dt)}}}
+  if(!o.alive){
+   if(o.turned){o.s=Math.min(o.L2,o.s+dt*.55);setPos(o,atDist(o.pts,o.s),dt)}
+   continue}
+  if(ph==='advance'){o.s=Math.max(0,SQ.s-o.back);setPos(o,atDist(o.pts,o.s),dt)}
+  else if(ph==='stack'){const tp=slotPt(o,sc,STACKOFF[o.i],ang);
+   o.set=seek(o,tp[0],tp[1],SEEK,dt);faceTo(o,oc[0],oc[1])}
+  else if(ph==='entry'){const tp=slotPt(o,oc,ENTRYOFF[o.i],ang);
+   seek(o,tp[0],tp[1],SEEK*.8,dt);faceTo(o,oc[0]+Math.cos(ang)*3,oc[1]+Math.sin(ang)*3)}
+  else if(ph==='standoff'){o.h=(o.h0===undefined?(o.h0=o.h):o.h0)+Math.sin(t*.9+o.i*1.7)*.75}
+  else if(ph==='breakout'){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt)}}}
 function drawSquad(ctx,X,Y,cs,t,mini){
  if(!SQ.on||!SQ.ops.length)return;
  const R=(mini?.44:.8)*cs;
@@ -985,7 +1010,7 @@ function drawSquad(ctx,X,Y,cs,t,mini){
    if(!mini){ctx.fillStyle=o.turned?'#ff6b78':'rgba(214,228,234,.9)';
     ctx.font='600 11px "IBM Plex Mono", monospace';ctx.fillText(o.cs,x+R*1.2+5,y+o.ly)}}}
  if(!mini){const alive=SQ.ops.filter(o=>o.alive).length;
-  const PW={advance:'ADVANCING',assault:'ASSAULT',standoff:'IN CONTACT',fallback:'FALLING BACK'};
+  const PW={advance:'ADVANCING',stack:'STACKING',entry:'ENTERING',standoff:'IN CONTACT',breakout:'BREAKING OUT'};
   const txt='RESCUE TEAM 1   '+(alive?PW[SQ.phase]||'':'NO BIOSIGNS')+'   '+alive+'/'+OPN+' ACTIVE';
   ctx.font='600 13px "IBM Plex Mono", monospace';
   const w=ctx.measureText(txt).width;
