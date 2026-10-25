@@ -115,9 +115,10 @@ window.CONTENT = {
   endCard: {
     kicker: 'INCOMING TRANSMISSION',
     head:   'The rescue team has been assembled.',
-    date:   'October 31',
-    time:   '7:00 PM',
-    place:  'Your party name here',
+    s1name: "Logan's Rescue Party",
+    s1when: 'Friday 10.30.2026 \u00b7 6\u201310 PM',
+    s2name: 'Student Mentees',
+    s2when: 'Saturday 10.31.2026 \u00b7 5\u20138 PM',
     tag:    'You leave at dusk.'
   },
 

@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Incoming Transmission</title>
 <meta name="description" content="Sublevel B. One survivor.">
@@ -277,13 +278,14 @@ body.clean{padding-block:0}
 .chip b.r{color:var(--red)}
 .labmain{display:grid;grid-template-rows:1fr auto;gap:14px;min-height:0}
 /* ---- end card ---- */
-#s-end{background:#020304;align-items:center;justify-content:center;text-align:center;gap:22px}
+#s-end{background:#020304;align-items:center;justify-content:center;text-align:center;gap:18px}
 #s-end .eb{position:absolute;width:520px;height:520px;opacity:.06;left:50%;top:50%;transform:translate(-50%,-50%)}
 #s-end .kick{font-family:var(--mono);font-size:22px;letter-spacing:.3em;color:var(--comms);min-height:30px}
-#s-end h2{margin:0;font-size:104px;font-weight:700;line-height:.95;letter-spacing:.02em;color:#fff;max-width:1300px;text-wrap:balance;min-height:200px}
+#s-end h2{margin:0;font-size:92px;font-weight:700;line-height:.95;letter-spacing:.02em;color:#fff;max-width:1300px;text-wrap:balance;min-height:180px}
 #s-end .rule{width:640px;height:8px;background:repeating-linear-gradient(-55deg,var(--red) 0 4px,transparent 4px 10px);opacity:0;transition:opacity .4s}
-#s-end .when{display:flex;gap:40px;justify-content:center;font-size:52px;font-weight:600;letter-spacing:.08em;color:var(--red);min-height:64px}
-#s-end .place{font-size:40px;font-weight:500;letter-spacing:.18em;color:#d8e2e5;min-height:50px}
+#s-end .sess{display:flex;flex-direction:column;align-items:center;gap:4px}
+#s-end .sname{font-size:40px;font-weight:600;letter-spacing:.17em;color:#d8e2e5;min-height:48px}
+#s-end .swhen{font-size:46px;font-weight:600;letter-spacing:.07em;color:var(--red);min-height:56px}
 #s-end .tag{font-family:var(--mono);font-size:30px;letter-spacing:.24em;color:#fff;min-height:42px}
 #s-end .cur::after{content:"▮";animation:blink .8s steps(2) infinite;margin-left:6px}
 .ctl input[type=range]{accent-color:var(--green);width:110px}
@@ -522,8 +524,8 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
    <div class="kick" id="e-kick"></div>
    <h2 id="e-head"></h2>
    <div class="rule" id="e-rule"></div>
-   <div class="when"><span id="e-date"></span><span id="e-time"></span></div>
-   <div class="place" id="e-place"></div>
+   <div class="sess"><div class="sname" id="e-s1name"></div><div class="swhen" id="e-s1when"></div></div>
+   <div class="sess"><div class="sname" id="e-s2name"></div><div class="swhen" id="e-s2when"></div></div>
    <div class="tag" id="e-tag"></div>
   </section>
  </div>
@@ -558,7 +560,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
   <select id="labstage" aria-label="Lab panel stage"><option value="anim">Panels: play from start</option><option value="early">Panels: early</option><option value="spread">Panels: spreading</option><option value="full">Panels: full breach</option></select><select id="lp0sel" aria-label="Upper right panel"></select><select id="lp1sel" aria-label="Lower right panel"></select>
  </div>
  <div class="grp"><span class="lbl">End card:</span>
-  <input type="text" id="i-head" aria-label="Headline"><input type="text" id="i-date" aria-label="Date"><input type="text" id="i-time" aria-label="Time"><input type="text" id="i-place" aria-label="Place or party name"><input type="text" id="i-tag" aria-label="Tagline">
+  <input type="text" id="i-head" aria-label="Headline"><input type="text" id="i-s1name" aria-label="First event name"><input type="text" id="i-s1when" aria-label="First event date and time"><input type="text" id="i-s2name" aria-label="Second event name"><input type="text" id="i-s2when" aria-label="Second event date and time"><input type="text" id="i-tag" aria-label="Tagline">
  </div>
  <div class="hint" style="color:#8fa0a6">Interactive version: <b style="color:#46e59a;font-family:var(--mono)">https://adichiara.github.io/Haunt-OS</b> &nbsp;·&nbsp; “URL on screen” puts it in the title bar so viewers can find it.</div>
  <div class="hint">Keys: <kbd>1</kbd>–<kbd>7</kbd> screens · <kbd>P</kbd> party loop (<kbd>Esc</kbd> to stop) · <kbd>S</kbd> sound · <kbd>R</kbd> restart · <kbd>T</kbd> team fall · <kbd>G</kbd> glitch · <kbd>Space</kbd> pause · <kbd>H</kbd> hide controls · <kbd>F</kbd> full screen · double-click a camera to enlarge it. You can also drag a video or image file straight onto a camera, or an audio file anywhere on the screen. After loading clips, press <b>Warm up clips</b> once and wait for &ldquo;Clips ready&rdquo;: the first pass through a clip is the slow one, so this gets the stutter out of the way before you record. Feed rate sets how often the camera pictures repaint &mdash; 15 fps looks like real CCTV and costs less; switch to Every frame once the clips are warm. To record: go full screen, then screen-record. Loaded clips and audio stay on your device.</div>
@@ -1679,7 +1681,9 @@ function drawLab(t,dt){drawCell(t);const lt=labT(t);for(const i of [0,1]){const 
 
 /* ---------- end card ---------- */
 const EF=Object.assign({kicker:'INCOMING TRANSMISSION'},C.endCard||{});
-const ENDSEQ=[['e-kick','kicker',0,40],['e-head','head',1.2,26],['e-date','date',4.4,20],['e-time','time',5.2,20],['e-place','place',6.4,24],['e-tag','tag',8.4,16]];
+const ENDSEQ=[['e-kick','kicker',0,40],['e-head','head',1.2,26],
+ ['e-s1name','s1name',4.4,24],['e-s1when','s1when',5.4,26],
+ ['e-s2name','s2name',6.9,24],['e-s2when','s2when',7.9,26],['e-tag','tag',9.5,16]];
 let endPrev={};
 function endReset(){endPrev={};ENDSEQ.forEach(([id])=>{$('#'+id).textContent='';$('#'+id).classList.remove('cur')});$('#e-rule').style.opacity=0}
 function updateEnd(t){let lastActive=null;
@@ -1688,7 +1692,7 @@ function updateEnd(t){let lastActive=null;
   if(t>=t0)lastActive=el}
  ENDSEQ.forEach(([id])=>$('#'+id).classList.toggle('cur',$('#'+id)===lastActive));
  $('#e-rule').style.opacity=t>3.8?.7:0;
- if(t>1.2&&t<1.25||t>4.4&&t<4.45||t>8.4&&t<8.45)glitch()}
+ if(t>1.2&&t<1.25||t>4.4&&t<4.45||t>6.9&&t<6.95||t>9.5&&t<9.55)glitch()}
 
 /* ---------- party loop ---------- */
 const LOOP={on:false,i:0,next:0,seq:[['map',32],['cctv',22],['tx',22],['lab',22],['vitals',40],['map',22],['alert',8]],wl:null};
