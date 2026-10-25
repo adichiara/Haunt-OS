@@ -931,6 +931,7 @@ function teamFall(){
  SQ.spd=Math.min(2.2,SQ.L/(T_ARRIVE*(MOVE/BOUND)));
  SQ.ops=OPDEF.map((d,i)=>({cs:d[0],back:d[1],lat:d[2],ly:d[3],i,alive:true,lost:0,turned:false,td:0,sd:0,
    n:i+1,ammo:AMMO0[i]||240,ammo0:AMMO0[i]||240,dry:0,fleeing:false,fleeT:0,reroute:0,cutoff:false,
+   ht:undefined,px:undefined,py:undefined,
    pts:SQ.pts,L2:SQ.L,s:0,spd:SQ.spd,set:false,room:null,
    x:SQ.pts[0][0],y:SQ.pts[0][1],h:0}));
  BIO.forEach(b=>{b.buf.fill(0);b.state='';b.shown='';b.row.className='br'});
@@ -945,13 +946,24 @@ function setPos(o,p,dt,snap){
  const tx=p[0]+Math.cos(n)*o.lat,ty=p[1]+Math.sin(n)*o.lat;
  if(snap||o.x===undefined){o.x=tx;o.y=ty}
  else{const k=Math.min(1,(dt||.016)*18);o.x+=(tx-o.x)*k;o.y+=(ty-o.y)*k}
- o.h=hd+(o.turned?Math.PI:0)}
+ o.ht=hd}
 const SEEK=2.3, RUNSPD=2.9, FLEESPD=1.5;
 /* ---- close-quarters helpers ---- */
 function seek(o,tx,ty,spd,dt){const dx=tx-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);
  if(d<.04){o.x=tx;o.y=ty;return true}
  const st=Math.min(d,spd*dt);o.x+=dx/d*st;o.y+=dy/d*st;return d-st<.04}
-function faceTo(o,px,py){o.h=Math.atan2(py-o.y,px-o.x)}
+function faceTo(o,px,py){o.ht=Math.atan2(py-o.y,px-o.x)}
+function easeHead(o,dt){
+ if(o.ht===undefined)o.ht=o.h||0;
+ if(o.h===undefined){o.h=o.ht;return}
+ let d=o.ht-o.h;while(d>Math.PI)d-=6.283185;while(d<-Math.PI)d+=6.283185;
+ const max=9*(dt||.016);                 /* radians a second, frame-rate proof */
+ o.h+=Math.abs(d)<=max?d:(d<0?-max:max)}
+/* a man faces where he is going whenever he is actually going somewhere */
+function headFromMove(o,dt){
+ const dx=o.x-(o.px===undefined?o.x:o.px),dy=o.y-(o.py===undefined?o.y:o.py);
+ if(dx*dx+dy*dy>2.2e-5)o.ht=Math.atan2(dy,dx);
+ o.px=o.x;o.py=o.y;easeHead(o,dt)}
 function clampIn(r,px,py){const m=.7;
  return [Math.max(r.x+m,Math.min(r.x+r.w-m,px)),Math.max(r.y+m,Math.min(r.y+r.h-m,py))]}
 function ctrOf(r){return [r.x+r.w/2,r.y+r.h/2]}
@@ -1171,7 +1183,7 @@ function stepSquad(dt){
 
  for(const o of SQ.ops){
   if(!o.alive){
-   if(o.turned){o.s=Math.min(o.L2,o.s+dt*.55);setPos(o,atDist(o.pts,o.s),dt)}
+   if(o.turned){o.s=Math.min(o.L2,o.s+dt*.55);setPos(o,atDist(o.pts,o.s),dt);headFromMove(o,dt)}
    continue}
   if(o.fleeing){                  /* running, and re-routing away from them */
    if(t-o.reroute>1.1){o.reroute=t;
@@ -1181,7 +1193,7 @@ function stepSquad(dt){
    const h=SQ.host.length?SQ.host.reduce((a,b)=>
      Math.hypot(a.x-o.x,a.y-o.y)<Math.hypot(b.x-o.x,b.y-o.y)?a:b):null;
    if(h)faceTo(o,o.x*2-h.x,o.y*2-h.y);
-   continue}
+   headFromMove(o,dt);continue}
   if(ph==='advance'){o.s=Math.max(0,SQ.s-o.back);setPos(o,atDist(o.pts,o.s),dt)}
   else if(ph==='stage'){          /* hold just short of the doorway */
    if(o.s<o.L2-.05){o.s=Math.min(o.L2,o.s+dt*o.spd);setPos(o,atDist(o.pts,o.s),dt);o.staged=false}
@@ -1195,10 +1207,10 @@ function stepSquad(dt){
      Math.hypot(a.x-o.x,a.y-o.y)<Math.hypot(b.x-o.x,b.y-o.y)?a:b):null;
    if(h){const d=Math.hypot(h.x-o.x,h.y-o.y);
     if(d<1.9)seek(o,o.outPt[0],o.outPt[1],2.0,dt);        /* back out */
-    else if(d>3.2)seek(o,o.inPt[0],o.inPt[1],1.1,dt);     /* retake the threshold */
+    else if(d>3.8)seek(o,o.inPt[0],o.inPt[1],1.1,dt);     /* retake the threshold */
     faceTo(o,h.x,h.y)}
    else{seek(o,o.inPt[0],o.inPt[1],1.1,dt);faceTo(o,oc[0],oc[1])}}
-  }}
+  headFromMove(o,dt)}}
 function drawSquad(ctx,X,Y,cs,t,mini){
  if(!SQ.on||!SQ.ops.length)return;
  const R=(mini?.44:.8)*cs;
