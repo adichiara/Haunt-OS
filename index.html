@@ -981,12 +981,16 @@ function doorGeom(room,e){const c=ctrOf(room);
 function doorsFor(room,from){
  const ds=room.n.filter(e=>!M.inf.has(e.r.i)&&e.r!==M.origin);
  if(!ds.length)return room.n.slice(0,1);
- const main=ds.find(e=>e.r===from)||ds[0];
- const rest=ds.filter(e=>e!==main).map(e=>{
-   const rr=roomRoute(main.r,e.r,true);
+ /* score every way in by how far the squad actually is from it, so they
+    never get sent the long way round to a door on the far side */
+ const sc=ds.map(e=>{
+   if(e.r===from)return {e:e,L:0};
+   const rr=roomRoute(from,e.r,true);
    return {e:e,L:(rr[rr.length-1]===e.r)?pathLen(roomsToPts(rr)):1e9}})
-  .filter(x=>x.L<=11).sort((a,b)=>a.L-b.L);
- return rest.length?[main,rest[0].e]:[main]}
+  .sort((a,b)=>a.L-b.L);
+ if(sc[0].L>=1e9)return [ds[0]];
+ const second=sc.slice(1).find(x=>x.L<1e9&&x.L<sc[0].L+11);
+ return second?[sc[0].e,second.e]:[sc[0].e]}
 function assignDoors(room,from){
  const ds=doorsFor(room,from),alive=SQ.ops.filter(o=>o.alive);
  const perDoor=ds.map(()=>[]);
@@ -1028,8 +1032,7 @@ function stepHostiles(dt,fast){
    if(dd>.05){h.x+=(tx-h.x)/dd*sp*dt;h.y+=(ty-h.y)/dd*sp*dt}
    h.pts=null;continue}
   if(!h.pts||SQ.t-(h.rt||0)>1.2){h.rt=SQ.t;
-   if(hr&&orr){const pts=roomsToPts(roomRoute(hr,orr));
-    pts.unshift([h.x,h.y]);pts.push([o.x,o.y]);
+   if(hr&&orr){const pts=ptsFrom(h.x,h.y,hr,orr,[o.x,o.y]);
     h.pts=pts;h.L=pathLen(pts);h.s=0}}
   if(h.pts){h.s=Math.min(h.L,h.s+sp*dt);const p=atDist(h.pts,h.s);h.x=p[0];h.y=p[1]}}}
 function killHostile(){if(!SQ.host.length)return false;
@@ -1057,9 +1060,19 @@ function nextObjective(from){        /* the nearest fallen room they can reach c
    const L=pathLen(roomsToPts(rr));
    if(L<bl){bl=L;best=r;bs=c}}}
  return best?{obj:best,stack:bs,len:bl}:null}
-function setRoute(o,fromRoom,toRoom,extra,spd){
- const pts=roomsToPts(roomRoute(fromRoom,toRoom));pts.unshift([o.x,o.y]);
+function ptsFrom(x,y,fromRoom,toRoom,extra){
+ const rooms=roomRoute(fromRoom,toRoom);
+ let pts;
+ if(rooms.length<2)pts=[[x,y]];
+ else{pts=roomsToPts(rooms);
+  /* already inside the first room: head for its doorway, not its centre */
+  if(roomAt(x,y)===rooms[0])pts.shift();
+  pts.unshift([x,y])}
  if(extra)pts.push(extra);
+ while(pts.length<2)pts.push([x,y]);
+ return pts}
+function setRoute(o,fromRoom,toRoom,extra,spd){
+ const pts=ptsFrom(o.x,o.y,fromRoom,toRoom,extra);
  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;o.spd=spd;
  if(SQ.doors){const rr=roomRoute(fromRoom,toRoom);
   for(let i=0;i<rr.length-1;i++)SQ.doors.add(dkey(rr[i],rr[i+1]))}}
@@ -1093,7 +1106,9 @@ function fleeTo(o){
    if(!M.inf.has(c.i)&&c!==M.origin&&!hostIn(c))best=c}
   layer=nx}
  const rooms=best?safeRoute(from,best):null;
- if(rooms&&rooms.length>1){const pts=roomsToPts(rooms);pts.unshift([o.x,o.y]);
+ if(rooms&&rooms.length>1){const pts=roomsToPts(rooms);
+  if(roomAt(o.x,o.y)===rooms[0])pts.shift();
+  pts.unshift([o.x,o.y]);
   o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;o.spd=FLEESPD;
   if(SQ.doors)for(let i=0;i<rooms.length-1;i++)SQ.doors.add(dkey(rooms[i],rooms[i+1]));
   return true}
@@ -1107,7 +1122,7 @@ function loseOp(o){o.alive=false;o.lost=SQ.t;
  addLog('BIOSIGN LOST · ST-'+o.n,'SECTOR '+(rm?rm.label:'--'),S.t)}
 function turnOp(o){o.turned=true;
  const rm=o.room||roomAt(o.x,o.y);
- const pts=roomsToPts(roomRoute(rm||SQ.obj,SQ.arm));pts.unshift([o.x,o.y]);
+ const pts=ptsFrom(o.x,o.y,rm||SQ.obj,SQ.arm);
  o.pts=pts;o.L2=pathLen(pts);o.s=0;o.lat=0;
  if(rm&&!M.inf.has(rm.i)){M.inf.set(rm.i,S.t);
   const src=rm.n.find(e=>M.inf.has(e.r.i));if(src)M.par.set(rm.i,src.r)}
