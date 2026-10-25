@@ -281,7 +281,7 @@ body.clean{padding-block:0}
 #s-end{background:#020304;align-items:center;justify-content:center;text-align:center;gap:18px}
 #s-end .eb{position:absolute;width:520px;height:520px;opacity:.06;left:50%;top:50%;transform:translate(-50%,-50%)}
 #s-end .kick{font-family:var(--mono);font-size:22px;letter-spacing:.3em;color:var(--comms);min-height:30px}
-#s-end h2{margin:0;font-size:92px;font-weight:700;line-height:.95;letter-spacing:.02em;color:#fff;max-width:1300px;text-wrap:balance;min-height:180px}
+#s-end h2{margin:0;font-size:92px;font-weight:700;line-height:.95;letter-spacing:.02em;color:#fff;max-width:1300px;white-space:pre-wrap;min-height:180px}
 #s-end .rule{width:640px;height:8px;background:repeating-linear-gradient(-55deg,var(--red) 0 4px,transparent 4px 10px);opacity:0;transition:opacity .4s}
 #s-end .sess{display:flex;flex-direction:column;align-items:center;gap:4px}
 #s-end .sname{font-size:40px;font-weight:600;letter-spacing:.17em;color:#d8e2e5;min-height:48px}
@@ -1684,10 +1684,30 @@ const ENDSEQ=[['e-kick','kicker',0,40],['e-head','head',1.2,26],
  ['e-s1name','s1name',4.4,24],['e-s1when','s1when',5.4,26],
  ['e-s2name','s2name',6.9,24],['e-s2when','s2when',7.9,26]];
 let endPrev={};
-function endReset(){endPrev={};ENDSEQ.forEach(([id])=>{$('#'+id).textContent='';$('#'+id).classList.remove('cur')});$('#e-rule').style.opacity=0}
+/* The headline types one letter at a time, so if it were left to wrap on its
+   own a word would sit on line 1 and then hop to line 2 as the line filled.
+   Work the line breaks out once, up front, from the finished text, and type
+   into those fixed lines instead. */
+let HBRK=[];
+function fitHead(){const el=$('#e-head'),W=1300;
+ if(!el.getClientRects().length){requestAnimationFrame(fitHead);return}   /* screen not shown yet */
+ const txt=(EF.head||'').toUpperCase(),prev=el.textContent,pw=el.style.whiteSpace;
+ el.style.whiteSpace='pre';HBRK=[];
+ const wid=t=>{el.textContent=t;const r=document.createRange();r.selectNodeContents(el);return r.getBoundingClientRect().width};
+ let start=0,last=-1;
+ for(let i=0;i<=txt.length;i++){
+  if(i<txt.length&&txt[i]!==' ')continue;
+  if(last>start&&wid(txt.slice(start,i))>W){HBRK.push(last);start=last+1}
+  last=i}
+ el.style.whiteSpace=pw;el.textContent=prev}
+function headText(s){if(!HBRK.length)return s;
+ let out='',p=0;
+ for(const b of HBRK){if(b>=s.length)break;out+=s.slice(p,b)+'\n';p=b+1}
+ return out+s.slice(p)}
+function endReset(){fitHead();endPrev={};ENDSEQ.forEach(([id])=>{$('#'+id).textContent='';$('#'+id).classList.remove('cur')});$('#e-rule').style.opacity=0}
 function updateEnd(t){let lastActive=null;
  for(const [id,key,t0,cps] of ENDSEQ){const txt=String(EF[key]??'').toUpperCase(),el=$('#'+id);const n=t<t0?0:Math.min(txt.length,Math.floor((t-t0)*cps));const s=txt.slice(0,n);
-  if(endPrev[id]!==s){endPrev[id]=s;el.textContent=s;if(n===txt.length&&t>t0&&!el.dataset.g){el.dataset.g=1}}
+  if(endPrev[id]!==s){endPrev[id]=s;el.textContent=(id==='e-head')?headText(s):s;if(n===txt.length&&t>t0&&!el.dataset.g){el.dataset.g=1}}
   if(t>=t0)lastActive=el}
  ENDSEQ.forEach(([id])=>$('#'+id).classList.toggle('cur',$('#'+id)===lastActive));
  $('#e-rule').style.opacity=t>3.8?.7:0;
