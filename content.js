@@ -114,12 +114,11 @@ window.CONTENT = {
   /* ---------- End card (the RESPOND tab) ---------- */
   endCard: {
     kicker: 'INCOMING TRANSMISSION',
-    head:   'The rescue team has been assembled.',
+    head:   'The rescue teams have been assembled.',
     s1name: "Logan's Rescue Party",
     s1when: 'Friday 10.30.2026 \u00b7 6\u201310 PM',
     s2name: 'Student Mentees',
-    s2when: 'Saturday 10.31.2026 \u00b7 5\u20138 PM',
-    tag:    'You leave at dusk.'
+    s2when: 'Saturday 10.31.2026 \u00b7 5\u20138 PM'
   },
 
   /* ---------- Mail screen ----------
