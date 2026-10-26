@@ -117,7 +117,7 @@ window.CONTENT = {
               dna, culture, subject, tanks, serum, telem                 */
   lab: {
     title: 'Specimen 07-B // Live Imaging',
-    media: '', grade: 'green', overlay: 'track',
+    media: 'Lab 3.mp4', grade: 'green', overlay: 'track',
     panels: ['dna', 'serum']
   },
 
