@@ -60,6 +60,8 @@ def _discover():
     """
     import re
     txt = open(os.path.join(HERE, 'content.js')).read()
+    txt = re.sub(r'/\*.*?\*/', '', txt, flags=re.S)      # commented-out lines don't count
+    txt = re.sub(r'(?m)^\s*//.*$', '', txt)
     want, pairs, missing = [], [], []
     for m in re.finditer(r"media/([A-Za-z0-9_\-]+)_cam\.jpg", txt):
         if m.group(1) not in want:

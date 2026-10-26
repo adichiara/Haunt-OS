@@ -73,8 +73,9 @@ window.CONTENT = {
     { label: 'CAM 4',  sub: 'Emergency Exit',    src: 'media/external1_cam.jpg',     slot: 4 },
     { label: 'CAM 5',  sub: 'Lab A',             src: 'media/lab_a1_1_cam.jpg',      slot: 1,
       reveal: 1, revealSrc: 'media/lab_a1_2_cam.jpg' },
-    { label: 'CAM 6',  sub: 'Lab B',             src: 'media/lab_b1_1_cam.jpg',      slot: 2,
-      reveal: 1, revealSrc: 'media/lab_b1_2_cam.jpg' },
+    { label: 'CAM 6',  sub: 'Lab B',             src: 'media/lab_b1_1_cam.jpg',      slot: 2 },
+    /* CAM 6 reveal: add lab_b1_2.png to media/, then put back
+       reveal: 1, revealSrc: 'media/lab_b1_2_cam.jpg'                      */
     { label: 'CAM 7',  sub: 'Specimen Storage',  src: 'media/specimen1_cam.jpg',     slot: 3 },
     { label: 'CAM 8',  sub: 'Decon Bay',         src: 'media/decon1_cam.jpg',        slot: 4,
       reveal: 2, revealSrc: 'media/decon1_figure_cam.jpg' },
