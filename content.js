@@ -152,14 +152,15 @@ window.CONTENT = {
         text: 'LOCKDOWN ACTIVE SINCE 21:59.\nALL EXITS SEALED. OVERRIDE REQUIRES LEVEL 5.\nYOU ARE LEVEL 0.' },
       { cmd: 'vent7',    listed: true,  about: 'vent 7 sensor readout', goto: 'map',
         text: 'VENT 7 · AIRFLOW 0.0 m/s · TEMP 39.1 °C\nACOUSTIC SENSOR: rhythmic knocking, 2 per second.' },
-      { cmd: 'whoami',   listed: true,  about: 'who you are',
-        text: 'guest · node 07 · probably the rescue team' },
       { cmd: 'hello',    listed: false, text: '...hello? Is someone there? — V' },
-      { cmd: 'voss',     listed: false, text: "She can't hear you from here." },
       { cmd: 'coffee',   listed: false, text: 'The coffee machine is the only thing still working down here. Nobody knows why.' },
       { cmd: 'rats',     listed: false, text: 'They are not rats.' },
       { cmd: 'exit',     listed: false, text: 'There is no exit.' },
-      { cmd: 'sudo',     listed: false, text: 'Nice try.' }
+      { cmd: 'sudo',     listed: false, text: 'Nice try.' },
+      { cmd: 'joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
+      { cmd: 'Joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
+      { cmd: 'login',    listed: true, text: '\nPASSWORD: ' },
+      { cmd: 'password2',  listed: false, text: '\nLOGIN SUCCESSFUL.\nSee video comments for more info ;)' }  
     ]
   },
 
