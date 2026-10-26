@@ -63,23 +63,34 @@ window.CONTENT = {
      offAt: N makes the camera go dark N days before the party.
      (Handy for reusing one still as a "different" camera.)            */
   cams: [
-    /* slot: 1 top-left · 2 top-right · 3 bottom-left · 4 bottom-right     */
-    { label: 'CAM 1',  sub: 'Entry Corridor',    src: 'media/cam1_cam.jpg',         slot: 1 },
-    { label: 'CAM 2',  sub: 'Main Corridor',     src: 'media/corridor0_cam.jpg',    slot: 2 },
-    { label: 'CAM 3',  sub: 'Rear Corridor',     src: 'media/corridor5_cam.jpg',    slot: 4, offAt: 0 },
-    { label: 'CAM 4',  sub: 'Emergency Exit',    src: 'media/external1_cam.jpg',    slot: 3 },
-    { label: 'CAM 5',  sub: 'Lab A',             src: 'media/lab_a1_1_cam.jpg',     slot: 1, offAt: 1 },
-    { label: 'CAM 6',  sub: 'Lab B',             src: 'media/lab_b1_1_cam.jpg',     slot: 2, offAt: 1 },
-    { label: 'CAM 7',  sub: 'Specimen Storage',  src: 'media/specimen1_cam.jpg',    slot: 3, offAt: 0 },
-    { label: 'CAM 8',  sub: 'Decon Bay',         src: 'media/corridor1_cam.jpg',    slot: 4, offAt: 0 },
-    { label: 'CAM 9',  sub: 'Containment Room',  src: 'media/containment1_cam.jpg', slot: 1, offAt: 3 },
-    { label: 'CAM 10', sub: 'Containment Room',  src: 'media/containment2_cam.jpg', slot: 2, offAt: 2 },
-    { label: 'CAM 11', sub: 'Armory',            src: 'media/armory1_cam.jpg',      slot: 3, offAt: 0 },
-    { label: 'CAM 12', sub: 'Ammo Storage',      src: 'media/cam3_cam.jpg',         slot: 4, offAt: 0 },
-    { label: 'CAM 13', sub: 'Utility Access',    src: 'media/vent7_cam.jpg',        slot: 1, offAt: 3 },
-    { label: 'CAM 14', sub: 'Storage Room',      src: 'media/storage2_cam.jpg',     slot: 2 },
-    { label: 'CAM 15', sub: 'Staff Storage',     src: 'media/corridor3_cam.jpg',    slot: 3, offAt: 0 },
-    { label: 'CAM 16', sub: 'Supply Room',       src: 'media/storage3_cam.jpg',     slot: 4 }
+    /* slot: 1 top-left · 2 top-right · 3 bottom-left · 4 bottom-right
+       reveal/revealSrc: from that many days before the party, this camera
+       shows a different still. The reveal image is only fetched on the day
+       it is due, so it costs nothing before then.                        */
+    { label: 'CAM 1',  sub: 'Entry Corridor',    src: 'media/cam1_cam.jpg',          slot: 1 },
+    { label: 'CAM 2',  sub: 'Main Corridor',     src: 'media/corridor0_cam.jpg',     slot: 2 },
+    { label: 'CAM 3',  sub: 'Utility Corridor',  src: 'media/vent7_cam.jpg',         slot: 3 },
+    { label: 'CAM 4',  sub: 'Emergency Exit',    src: 'media/external1_cam.jpg',     slot: 4 },
+    { label: 'CAM 5',  sub: 'Lab A',             src: 'media/lab_a1_1_cam.jpg',      slot: 1,
+      reveal: 1, revealSrc: 'media/lab_a1_2_cam.jpg' },
+    { label: 'CAM 6',  sub: 'Lab B',             src: 'media/lab_b1_1_cam.jpg',      slot: 2,
+      reveal: 1, revealSrc: 'media/lab_b1_2_cam.jpg' },
+    { label: 'CAM 7',  sub: 'Specimen Storage',  src: 'media/specimen1_cam.jpg',     slot: 3 },
+    { label: 'CAM 8',  sub: 'Decon Bay',         src: 'media/decon1_cam.jpg',        slot: 4,
+      reveal: 2, revealSrc: 'media/decon1_figure_cam.jpg' },
+    { label: 'CAM 9',  sub: 'Containment Room',  src: 'media/containment1_cam.jpg',  slot: 1,
+      reveal: 3, revealSrc: 'media/containment1_zombie_cam.jpg' },
+    { label: 'CAM 10', sub: 'Containment Room',  src: 'media/containment2_cam.jpg',  slot: 2,
+      reveal: 3, revealSrc: 'media/containment2_zombie_cam.jpg' },
+    { label: 'CAM 11', sub: 'Armory',            src: 'media/armory1_cam.jpg',       slot: 3 },
+    { label: 'CAM 12', sub: 'Ammo Storage',      src: 'media/cam3_cam.jpg',          slot: 4 },
+    { label: 'CAM 13', sub: 'Comms Station',     src: 'media/console1_cam.jpg',      slot: 1,
+      reveal: 0, revealSrc: 'media/console1_2_cam.jpg' },
+    { label: 'CAM 14', sub: 'Comms Station',     src: 'media/console2_cam.jpg',      slot: 2,
+      reveal: 0, revealSrc: 'media/console2_2_cam.jpg' },
+    { label: 'CAM 15', sub: 'Storage Room',      src: 'media/storage2_cam.jpg',      slot: 3,
+      reveal: 2, revealSrc: 'media/storage2_figure_cam.jpg' },
+    { label: 'CAM 16', sub: 'Supply Room',       src: 'media/storage3_cam.jpg',      slot: 4 }
   ],
 
   /* How often the camera pictures are repainted. Real CCTV is not smooth,
@@ -92,12 +103,12 @@ window.CONTENT = {
 
   /* the group names under the camera list. Each loads its cameras at once. */
   camGroups: [
-    { name: 'EXTERNAL',    cams: ['CAM 1', 'CAM 4'] },
-    { name: 'CORRIDORS',   cams: ['CAM 2', 'CAM 3'] },
-    { name: 'LAB',         cams: ['CAM 5', 'CAM 6', 'CAM 7', 'CAM 8'] },
-    { name: 'CONTAINMENT', cams: ['CAM 9', 'CAM 10'] },
-    { name: 'SECURITY',    cams: ['CAM 11', 'CAM 12'] },
-    { name: 'STORAGE',     cams: ['CAM 13', 'CAM 14', 'CAM 15', 'CAM 16'] }
+    { name: 'CORRIDORS',      cams: ['CAM 1', 'CAM 2', 'CAM 3', 'CAM 4'] },
+    { name: 'LAB',            cams: ['CAM 5', 'CAM 6', 'CAM 7', 'CAM 8'] },
+    { name: 'CONTAINMENT',    cams: ['CAM 9', 'CAM 10'] },
+    { name: 'SECURITY',       cams: ['CAM 11', 'CAM 12'] },
+    { name: 'COMMS STATION',  cams: ['CAM 13', 'CAM 14'] },
+    { name: 'STORAGE',        cams: ['CAM 15', 'CAM 16'] }
   ],
 
   /* ---------- Map ----------

@@ -576,7 +576,7 @@ if(!C){document.body.innerHTML='<p style="font:16px/1.6 monospace;color:#ff6b78;
 const isVid=s=>/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(s||'');const VIDS=[];
 let SUBJ=[];
 let VPi=0,VB={hr:74,spo2:98,resp:16,bp:'118/76',temp:37};
-const FEEDS=(C.cams||[]).map((c,i)=>{const m=mediaObj(c.src);return {label:c.label||('CAM '+String(i+1).padStart(2,'0')),sub:c.sub||'',slot:c.slot?((+c.slot-1)%4+4)%4:i%4,flip:!!c.flip,zoom:+c.zoom||1,offAt:c.offAt,src0:c.src,m0:m,m,seed:i*17+3}});
+const FEEDS=(C.cams||[]).map((c,i)=>{const m=mediaObj(c.src);return {label:c.label||('CAM '+String(i+1).padStart(2,'0')),sub:c.sub||'',slot:c.slot?((+c.slot-1)%4+4)%4:i%4,flip:!!c.flip,zoom:+c.zoom||1,offAt:c.offAt,reveal:c.reveal,revealSrc:c.revealSrc,src0:c.src,m0:m,m,mRev:null,seed:i*17+3}});
 function applyFeed(c,f){f=f||{label:'',sub:'',m:null,seed:3};c.feed=f;c.label=f.label;c.sub=f.sub;c.media=f.m&&f.m.video?f.m:null;c.still=f.m&&!f.m.video?f.m.el:null;c.offline=!f.m;c.flip=f.flip;c.zoom=f.zoom;c.seed=f.seed;
  if(c.box){const lb=c.box.querySelector('.lab');if(lb){lb.textContent=f.label;const sm=document.createElement('small');sm.textContent=f.sub;lb.appendChild(sm)}}}
 function mediaObj(src){if(!src)return null;if(isVid(src)){const v=document.createElement('video');v.src=src;v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';VIDS.push(v);return {el:v,video:true}}const i=new Image();i.src=src;return {el:i,video:false}}
@@ -1956,7 +1956,12 @@ function applyDay(){
       ...SUBJ.filter(x=>x.id!=='0-00').map(x=>({name:'subject_'+x.id+'.rec',text:subjText(x),media:''}))].map((a,i)=>(a.i=i,a));
  FILES=ATT;
  /* cameras that have gone dark */
- FEEDS.forEach(f=>{const off=!f.src0||(f.offAt!==undefined&&DAY<=f.offAt);f.m=off?null:f.m0});
+ FEEDS.forEach(f=>{
+  const off=!f.src0||(f.offAt!==undefined&&DAY<=f.offAt);
+  if(off){f.m=null;return}
+  const rev=f.revealSrc&&f.reveal!==undefined&&DAY<=f.reveal;
+  if(rev&&!f.mRev)f.mRev=mediaObj(f.revealSrc);
+  f.m=rev?f.mRev:f.m0});
  cams.forEach((c,q)=>applyFeed(c,FEEDS.find(f=>f.slot===q)));
  buildCamList();
  /* the rest of the facility */

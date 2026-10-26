@@ -52,25 +52,27 @@ import os, glob, sys
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA = os.path.join(HERE, 'media')
 
-# source -> published camera still
-PAIRS = [
-    ('cam1.jpg',         'cam1_cam.jpg'),
-    ('corridor0.png',    'corridor0_cam.jpg'),
-    ('corridor5.jpg',    'corridor5_cam.jpg'),
-    ('external1.png',    'external1_cam.jpg'),
-    ('lab_a1_1.png',     'lab_a1_1_cam.jpg'),
-    ('lab_b1_1.png',     'lab_b1_1_cam.jpg'),
-    ('specimen1.png',    'specimen1_cam.jpg'),
-    ('corridor1.png',    'corridor1_cam.jpg'),
-    ('containment1.png', 'containment1_cam.jpg'),
-    ('containment2.png', 'containment2_cam.jpg'),
-    ('armory1.png',      'armory1_cam.jpg'),
-    ('cam3.jpg',         'cam3_cam.jpg'),
-    ('vent7.png',        'vent7_cam.jpg'),
-    ('storage2.png',     'storage2_cam.jpg'),
-    ('corridor3.png',    'corridor3_cam.jpg'),
-    ('storage3.png',     'storage3_cam.jpg'),
-]
+def _discover():
+    """Every media/<name>_cam.jpg content.js asks for, paired with its source.
+
+    Keeps itself in step with content.js, so a still added there is graded
+    with the rest instead of quietly staying ungraded.
+    """
+    import re
+    txt = open(os.path.join(HERE, 'content.js')).read()
+    want, pairs, missing = [], [], []
+    for m in re.finditer(r"media/([A-Za-z0-9_\-]+)_cam\.jpg", txt):
+        if m.group(1) not in want:
+            want.append(m.group(1))
+    for stem in want:
+        src = next((stem + e for e in ('.png', '.jpg', '.jpeg', '.webp')
+                    if os.path.exists(os.path.join(MEDIA, stem + e))), None)
+        (pairs.append((src, stem + '_cam.jpg')) if src
+         else missing.append(stem + '.png'))
+    return pairs, missing
+
+
+PAIRS, MISSING = _discover()
 
 # what the original reference screenshot measured, per pane
 REF = dict(luma=32.7, p25=7.9, p50=20.1, p99=180.1, sat=53.9, rb=-15.9, gb=-7.3)
