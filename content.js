@@ -164,7 +164,7 @@ window.CONTENT = {
       { cmd: 'joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
       { cmd: 'Joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
       { cmd: 'login',    listed: true, text: '\nPASSWORD: ' },
-      { cmd: 'password2',  listed: false, text: '\nLOGIN SUCCESSFUL.\nSee video comments for more info ;)' }  
+      { cmd: 'password2',  listed: false, text: '\nLOGIN SUCCESSFUL.\nCONGRATULATIONS. You can now register to take part in this research as a test subject.\n\nSee video comments for more info ;)' }  
     ]
   },
 
