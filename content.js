@@ -64,7 +64,7 @@ window.CONTENT = {
      (Handy for reusing one still as a "different" camera.)            */
   cams: [
     /* slot: 1 top-left · 2 top-right · 3 bottom-left · 4 bottom-right     */
-    { label: 'CAM 1',  sub: 'Entry Corridor',    src: 'media/cam1.jpg',             slot: 1 },
+    { label: 'CAM 1',  sub: 'Entry Corridor',    src: 'media/cam1_cam.jpg',         slot: 1 },
     { label: 'CAM 2',  sub: 'Main Corridor',     src: 'media/corridor0_cam.jpg',    slot: 2 },
     { label: 'CAM 3',  sub: 'Rear Corridor',     src: 'media/corridor5_cam.jpg',    slot: 4, offAt: 0 },
     { label: 'CAM 4',  sub: 'Emergency Exit',    src: 'media/external1_cam.jpg',    slot: 3 },
@@ -75,7 +75,7 @@ window.CONTENT = {
     { label: 'CAM 9',  sub: 'Containment Room',  src: 'media/containment1_cam.jpg', slot: 1, offAt: 3 },
     { label: 'CAM 10', sub: 'Containment Room',  src: 'media/containment2_cam.jpg', slot: 2, offAt: 2 },
     { label: 'CAM 11', sub: 'Armory',            src: 'media/armory1_cam.jpg',      slot: 3, offAt: 0 },
-    { label: 'CAM 12', sub: 'Ammo Storage',      src: 'media/cam3.jpg',             slot: 4, offAt: 0 },
+    { label: 'CAM 12', sub: 'Ammo Storage',      src: 'media/cam3_cam.jpg',         slot: 4, offAt: 0 },
     { label: 'CAM 13', sub: 'Utility Access',    src: 'media/vent7_cam.jpg',        slot: 1, offAt: 3 },
     { label: 'CAM 14', sub: 'Storage Room',      src: 'media/storage2_cam.jpg',     slot: 2 },
     { label: 'CAM 15', sub: 'Staff Storage',     src: 'media/corridor3_cam.jpg',    slot: 3, offAt: 0 },
