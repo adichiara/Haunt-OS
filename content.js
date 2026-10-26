@@ -64,22 +64,22 @@ window.CONTENT = {
      (Handy for reusing one still as a "different" camera.)            */
   cams: [
     /* slot: 1 top-left · 2 top-right · 3 bottom-left · 4 bottom-right     */
-    { label: 'CAM 1',  sub: 'Entry Corridor',     src: 'media/cam1.jpg',         slot: 1 },
-    { label: 'CAM 2',  sub: 'Main Corridor',      src: 'media/corridor0.png',    slot: 2 },
-    { label: 'CAM 3',  sub: 'Rear Corridor',      src: 'media/corridor5.jpg',    slot: 3, offAt: 0 },
-    { label: 'CAM 4',  sub: 'Emergency Exit',     src: 'media/external1.png',    slot: 4 },
-    { label: 'CAM 5',  sub: 'Lab A',              src: 'media/lab_a1_1.png',     slot: 1, offAt: 1 },
-    { label: 'CAM 6',  sub: 'Lab B',              src: 'media/lab_b1_1.png',     slot: 2, offAt: 1 },
-    { label: 'CAM 7',  sub: 'Specimen Storage',   src: 'media/specimen1.png',    slot: 3, offAt: 0 },
-    { label: 'CAM 8',  sub: 'Decon Bay',          src: 'media/corridor1.png',    slot: 4, offAt: 0 },
-    { label: 'CAM 9',  sub: 'Containment Room',   src: 'media/containment1.png', slot: 1, offAt: 3 },
-    { label: 'CAM 10', sub: 'Containment Room',   src: 'media/containment2.png', slot: 2, offAt: 2 },
-    { label: 'CAM 11', sub: 'Storage Room',       src: 'media/cam3.jpg',         slot: 1 },
-    { label: 'CAM 12', sub: 'Storage Room',       src: 'media/storage2.png',     slot: 2 },
-    { label: 'CAM 13', sub: 'Staff Storage',      src: 'media/corridor3.png',    slot: 3, offAt: 0 },
-    { label: 'CAM 14', sub: 'Supply Room',        src: 'media/storage3.png',     slot: 4 },
-    { label: 'CAM 15', sub: 'Armory',             src: 'media/armory1.png',      slot: 3, offAt: 0 },
-    { label: 'CAM 16', sub: 'Utility Shaft',      src: 'media/vent7.png',        slot: 4, offAt: 3 }
+    { label: 'CAM 1',  sub: 'Entry Corridor',    src: 'media/cam1.jpg',             slot: 1 },
+    { label: 'CAM 2',  sub: 'Main Corridor',     src: 'media/corridor0_cam.jpg',    slot: 2 },
+    { label: 'CAM 3',  sub: 'Rear Corridor',     src: 'media/corridor5_cam.jpg',    slot: 4, offAt: 0 },
+    { label: 'CAM 4',  sub: 'Emergency Exit',    src: 'media/external1_cam.jpg',    slot: 3 },
+    { label: 'CAM 5',  sub: 'Lab A',             src: 'media/lab_a1_1_cam.jpg',     slot: 1, offAt: 1 },
+    { label: 'CAM 6',  sub: 'Lab B',             src: 'media/lab_b1_1_cam.jpg',     slot: 2, offAt: 1 },
+    { label: 'CAM 7',  sub: 'Specimen Storage',  src: 'media/specimen1_cam.jpg',    slot: 3, offAt: 0 },
+    { label: 'CAM 8',  sub: 'Decon Bay',         src: 'media/corridor1_cam.jpg',    slot: 4, offAt: 0 },
+    { label: 'CAM 9',  sub: 'Containment Room',  src: 'media/containment1_cam.jpg', slot: 1, offAt: 3 },
+    { label: 'CAM 10', sub: 'Containment Room',  src: 'media/containment2_cam.jpg', slot: 2, offAt: 2 },
+    { label: 'CAM 11', sub: 'Armory',            src: 'media/armory1_cam.jpg',      slot: 3, offAt: 0 },
+    { label: 'CAM 12', sub: 'Ammo Storage',      src: 'media/cam3.jpg',             slot: 4, offAt: 0 },
+    { label: 'CAM 13', sub: 'Utility Access',    src: 'media/vent7_cam.jpg',        slot: 1, offAt: 3 },
+    { label: 'CAM 14', sub: 'Storage Room',      src: 'media/storage2_cam.jpg',     slot: 2 },
+    { label: 'CAM 15', sub: 'Staff Storage',     src: 'media/corridor3_cam.jpg',    slot: 3, offAt: 0 },
+    { label: 'CAM 16', sub: 'Supply Room',       src: 'media/storage3_cam.jpg',     slot: 4 }
   ],
 
   /* How often the camera pictures are repainted. Real CCTV is not smooth,
@@ -96,8 +96,8 @@ window.CONTENT = {
     { name: 'CORRIDORS',   cams: ['CAM 2', 'CAM 3'] },
     { name: 'LAB',         cams: ['CAM 5', 'CAM 6', 'CAM 7', 'CAM 8'] },
     { name: 'CONTAINMENT', cams: ['CAM 9', 'CAM 10'] },
-    { name: 'STORAGE',     cams: ['CAM 11', 'CAM 12', 'CAM 13', 'CAM 14'] },
-    { name: 'OTHER',       cams: ['CAM 15', 'CAM 16'] }
+    { name: 'SECURITY',    cams: ['CAM 11', 'CAM 12'] },
+    { name: 'STORAGE',     cams: ['CAM 13', 'CAM 14', 'CAM 15', 'CAM 16'] }
   ],
 
   /* ---------- Map ----------
