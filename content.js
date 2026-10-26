@@ -38,7 +38,7 @@ window.CONTENT = {
        on. -1 = the channel never comes up. Until it does the screen reads
        NO SIGNAL, the waveform sits flat, and the audio file is never even
        requested. offLine1/offLine2 are what it says while it's dead.     */
-    liveFrom: 4,
+    liveFrom: 2,
     offLine1: 'No carrier found.',
     offLine2: 'Nothing is transmitting on this channel.',
 
