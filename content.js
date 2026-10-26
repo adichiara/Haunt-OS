@@ -63,21 +63,23 @@ window.CONTENT = {
      offAt: N makes the camera go dark N days before the party.
      (Handy for reusing one still as a "different" camera.)            */
   cams: [
-    { label: 'CAM 01', sub: 'Corridor A',     src: 'media/cam1.jpg' },
-    { label: 'CAM 02', sub: 'Lab Entry',      src: 'media/cam6.jpg' },
-    { label: 'CAM 03', sub: 'Storage',        src: 'media/cam3.jpg' },
-    { label: 'CAM 04', sub: 'Secondary',      src: 'media/cam8.jpg', offAt: 0 },
-    { label: 'CAM 05', sub: 'Lab A',          src: 'media/cam9.jpg', offAt: 0 },
-    { label: 'CAM 06', sub: 'Decon Bay',      src: 'media/cam11.jpg' },
-    { label: 'CAM 07', sub: 'Specimen Vault', src: 'media/cam2.jpg', zoom: 1.3, offAt: 1 },
-    { label: 'CAM 08', sub: 'Freight Lift',   src: '' },
-    { label: 'CAM 09', sub: 'Corridor B',     src: 'media/cam5.jpg', offAt: 0 },
-    { label: 'CAM 10', sub: 'Isolation Bay',  src: 'media/cam10.jpg', offAt: 0 },
-    { label: 'CAM 12', sub: 'Generator Room', src: 'media/cam13.jpg', offAt: 0 },
-    { label: 'CAM 13', sub: 'Vent 7 Access',  src: 'media/cam4.jpg', flip: true, zoom: 1.7, offAt: 3 },
-    { label: 'CAM 14', sub: 'Stairwell C',    src: 'media/cam12.jpg', offAt: 1 },
-    { label: 'CAM 15', sub: 'Comms Hall',     src: 'media/cam7.jpg' },
-    { label: 'CAM 16', sub: 'Loading Dock',   src: 'media/cam1.jpg', flip: true, zoom: 1.15 }
+    /* slot: 1 top-left · 2 top-right · 3 bottom-left · 4 bottom-right     */
+    { label: 'CAM 1',  sub: 'Entry Corridor',     src: 'media/cam1.jpg',         slot: 1 },
+    { label: 'CAM 2',  sub: 'Main Corridor',      src: 'media/corridor0.png',    slot: 2 },
+    { label: 'CAM 3',  sub: 'Rear Corridor',      src: 'media/corridor5.jpg',    slot: 3, offAt: 0 },
+    { label: 'CAM 4',  sub: 'Emergency Exit',     src: 'media/external1.png',    slot: 4 },
+    { label: 'CAM 5',  sub: 'Lab A',              src: 'media/lab_a1_1.png',     slot: 1, offAt: 1 },
+    { label: 'CAM 6',  sub: 'Lab B',              src: 'media/lab_b1_1.png',     slot: 2, offAt: 1 },
+    { label: 'CAM 7',  sub: 'Specimen Storage',   src: 'media/specimen1.png',    slot: 3, offAt: 0 },
+    { label: 'CAM 8',  sub: 'Decon Bay',          src: 'media/corridor1.png',    slot: 4, offAt: 0 },
+    { label: 'CAM 9',  sub: 'Containment Room',   src: 'media/containment1.png', slot: 1, offAt: 3 },
+    { label: 'CAM 10', sub: 'Containment Room',   src: 'media/containment2.png', slot: 2, offAt: 2 },
+    { label: 'CAM 11', sub: 'Storage Room',       src: 'media/cam3.jpg',         slot: 1 },
+    { label: 'CAM 12', sub: 'Storage Room',       src: 'media/storage2.png',     slot: 2 },
+    { label: 'CAM 13', sub: 'Staff Storage',      src: 'media/corridor3.png',    slot: 3, offAt: 0 },
+    { label: 'CAM 14', sub: 'Supply Room',        src: 'media/storage3.png',     slot: 4 },
+    { label: 'CAM 15', sub: 'Armory',             src: 'media/armory1.png',      slot: 3, offAt: 0 },
+    { label: 'CAM 16', sub: 'Utility Shaft',      src: 'media/vent7.png',        slot: 4, offAt: 3 }
   ],
 
   /* How often the camera pictures are repainted. Real CCTV is not smooth,
@@ -90,12 +92,12 @@ window.CONTENT = {
 
   /* the group names under the camera list. Each loads its cameras at once. */
   camGroups: [
-    { name: 'LAB A',       cams: ['CAM 05', 'CAM 10'] },
-    { name: 'LAB B',       cams: ['CAM 02', 'CAM 07'] },
-    { name: 'STORAGE',     cams: ['CAM 03', 'CAM 12'] },
-    { name: 'CORRIDORS',   cams: ['CAM 01', 'CAM 09', 'CAM 14', 'CAM 15'] },
-    { name: 'EXTERIOR',    cams: ['CAM 08', 'CAM 16'] },
-    { name: 'ALL CAMERAS', cams: ['CAM 01', 'CAM 02', 'CAM 03', 'CAM 04'] }
+    { name: 'EXTERNAL',    cams: ['CAM 1', 'CAM 4'] },
+    { name: 'CORRIDORS',   cams: ['CAM 2', 'CAM 3'] },
+    { name: 'LAB',         cams: ['CAM 5', 'CAM 6', 'CAM 7', 'CAM 8'] },
+    { name: 'CONTAINMENT', cams: ['CAM 9', 'CAM 10'] },
+    { name: 'STORAGE',     cams: ['CAM 11', 'CAM 12', 'CAM 13', 'CAM 14'] },
+    { name: 'OTHER',       cams: ['CAM 15', 'CAM 16'] }
   ],
 
   /* ---------- Map ----------
