@@ -84,6 +84,10 @@ window.CONTENT = {
      and a lower rate costs much less on phones. 0 = every frame.        */
   cctvFps: 15,
 
+  /* Same idea for a video clip on the Lab screen. Only a clip is held
+     back — the drawn cell and a still picture stay smooth either way.   */
+  labFps: 15,
+
   /* the group names under the camera list. Each loads its cameras at once. */
   camGroups: [
     { name: 'LAB A',       cams: ['CAM 05', 'CAM 10'] },

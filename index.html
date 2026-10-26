@@ -554,6 +554,7 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
  <div class="grp">
   <span class="lbl">Vitals:</span><select id="vscen" aria-label="Vitals scenario"><option value="flat">Flatline</option><option value="rean">Dies, then comes back</option><option value="feral">Infected: frenzied</option><option value="husk">Infected: no pulse, still moving</option></select>
   <span class="lbl">Feed rate:</span><select id="feedfps" aria-label="Camera feed frame rate"><option value="15">15 fps (CCTV)</option><option value="12">12 fps</option><option value="8">8 fps</option><option value="30">30 fps</option><option value="0">Every frame</option></select>
+  <span class="lbl">Lab rate:</span><select id="labfps" aria-label="Lab clip frame rate"><option value="15">15 fps</option><option value="12">12 fps</option><option value="8">8 fps</option><option value="24">24 fps</option><option value="0">Every frame</option></select>
   <span class="lbl">Lab:</span><button id="b-lab">Load lab clip</button><input type="file" id="f-lab" accept="video/*,image/*" tabindex="-1"><select id="labgrade" aria-label="Lab clip look"><option value="green">Green scope</option><option value="mono">Monochrome</option><option value="red">Red alert</option></select><button id="b-labclr">Use built-in cell</button>
   <select id="labov" aria-label="Lab overlay"><option value="track">Overlay: tracking box</option><option value="multi">Overlay: multi-target</option><option value="lock">Overlay: target lock</option><option value="scan">Overlay: scan sweep</option><option value="measure">Overlay: measure grid</option><option value="none">Overlay: none</option></select>
   <select id="labstage" aria-label="Lab panel stage"><option value="anim">Panels: play from start</option><option value="early">Panels: early</option><option value="spread">Panels: spreading</option><option value="full">Panels: full breach</option></select><select id="lp0sel" aria-label="Upper right panel"></select><select id="lp1sel" aria-label="Lower right panel"></select>
@@ -665,7 +666,11 @@ function syncVideos(){try{const cc=S.mode==='cctv',on=new Set(WARM);
 /* camera feeds repaint at their own rate: real CCTV is not 60 fps, and
    each repaint is four full-size draws. 0 = every frame.               */
 let FEEDFPS=(C.cctvFps===undefined||C.cctvFps===null)?15:Math.max(0,+C.cctvFps||0),feedLast=-1e9;
+let LABFPS=(C.labFps===undefined||C.labFps===null)?15:Math.max(0,+C.labFps||0),labLast=-1e9;
 function feedDue(now){if(!FEEDFPS)return true;const iv=1000/FEEDFPS;if(now-feedLast<iv)return false;feedLast=now;return true}
+/* only a clip is held back; the drawn cell and a still both stay smooth */
+function labDue(now){if(!LABFPS||!labMedia||!labMedia.video)return true;
+ const iv=1000/LABFPS;if(now-labLast<iv)return false;labLast=now;return true}
 /* cctv layout */
 const grid=$('#cctv');
 cams.forEach((c,i)=>{const d=document.createElement('div');d.className='cam';
@@ -1684,7 +1689,7 @@ function setPanel(i,key){const el=$('#lp'+i);lpState[i]=Object.create(LP[key]);l
 for(const i of [0,1]){const sel=$('#lp'+i+'sel');sel.innerHTML=LPKEYS.map(k=>`<option value="${k}">${i?'Lower':'Upper'} panel: ${LP[k].t}</option>`).join('');sel.onchange=e=>setPanel(i,e.target.value)}
 {const pn=((C.lab&&C.lab.panels)||[]).filter(k=>LP[k]);setPanel(0,pn[0]||'dna');setPanel(1,pn[1]&&pn[1]!==pn[0]?pn[1]:(pn[0]==='serum'?'dna':'serum'))}
 function labT(t){const m=$('#labstage').value;return m==='anim'?t:({early:4,spread:21,full:46}[m]+Math.min(5,t*.04))}
-function drawLab(t,dt){drawCell(t);const lt=labT(t);for(const i of [0,1]){const st=lpState[i];const sm=st.upd($('#lp'+i),lt,dt);const e=$('#lp'+i+'s');if(e.textContent!==sm)e.textContent=sm}
+function drawLab(t,dt){if(labDue(performance.now()))drawCell(t);const lt=labT(t);for(const i of [0,1]){const st=lpState[i];const sm=st.upd($('#lp'+i),lt,dt);const e=$('#lp'+i+'s');if(e.textContent!==sm)e.textContent=sm}
  const f=sig(lt);$('#c1').textContent=(.4+f*6.1).toFixed(1)+'%/hr';$('#c2').textContent=Math.round(f*100)+'%';$('#c4').textContent=f<.2?'STABLE':f<.6?'DEGRADING':'CRITICAL';$('#c4').className=f<.2?'':'r';
  const inc=Math.max(60,840-Math.floor(lt*14));$('#c3').textContent='00:'+pad(Math.floor(inc/60))+':'+pad(inc%60)}
 
@@ -1749,6 +1754,7 @@ $('#b-team').onclick=()=>teamFall();
  hx.onchange=e=>setc(e.target.value.trim());}
 $('#mappanel').onchange=e=>{MAPPANEL=e.target.value;note('Map panel: '+e.target.selectedOptions[0].textContent.replace('Panel: ',''))};
 $('#feedfps').onchange=e=>{FEEDFPS=+e.target.value;feedLast=-1e9;note('Camera feeds: '+(FEEDFPS?FEEDFPS+' fps':'every frame'))};
+$('#labfps').onchange=e=>{LABFPS=+e.target.value;labLast=-1e9;note('Lab clip: '+(LABFPS?LABFPS+' fps':'every frame'))};
 {const pane=$('#cell').parentElement;pane.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation()});
  pane.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();const f=e.dataTransfer.files[0];if(f&&!f.type.startsWith('audio'))loadLab(f)})}
 
