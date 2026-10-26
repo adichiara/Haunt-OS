@@ -32,6 +32,16 @@ window.CONTENT = {
      feed:  picture or video in the left panel. '' = uses camera 1.      */
   transmission: {
     audio: 'media/transmission.mp3',
+
+    /* liveFrom: the day the signal comes up, counting down to the party.
+       5 = live from the very first day. 4 = dead on day 5, live from day 4
+       on. -1 = the channel never comes up. Until it does the screen reads
+       NO SIGNAL, the waveform sits flat, and the audio file is never even
+       requested. offLine1/offLine2 are what it says while it's dead.     */
+    liveFrom: 4,
+    offLine1: 'No carrier found.',
+    offLine2: 'Nothing is transmitting on this channel.',
+
     feed: '', feedLabel: 'CAM 03',
     bootLines: ['> initializing uplink', '> searching for carrier...', '> carrier locked · routing to all frequencies'],
     connected: 'Connection established.',
@@ -54,19 +64,19 @@ window.CONTENT = {
      (Handy for reusing one still as a "different" camera.)            */
   cams: [
     { label: 'CAM 01', sub: 'Corridor A',     src: 'media/cam1.jpg' },
-    { label: 'CAM 02', sub: 'Lab Entry',      src: 'media/cam2.jpg' },
+    { label: 'CAM 02', sub: 'Lab Entry',      src: 'media/cam6.jpg' },
     { label: 'CAM 03', sub: 'Storage',        src: 'media/cam3.jpg' },
-    { label: 'CAM 04', sub: 'Secondary',      src: 'media/cam4.jpg', offAt: 0 },
-    { label: 'CAM 05', sub: 'Lab A',          src: 'media/cam2.jpg', flip: true, offAt: 0 },
-    { label: 'CAM 06', sub: 'Decon Bay',      src: 'media/cam1.jpg', flip: true, zoom: 1.35 },
-    { label: 'CAM 07', sub: 'Specimen Vault', src: 'media/cam3.jpg', zoom: 1.4, offAt: 1 },
+    { label: 'CAM 04', sub: 'Secondary',      src: 'media/cam8.jpg', offAt: 0 },
+    { label: 'CAM 05', sub: 'Lab A',          src: 'media/cam9.jpg', offAt: 0 },
+    { label: 'CAM 06', sub: 'Decon Bay',      src: 'media/cam11.jpg' },
+    { label: 'CAM 07', sub: 'Specimen Vault', src: 'media/cam2.jpg', zoom: 1.3, offAt: 1 },
     { label: 'CAM 08', sub: 'Freight Lift',   src: '' },
-    { label: 'CAM 09', sub: 'Corridor B',     src: 'media/cam4.jpg', flip: true, offAt: 0 },
-    { label: 'CAM 10', sub: 'Isolation Bay',  src: 'media/cam2.jpg', zoom: 1.5, offAt: 0 },
-    { label: 'CAM 12', sub: 'Generator Room', src: 'media/cam3.jpg', flip: true, offAt: 0 },
-    { label: 'CAM 13', sub: 'Vent 7 Access',  src: 'media/cam3.jpg', flip: true, zoom: 1.7, offAt: 3 },
-    { label: 'CAM 14', sub: 'Stairwell C',    src: 'media/cam1.jpg', zoom: 1.6, offAt: 1 },
-    { label: 'CAM 15', sub: 'Comms Hall',     src: 'media/cam4.jpg', zoom: 1.4 },
+    { label: 'CAM 09', sub: 'Corridor B',     src: 'media/cam5.jpg', offAt: 0 },
+    { label: 'CAM 10', sub: 'Isolation Bay',  src: 'media/cam10.jpg', offAt: 0 },
+    { label: 'CAM 12', sub: 'Generator Room', src: 'media/cam13.jpg', offAt: 0 },
+    { label: 'CAM 13', sub: 'Vent 7 Access',  src: 'media/cam4.jpg', flip: true, zoom: 1.7, offAt: 3 },
+    { label: 'CAM 14', sub: 'Stairwell C',    src: 'media/cam12.jpg', offAt: 1 },
+    { label: 'CAM 15', sub: 'Comms Hall',     src: 'media/cam7.jpg' },
     { label: 'CAM 16', sub: 'Loading Dock',   src: 'media/cam1.jpg', flip: true, zoom: 1.15 }
   ],
 

@@ -29,8 +29,20 @@ Live: https://adichiara.github.io/Haunt-OS
 Put an audio file in `media/` named `transmission.mp3` (or change
 `transmission.audio` in `content.js` to match your file name). It starts when
 "Transmission started." appears and the waveform follows the real voice.
-Without it, the waveform runs on a simulated voice, which is what happens
-today — the file isn't in the repo yet.
+Without it, the waveform runs on a simulated voice.
+
+The channel starts dead. `transmission.liveFrom` in `content.js` is the day
+the signal comes up, counting down to the party:
+
+| `liveFrom` | What happens |
+|---|---|
+| `5` | live from the very first day |
+| `4` | dead on day 5, live from day 4 on — how it is set now |
+| `-1` | the channel never comes up |
+
+While it is dead the screen reads NO SIGNAL, the waveform sits flat, and the
+audio file is never even requested. `offLine1` and `offLine2` are the two
+lines it shows instead.
 
 ### Adding mail
 

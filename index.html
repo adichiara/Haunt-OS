@@ -1410,27 +1410,37 @@ const m1=$('#m1'),m2=$('#m2'),T1=3.6,T2=5.2;
 const typ=(txt,t0,t,cps)=>t<t0?'':txt.slice(0,Math.floor((t-t0)*cps));
 const vu=$('#vu');const vuSeg=[];for(let i=0;i<16;i++){const e=document.createElement('i');vu.appendChild(e);vuSeg.push(e)}
 let audio=null,analyser=null,abuf=null;const hist=Array(240).fill(0);
+/* Nobody is broadcasting yet. liveFrom in content.js is the day the signal
+   comes up: 5 = live from the first day, 4 = live from four days out, and
+   leaving it out (or -1) keeps the channel dead. */
+function txLive(){const lf=TXC.liveFrom;
+ if(lf===undefined||lf===null)return true;
+ return typeof DAY==='number'&&DAY<=lf}
 function speech(tt){const on=hash(Math.floor(tt*1.8))>.3?1:.04;return on*(.3+.7*Math.pow(Math.abs(Math.sin(tt*8.3)*Math.sin(tt*3.1+1)),.6))}
 function drawWave(t,weak){const c=$('#wave').getContext('2d'),W=740,H=250,mid=H/2;c.clearRect(0,0,W,H);
  c.strokeStyle='rgba(70,229,154,.07)';c.lineWidth=1;c.beginPath();for(let x=0;x<=W;x+=37){c.moveTo(x,0);c.lineTo(x,H)}for(let y=0;y<=H;y+=25){c.moveTo(0,y);c.lineTo(W,y)}c.stroke();
  c.strokeStyle='rgba(70,229,154,.25)';c.beginPath();c.moveTo(0,mid);c.lineTo(W,mid);c.stroke();
- const live=t>=T2&&!(audio&&audio.ended);let lvl=0;
+ const live=txLive()&&t>=T2&&!(audio&&audio.ended);let lvl=0;
  if(analyser){analyser.getByteTimeDomainData(abuf);let s=0;for(const v of abuf){const d=(v-128)/128;s+=d*d}lvl=Math.min(1,Math.sqrt(s/abuf.length)*4.5);hist.push(lvl);hist.shift()}
  const N=240,dx=W/N;c.strokeStyle=weak?'rgba(70,229,154,.4)':'#46e59a';c.shadowColor='#46e59a';c.shadowBlur=8;c.lineWidth=1.6;c.beginPath();
  for(let i=0;i<N;i++){let a;if(analyser)a=hist[i];else if(!live||(audio&&audio.paused))a=0;else{const tt=t-(N-i)*.011;a=tt<T2?0:speech(tt)*(.25+.75*hash(Math.floor(tt*90)))}
   if(weak&&hash(i+Math.floor(t*20))<.5)a*=.2;const h=Math.max(1,a*H*.46),x=i*dx+dx/2;c.moveTo(x,mid-h);c.lineTo(x,mid+h);if(i===N-1)lvl=a}
  c.stroke();c.shadowBlur=0;const n=Math.round(lvl*16);vuSeg.forEach((e,i)=>e.classList.toggle('on',i<n))}
 function updateTx(t){bootLines.forEach(([t0,txt],i)=>{const s=typ(txt,t0,t,34);if(bootDivs[i].textContent!==s)bootDivs[i].textContent=s});
- const s1=typ(TXC.connected||'',T1,t,30),s2=typ(TXC.started||'',T2,t,30);
+
+ const _on=txLive();
+ const _l1=_on?(TXC.connected||''):(TXC.offLine1||'No carrier found.');
+ const _l2=_on?(TXC.started||''):(TXC.offLine2||'Nothing is transmitting on this channel.');
+ const s1=typ(_l1,T1,t,30),s2=typ(_l2,T2,t,30);
  if(m1.lastChild.textContent!==s1)m1.lastChild.textContent=s1;if(m2.lastChild.textContent!==s2)m2.lastChild.textContent=s2;
  m1.classList.toggle('shown',t>=T1);m2.classList.toggle('shown',t>=T2);
- const live=t>=T2&&!(audio&&audio.ended);$('#txbar').classList.toggle('idle',!live);$('#txlive').textContent=live?'TX LIVE':(audio&&audio.ended)?'TX ENDED':'TX IDLE';
+ const live=_on&&t>=T2&&!(audio&&audio.ended);$('#txbar').classList.toggle('idle',!live);$('#txlive').textContent=live?'TX LIVE':!_on?'NO SIGNAL':(audio&&audio.ended)?'TX ENDED':'TX IDLE';
  const el=(audio&&audio.currentTime>0)?audio.currentTime:Math.max(0,t-T2);$('#txtime').textContent=pad(Math.floor(el/60))+':'+pad(Math.floor(el%60));
- $('#uplink').textContent=live?'LIVE':(audio&&audio.ended)?'LOST':t>=T1?'CONNECTED':'SEARCHING';
+ $('#uplink').textContent=live?'LIVE':!_on?'NO SIGNAL':(audio&&audio.ended)?'LOST':t>=T1?'CONNECTED':'SEARCHING';
  const weak=live&&hash(Math.floor(t/.6)+7)<.08;
- const lv=t<1?0:t<T1?1+Math.floor((t*3)%3):weak?1:3+Math.round(hash(Math.floor(t*3))*2);
+ const lv=!_on?(t<1?0:1):t<1?0:t<T1?1+Math.floor((t*3)%3):weak?1:3+Math.round(hash(Math.floor(t*3))*2);
  document.querySelectorAll('#sig span').forEach((sp,i)=>sp.classList.toggle('on',i<lv));
- $('#sig').classList.toggle('weak',weak);const st=$('#sigtxt');st.classList.toggle('weak',weak);st.textContent=weak?'SIGNAL WEAK':t<T1?'SEARCHING':'SIGNAL';
+ $('#sig').classList.toggle('weak',weak);const st=$('#sigtxt');st.classList.toggle('weak',weak);st.textContent=!_on?'NO CARRIER':weak?'SIGNAL WEAK':t<T1?'SEARCHING':'SIGNAL';
  return weak}
 
 /* ---------- one menu bar on every screen, same names as the web version ---------- */
@@ -1750,11 +1760,11 @@ vReset();
 S.txT0=0;S.audioStarted=false;
 const TXFEED=(function(){const m=mediaObj(TXC.feed);if(!m){const f=FEEDS.find(f=>f.m)||{};return {still:f.m&&!f.m.video?f.m.el:null,media:f.m&&f.m.video?f.m:null,seed:9,flip:f.flip,zoom:f.zoom}}const o={seed:9};if(m.video)o.media=m;else o.still=m.el;return o})();
 audio=null;analyser=null;
-if(TXC.audio){audio=new Audio();audio.src=TXC.audio;audio.preload='auto';audio.addEventListener('error',()=>{console.warn('Transmission audio not found: '+TXC.audio);audio=null})}
+if(TXC.audio){audio=new Audio();audio.preload='none';audio.addEventListener('error',()=>{console.warn('Transmission audio not found: '+TXC.audio);audio=null})}
 function hookAnalyser(){if(!audio||analyser||!AC||location.protocol==='file:')return;try{const src=AC.createMediaElementSource(audio);analyser=AC.createAnalyser();analyser.fftSize=1024;abuf=new Uint8Array(analyser.fftSize);src.connect(analyser);analyser.connect(AC.destination)}catch(e){analyser=null}}
-function txAudioTick(tt){if(!audio||S.audioStarted||tt<T2)return;S.audioStarted=true;try{audio.currentTime=0}catch(e){}audio.muted=!soundOn;audio.play().catch(()=>{})}
+function txAudioTick(tt){if(!audio||S.audioStarted||tt<T2||!txLive())return;S.audioStarted=true;if(!audio.src)audio.src=TXC.audio;try{audio.currentTime=0}catch(e){}audio.muted=!soundOn;audio.play().catch(()=>{})}
 function startTx(){S.txT0=S.t;S.audioStarted=false;hist.fill(0);if(audio){audio.pause();try{audio.currentTime=0}catch(e){}}}
-function unlockAudio(){if(!audio)return;audio.muted=true;const p=audio.play();if(p)p.then(()=>{audio.pause();audio.muted=!soundOn;try{audio.currentTime=0}catch(e){}}).catch(()=>{audio.muted=!soundOn})}
+function unlockAudio(){if(!audio||!txLive())return;if(!audio.src)audio.src=TXC.audio;audio.muted=true;const p=audio.play();if(p)p.then(()=>{audio.pause();audio.muted=!soundOn;try{audio.currentTime=0}catch(e){}}).catch(()=>{audio.muted=!soundOn})}
 let PATS=[];const VP={get i(){return VPi}};
 function setPatient(i){VPi=(i+PATS.length)%PATS.length;const p=PATS[VPi];VB=Object.assign({hr:74,spo2:98,resp:16,bp:'118/76',temp:37},p.base||{});V.scen=SCEN[p.monitor]?p.monitor:'flat';$('#t-vbed').textContent='Patient Monitor  //  '+(p.bedline||'');vReset();S.modeT0=S.t;document.querySelectorAll('.subjchips button').forEach((b,j)=>b.classList.toggle('on',j===VPi))}
 const HINTS={files:'Pick a folder, then a message',term:'Type HELP, or tap a command',tx:'',cctv:'Pick a camera from the list · tap a feed to enlarge',map:'',alert:'',vitals:'Pick a subject top right, or tap the monitor',lab:'Tap the specimen: next stage · tap a panel to switch it',end:''};
