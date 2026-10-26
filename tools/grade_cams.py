@@ -76,6 +76,18 @@ PAIRS = [
 REF = dict(luma=32.7, p25=7.9, p50=20.1, p99=180.1, sat=53.9, rb=-15.9, gb=-7.3)
 
 T_WHITE, T_MEAN, T_P25 = 180.0, 32.7, 7.0
+
+# the look, as landed on. change these and everything follows.
+SAT      = 34.0
+GLOW     = 1.3
+HAZE     = 0.0
+EXPOSURE = 32.7
+WHITE    = 150.0
+CONTRAST = 1.1
+LIFT     = 7.0
+CAST     = 1.0
+GRAIN    = 2.0
+VIGNETTE = 0.35
 T_RB, T_GB = REF['rb'], REF['gb']
 OUT_W, OUT_H = 960, 540
 
@@ -101,9 +113,9 @@ def _expose(a, target):
     return np.clip(255. * np.power(np.clip(a, 0, 255) / 255., g), 0, 255)
 
 
-def grade_one(src, haze=0.0, sat=16.0, exposure=T_MEAN, white=T_WHITE,
-              lift=T_P25, contrast=1.0, cast=1.0, glow=1.0, grain=0.0,
-              vignette=0.0):
+def grade_one(src, haze=HAZE, sat=SAT, exposure=EXPOSURE, white=WHITE,
+              lift=LIFT, contrast=CONTRAST, cast=CAST, glow=GLOW, grain=GRAIN,
+              vignette=VIGNETTE):
     """Grade one source image. Returns a PIL.Image, writes nothing."""
     im = Image.open(os.path.join(MEDIA, src)).convert('RGB')
     w, h = im.size
@@ -171,7 +183,7 @@ def grade_one(src, haze=0.0, sat=16.0, exposure=T_MEAN, white=T_WHITE,
     return Image.fromarray(a.astype(np.uint8))
 
 
-def grade_all(haze=0.0, sat=16.0, over=None, write=False, outdir=None,
+def grade_all(haze=HAZE, sat=SAT, over=None, write=False, outdir=None,
               pairs=None, **kw):
     """Grade every still. Returns {output filename: PIL.Image}.
 
@@ -244,7 +256,7 @@ def missing_sources():
 
 
 if __name__ == '__main__':
-    haze = float(sys.argv[1]) if len(sys.argv) > 1 else 0.0
-    sat = float(sys.argv[2]) if len(sys.argv) > 2 else 16.0
+    haze = float(sys.argv[1]) if len(sys.argv) > 1 else HAZE
+    sat = float(sys.argv[2]) if len(sys.argv) > 2 else SAT
     outdir = sys.argv[3] if len(sys.argv) > 3 else None
     grade_all(haze, sat, write=(outdir is None), outdir=outdir)
