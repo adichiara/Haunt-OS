@@ -45,8 +45,9 @@ window.EMAILS = {
     to: 'Principal Investigator', subject: 'BRAINZ! #184 — the word problem',
     body:
 `BRAINZ!  ·  Issue 184
-What the Ambulatory Former Humans (AFHs) community argued about
-this week.
+BRAINZ! is a weekly digest newsletter about current topics raised by
+the Ambulatory Former Human (AFH) research and intellectual
+communities.
 Seven groups. Twelve minutes. Week of 12 January.
 
 SETAFH · Society for the Ethical Treatment of Ambulatory Former Humans
@@ -98,8 +99,9 @@ conference. Manage preferences at the link below.` },
     to: 'Principal Investigator', subject: 'BRAINZ! #198 — the twelve-week trial',
     body:
 `BRAINZ!  ·  Issue 198
-What the Ambulatory Former Humans (AFHs) community argued about
-this week.
+BRAINZ! is a weekly digest newsletter about current topics raised by
+the Ambulatory Former Human (AFH) research and intellectual
+communities.
 Eight groups. Week of 20 April.
 
 REACH & REPEAT · rehabilitation network
@@ -156,8 +158,9 @@ conference. Manage preferences at the link below.` },
     to: 'Principal Investigator', subject: 'BRAINZ! #213 — one population and a thermometer',
     body:
 `BRAINZ!  ·  Issue 213
-What the Ambulatory Former Humans (AFHs) community argued about
-this week.
+BRAINZ! is a weekly digest newsletter about current topics raised by
+the Ambulatory Former Human (AFH) research and intellectual
+communities.
 Eight groups. Week of 3 August.
 
 GAIT & LOCOMOTION GROUP · why some lurk and some charge
@@ -221,8 +224,9 @@ I did not register at a partner conference. I attended one.` },
     to: 'Principal Investigator', subject: 'BRAINZ! #224 — we have made them better at it',
     body:
 `BRAINZ!  ·  Issue 224
-What the Ambulatory Former Humans (AFHs) community argued about
-this week.
+BRAINZ! is a weekly digest newsletter about current topics raised by
+the Ambulatory Former Human (AFH) research and intellectual
+communities.
 Nine groups. Week of 26 October.
 
 REACH & REPEAT · rehabilitation network
@@ -300,6 +304,10 @@ conference. Manage preferences at the link below.` },
     to: 'Principal Investigator', subject: 'BRAINZ! — special edition — containment research',
     body:
 `BRAINZ!  ·  Special Edition
+BRAINZ! is a weekly digest newsletter about current topics raised by
+the Ambulatory Former Human (AFH) research and intellectual
+communities.
+
 29 October. We are off schedule. The reason is below.
 
 The editor is aware that this week of all weeks our name sits
