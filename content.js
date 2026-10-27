@@ -168,7 +168,7 @@ window.CONTENT = {
                tx, cctv, map, alert, vitals, lab, files (mail), end   */
   terminal: {
     welcome: 'Type HELP for a list of commands.',
-    quick: ['help', 'mail', 'ls', 'subjects', 'lockdown'],
+    quick: ['help', 'ls', 'subjects', 'lockdown'],
     commands: [
       { cmd: 'lockdown', listed: true,  about: 'check lockdown status', goto: 'alert',
         text: 'LOCKDOWN ACTIVE SINCE 21:59.\nALL EXITS SEALED. OVERRIDE REQUIRES LEVEL 5.\nYOU ARE LEVEL 0.' },
@@ -180,10 +180,9 @@ window.CONTENT = {
       { cmd: 'exit',     listed: false, text: 'There is no exit.' },
       { cmd: 'sudo',     listed: false, text: 'Nice try.' },
       { cmd: 'joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
-      { cmd: 'Joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
       { cmd: 'logan',    listed: false, text: '\nHappy Birthday Logan!' },
       { cmd: 'secret',    listed: true, about: "[[REDACTED]]", text: '\nPASSWORD: ' },
-      { cmd: 'password2',  listed: false, text: "\nYup. That's the password." }
+      { cmd: 'password2',  listed: false, text: "\nYup. That's the password.\nPut it in the video comments. First one gets a shoutout." }
     ]
   },
 
