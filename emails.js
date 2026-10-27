@@ -359,9 +359,7 @@ Please do not route all loads to Autoclave 1 at the same time.` },
 `Annual certification for BSC-7 and BSC-9 expires in 11 days.
 
 Cabinets may not be used for work with infectious material after the
-expiration date.
-
-The certifier is booked until February.` },
+expiration date.` },
 
   /* ---------- funding and sponsor ---------- */
   { folder: 'inbox', date: '2026-03-02 12:11', unread: false, from: 'Office of Sponsored Programs', addr: 'osp@exresfac.org',
@@ -513,9 +511,7 @@ I came across your profile and was really impressed by your experience.
 I'm working with a fast-growing client in the biotech space looking for a
 Senior Scientist. Competitive comp, great culture, hybrid.
 
-Would you be open to a quick 15-minute chat this week?
-
-P.S. — I promise I'm not a bot! 🙂` },
+Would you be open to a quick 15-minute chat this week?` },
 
   { folder: 'inbox', date: '2026-10-18 07:58', unread: true, from: 'Lab A Coordination', addr: 'lab-a-coord@exresfac.org',
     to: 'Principal Investigator', subject: 'Per my last email',
