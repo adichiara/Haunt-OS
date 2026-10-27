@@ -603,7 +603,7 @@ This session is mandatory for supervisory staff and strongly encouraged for ever
 
 Accept  ·  Decline  ·  Propose New Time` },
      
-  { folder: 'inbox', date: '2026-9-28 07:13', unread: true, from: 'Poolmaster', addr: 'cmk@gmail.com',
+  { folder: 'inbox', date: '2026-10-01 07:13', unread: false, from: 'Poolmaster', addr: 'cmk@gmail.com',
     to: 'Principal Investigator', subject: 'Football pool entry fee',
     body:
 `This week is the final deadline for sending your pool entry fee. 
@@ -613,7 +613,7 @@ Please pay promptly by check, PayPal or Venmo or you will be removed.
 DO NOT SAY IT IS FOR A FOOTBALL POOL!
  ` },  
 
-  { folder: 'inbox', date: '2004-5-15 16:46', unread: false, from: 'Adam', addr: 'ajd@gmail.com',
+  { folder: 'inbox', date: '2003-5-15 16:46', unread: false, from: 'Adam', addr: 'ajd@gmail.com',
     to: 'Principal Investigator', subject: 'RE: RE: RE: RE: RE: Rocky IV Musings',
     body:
 `
