@@ -1847,7 +1847,7 @@ function renderSide(){const L=$('#mailside');
  L.querySelectorAll('a[data-at]').forEach(a=>a.onclick=()=>{ac();openDoc(+a.dataset.at)})}
 function renderList(){const ms=MSGS.filter(m=>m.folder===MBOX),fo=FOLD.find(f=>f.id===MBOX)||{name:MBOX};
  $('#mboxname').textContent=fo.name;$('#mboxcount').textContent=ms.length+' MESSAGES'+(unreadN(MBOX)?' · '+unreadN(MBOX)+' UNREAD':'');
- $('#mlist').innerHTML=ms.map(m=>`<a data-m="${m.i}" class="${m.unread?'un ':''}${m.flag?'fg ':''}${m.i===MSEL?'on':''}"><span class="r1"><span class="fr">${escH(m.from||'')}</span><span class="dt2">${escH(nice(m.date))}</span></span><span class="su">${escH(m.subject||'')}${(m.files&&m.files.length)?'<span class="clip">&#128206;</span>':''}</span></a>`).join('')
+ $('#mlist').innerHTML=ms.map(m=>`<a data-m="${m.i}" class="${m.unread?'un ':''}${m.flag?'fg ':''}${m.i===MSEL?'on':''}"><span class="r1"><span class="fr">${escH(m.folder==='sent'?('To: '+(m.to||ACCT.name)):(m.from||''))}</span><span class="dt2">${escH(nice(m.date))}</span></span><span class="su">${escH(m.subject||'')}${(m.files&&m.files.length)?'<span class="clip">&#128206;</span>':''}</span></a>`).join('')
   ||'<a style="color:#6d7d84;cursor:default">Nothing here.</a>';
  $('#mlist').querySelectorAll('a[data-m]').forEach(a=>a.onclick=()=>{ac();openMsg(+a.dataset.m);tone(1800,.03,.04,'square')})}
 function blankPane(){$('#dtitle').textContent='No message selected';$('#dmeta').textContent='';$('#doc').innerHTML='<span class="empty">Pick a message on the left.</span>'}
@@ -1880,7 +1880,7 @@ const UC=Array.isArray(TM.commands)?TM.commands.filter(c=>c&&c.cmd):Object.entri
 const CMDS={
  help:()=>{const rows=[...BUILTIN,...UC.filter(c=>c.listed).map(c=>[String(c.cmd),c.about||''])];return ['COMMANDS',...rows.map(([a,b])=>'  '+a.padEnd(22)+b)].join('\n')},
  ls:()=>ATT.map(f=>'  '+f.name).join('\n')||'(empty)',dir:()=>CMDS.ls(),
- mail:()=>{const ms=MSGS.slice(0,12);return ['  '+String(MSGS.length)+' MESSAGES · '+String(MSGS.filter(m=>m.unread).length)+' UNREAD',...ms.map(m=>'  '+(m.unread?'* ':'  ')+nice(m.date).padEnd(14)+String(m.from||'').slice(0,22).padEnd(24)+String(m.subject||'').slice(0,46))].join('\n')},
+ mail:()=>{const ms=MSGS.slice(0,12);return ['  '+String(MSGS.length)+' MESSAGES · '+String(MSGS.filter(m=>m.unread).length)+' UNREAD',...ms.map(m=>'  '+(m.unread?'* ':'  ')+nice(m.date).padEnd(14)+String(m.folder==='sent'?('To: '+(m.to||'')):(m.from||'')).slice(0,22).padEnd(24)+String(m.subject||'').slice(0,46))].join('\n')},
  inbox:()=>CMDS.mail(),
  status:()=>`COMPROMISED: ${Math.round(frac()*100)}%\nHUMAN LIFE SIGNS: 1 (COMMS ROOM)\nSUBJECTS IN ISOLATION: ${SUBJ.length}\nCONTAINMENT: FAILED\nUPLINK: ${S.audioStarted?'LIVE':'STANDBY'}`,
  cat:a=>{const f=findFile(a);if(!f)return['No such attachment. Type LS.','e'];return plain(f.text)},
