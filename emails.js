@@ -603,7 +603,7 @@ This session is mandatory for supervisory staff and strongly encouraged for ever
 
 Accept  ·  Decline  ·  Propose New Time` },
      
-  { folder: 'inbox', date: '2026-10-01 07:13', unread: false, from: 'Poolmaster', addr: 'cmk@gmail.com',
+  { folder: 'inbox', date: '2026-10-01 07:13', unread: true, from: 'Poolmaster', addr: 'cmk@gmail.com',
     to: 'Principal Investigator', subject: 'Football pool entry fee',
     body:
 `This week is the final deadline for sending your pool entry fee. 
