@@ -45,7 +45,8 @@ window.EMAILS = {
     to: 'Principal Investigator', subject: 'BRAINZ! #184 — the word problem',
     body:
 `BRAINZ!  ·  Issue 184
-What the AFH community argued about this week.
+What the Ambulatory Former Humans (AFHs) community argued about
+this week.
 Seven groups. Twelve minutes. Week of 12 January.
 
 SETAFH · Society for the Ethical Treatment of Ambulatory Former Humans
@@ -97,7 +98,8 @@ conference. Manage preferences at the link below.` },
     to: 'Principal Investigator', subject: 'BRAINZ! #198 — the twelve-week trial',
     body:
 `BRAINZ!  ·  Issue 198
-What the AFH community argued about this week.
+What the Ambulatory Former Humans (AFHs) community argued about
+this week.
 Eight groups. Week of 20 April.
 
 REACH & REPEAT · rehabilitation network
@@ -154,7 +156,8 @@ conference. Manage preferences at the link below.` },
     to: 'Principal Investigator', subject: 'BRAINZ! #213 — one population and a thermometer',
     body:
 `BRAINZ!  ·  Issue 213
-What the AFH community argued about this week.
+What the Ambulatory Former Humans (AFHs) community argued about
+this week.
 Eight groups. Week of 3 August.
 
 GAIT & LOCOMOTION GROUP · why some lurk and some charge
@@ -218,7 +221,8 @@ I did not register at a partner conference. I attended one.` },
     to: 'Principal Investigator', subject: 'BRAINZ! #224 — we have made them better at it',
     body:
 `BRAINZ!  ·  Issue 224
-What the AFH community argued about this week.
+What the Ambulatory Former Humans (AFHs) community argued about
+this week.
 Nine groups. Week of 26 October.
 
 REACH & REPEAT · rehabilitation network
