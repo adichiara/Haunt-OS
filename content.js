@@ -177,6 +177,7 @@ window.CONTENT = {
       { cmd: 'sudo',     listed: false, text: 'Nice try.' },
       { cmd: 'joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
       { cmd: 'Joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
+      { cmd: 'logan',    listed: false, text: '\nHappy Birthday Logan!' },
       { cmd: 'login',    listed: true, text: '\nPASSWORD: ' },
       { cmd: 'password2',  listed: false, text: "\nYup. That's the password." }
     ]
