@@ -48,7 +48,7 @@ window.EMAILS = {
 What the post-vital community argued about this week.
 Seven groups. Twelve minutes. Week of 12 January.
 
-SETAFH · language & ethics
+SETAFH · Society for the Ethical Treatment of Ambulatory Former Humans
   Position paper on the Z-word dropped Tuesday. Their line, not ours:
   every term we have was coined from behind a barricade. Six hundred
   replies, no agreement, one new word that nobody likes.
@@ -110,7 +110,8 @@ LOCAL 2200 · containment operators
   greater length: still no good gloves.
 
 SECOND LIVES · sighting network
-  Launched a merch line. SETAFH objected to the wording. The Vital
+  Launched a merch line. SETAFH, who exist to object to wording,
+  objected to the wording. The Vital
   Line objected to the existence. Sales are reportedly strong.
 
 THE SUNDAY GROUP · faith & practice
@@ -217,7 +218,7 @@ SECOND LIVES · sighting network
   locked it until November 2nd. This went down about as well as
   every other time they have locked it.
 
-SETAFH · language & ethics
+SETAFH · Ethical Treatment of Ambulatory Former Humans
   Annual Halloween statement, same as every year and a little
   shorter. Since their Z-word paper they have stopped explaining and
   started linking to it.
@@ -239,9 +240,10 @@ conference. Manage preferences at the link below.` },
 
 A JOINT STATEMENT
 
-  SETAFH, The Threshold Review and the Ambulatory Labour Project
-  agree on almost nothing and have never co-signed anything. This
-  week they did. It is four sentences:
+  The Society for the Ethical Treatment of Ambulatory Former Humans,
+  The Threshold Review and the Ambulatory Labour Project agree on
+  almost nothing and have never co-signed anything. This week they
+  did. It is four sentences:
 
     Every facility doing this work holds an exemption on the same
     ground — that the subject was not a living human subject at
@@ -816,14 +818,14 @@ Sublevel B personnel: your scheduled slot conflicts with the all-hands
 meeting. Please attend both.` },
 
   { folder: 'inbox', day: 3, time: '09:40', from: 'Security Systems (automated)', addr: 'alarms@exresfac.org',
-    to: 'Sublevel B Distribution', subject: 'Camera offline — CAM 13 (Vent 7 Access)',
+    to: 'Sublevel B Distribution', subject: 'Camera offline — CAM 3 (Utility Corridor)',
     body:
-`CAM 13 has stopped reporting. Last frame 09:38.
+`CAM 3 (Utility Corridor) has stopped reporting. Last frame 09:38. This
+is the camera covering the Vent 7 access, which is the third fault
+raised on that run this month.
 
 A service request has been raised. Current queue time for non-critical
-camera faults is 6 weeks.
-
-CAM 08 (Freight Lift) remains offline from 14 August.` },
+camera faults is 6 weeks.` },
 
   { folder: 'inbox', day: 3, time: '15:19', from: 'Lab B Floor Lead', addr: 'lab-b-floor@exresfac.org',
     to: 'Principal Investigator', subject: 'Ran it again. Alone. Sealed bench.',
@@ -938,9 +940,9 @@ Prizes will be awarded for best costume.` },
     body:
 `The following feeds have stopped reporting within the last 40 minutes:
 
-  CAM 05  Lab A
-  CAM 10  Isolation Bay
-  CAM 12  Generator Room
+  CAM 5   Lab A
+  CAM 7   Specimen Storage
+  CAM 11  Armory
 
 No fault is reported on the network path. The cameras are receiving
 power.
