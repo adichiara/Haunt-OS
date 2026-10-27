@@ -178,7 +178,7 @@ window.CONTENT = {
       { cmd: 'joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
       { cmd: 'Joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
       { cmd: 'login',    listed: true, text: '\nPASSWORD: ' },
-      { cmd: 'password2',  listed: false, text: '\nYup. That's the password.' }  
+      { cmd: 'password2',  listed: false, text: "\nYup. That's the password." }
     ]
   },
 
