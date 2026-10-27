@@ -602,7 +602,25 @@ This session is mandatory for supervisory staff and strongly encouraged for ever
   ATTENDEES: 23
 
 Accept  ·  Decline  ·  Propose New Time` },
+     
+  { folder: 'inbox', date: '2026-9-28 07:13', unread: true, from: 'Poolmaster', addr: 'cmk@gmail.com',
+    to: 'Principal Investigator', subject: 'Football pool entry fee',
+    body:
+`This week is the final deadline for sending your pool entry fee. 
 
+Please pay promptly by check, PayPal or Venmo or you will be removed.
+
+DO NOT SAY IT IS FOR A FOOTBALL POOL!
+ ` },  
+
+  { folder: 'inbox', date: '2004-5-15 16:46', unread: false, from: 'Adam', addr: 'ajd@gmail.com',
+    to: 'Principal Investigator', subject: 'RE: RE: RE: RE: RE: Rocky IV Musings',
+    body:
+`
+Server Error: This message exceeds the maximum viewable file size. 
+` },  
+
+     
   { folder: 'inbox', date: '2026-10-17 16:50', unread: true, from: 'Recruiter', addr: 'talent@apex-biosolutions-recruiting.com',
     to: 'Principal Investigator', subject: 'Exciting opportunity matching your background!',
     body:
@@ -684,7 +702,7 @@ Sublevel B personnel: your scheduled slot conflicts with the all-hands meeting. 
   { folder: 'inbox', day: 3, time: '09:40', from: 'Security Systems (automated)', addr: 'alarms@exresfac.org',
     to: 'Sublevel B Distribution', subject: 'Camera offline — CAM 3 (Utility Corridor)',
     body:
-`CAM 3 (Utility Corridor) has stopped reporting. Last frame 09:38. This is the camera covering the Vent 7 access, which is the third fault raised on that run this month.
+`CAM 3 (Utility Corridor) has stopped reporting consistently. This is the camera covering the Vent 7 access, which is the third fault raised on that run this month.
 
 A service request has been raised. Current queue time for non-critical camera faults is 6 weeks.` },
 
@@ -845,8 +863,7 @@ NO FURTHER INSTRUCTION IS SCHEDULED.` },
     body:
 `A team has been assembled and authorized to enter Sublevel B.
 
-They are volunteers. They have masks. Their armaments are foam-based.
-They are very enthusiastic.
+They are volunteers. They have skull masks. They are very enthusiastic.
 
 Objective: recover personnel. Contain what can be contained.
 
@@ -904,7 +921,7 @@ ROUTE C   Vent 7 crawlway                  DO NOT USE
 ROUTE D   Wait for rescue                  RECOMMENDED
 
 Rescue teams enter through the loading dock.
-Listen for the foam.` },
+Listen for them.` },
 
   { name: 'power_report_2240.txt', day: 0, text:
 `POWER · LEVEL B1 · AUTO REPORT 22:40
@@ -931,12 +948,7 @@ B-07 is not a virus. It is a [[REDACTED]].
 `(handwritten, stuck to monitor 3)
 
 Password is NOT "password" anymore.
-It's "password2".
-
-(second note, different handwriting)
-
-Whoever wrote the first note is in Isolation Bay 4 now.
-Who changes the password?` }
+It's "password2".` }
 
   ]
 };
