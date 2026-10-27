@@ -27,27 +27,27 @@ window.TIMELINE = {
 
   days: {
 
-     5: { breach: 0,    spread: 998, lab: 'early',
+     5: { breach: 0,    spread: 998, lab: 2,
           alert:  { title: 'NOTICE', subtitle: 'SENSOR FAULT', line: 'Maintenance ticket raised' },
           status: 'ALL CHANNELS CLEAR' },
 
-     4: { breach: 0.06, spread: 80, lab: 'early',
+     4: { breach: 0.06, spread: 80, lab: 9,
           alert:  { title: 'ADVISORY', subtitle: 'AIR QUALITY DEVIATION', line: 'Monitoring' },
           status: 'MINOR SIGNAL INTERFERENCE' },
 
-     3: { breach: 0.22, spread: 40, lab: 'spread',
+     3: { breach: 0.22, spread: 40, lab: 18,
           alert:  { title: 'CAUTION', subtitle: 'CONTAINMENT DEGRADED', line: 'Lab B sealed pending review' },
           status: 'SIGNAL DEGRADED' },
 
-     2: { breach: 0.48, spread: 24, lab: 'spread',
+     2: { breach: 0.48, spread: 24, lab: 27,
           alert:  { title: 'WARNING', subtitle: 'CONTAINMENT FAILING', line: 'Evacuation request DENIED' },
           status: 'SIGNAL WEAK' },
 
-     1: { breach: 0.78, spread: 11, lab: 'full',
+     1: { breach: 0.78, spread: 11, lab: 38,
           alert:  { title: 'ALERT', subtitle: 'MULTIPLE SECTORS LOST', line: 'Shelter in place' },
           status: 'SIGNAL FAILING' },
 
-     0: { breach: 0.94, spread: 5, lab: 'full',
+     0: { breach: 0.94, spread: 5, lab: 52,
           alert:  { title: 'ALERT', subtitle: 'CONTAINMENT BREACH', line: 'Quarantine protocol engaged' },
           status: 'LAST KNOWN TRANSMISSION' }
   },

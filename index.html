@@ -1601,6 +1601,13 @@ const cellc=$('#cell').getContext('2d');
 const tendrils=Array.from({length:16},(_,i)=>({a:i/16*Math.PI*2+Math.random()*.3,len:70+Math.random()*120,w:Math.random()*6,sp:.5+Math.random()}));
 const motes=Array.from({length:60},()=>[Math.random()*1000,Math.random()*560,Math.random()*2+.5,Math.random()*.4+.1]);
 let labMedia=null;
+let LABCLIPS=[],LABOBJ=[],LABI=0;
+function labClip(i){if(!LABOBJ[i])LABOBJ[i]=mediaObj(LABCLIPS[i]);return LABOBJ[i]}
+function nextLabClip(){
+ if(LABCLIPS.length<2)return false;
+ LABI=(LABI+1)%LABCLIPS.length;labMedia=labClip(LABI);
+ if(typeof syncVideos==='function')syncVideos();
+ return true}
 const GRADES={green:'#3cf0a0',mono:null,red:'#ff3040'};
 function drawLabClip(t){const c=cellc,W=1000,H=560,m=labMedia,el=m.el,iw=m.video?el.videoWidth:el.naturalWidth,ih=m.video?el.videoHeight:el.naturalHeight;
  c.fillStyle='#020504';c.fillRect(0,0,W,H);if(!iw)return;
@@ -1695,7 +1702,10 @@ const LPKEYS=Object.keys(LP),lpState=[null,null];
 function setPanel(i,key){const el=$('#lp'+i);lpState[i]=Object.create(LP[key]);lpState[i].init(el);$('#lp'+i+'t').textContent=LP[key].t;$('#lp'+i+'sel').value=key;lpState[i].key=key}
 for(const i of [0,1]){const sel=$('#lp'+i+'sel');sel.innerHTML=LPKEYS.map(k=>`<option value="${k}">${i?'Lower':'Upper'} panel: ${LP[k].t}</option>`).join('');sel.onchange=e=>setPanel(i,e.target.value)}
 {const pn=((C.lab&&C.lab.panels)||[]).filter(k=>LP[k]);setPanel(0,pn[0]||'dna');setPanel(1,pn[1]&&pn[1]!==pn[0]?pn[1]:(pn[0]==='serum'?'dna':'serum'))}
-function labT(t){const m=$('#labstage').value;return m==='anim'?t:({early:4,spread:21,full:46}[m]+Math.min(5,t*.04))}
+let LABOFF=null;
+function labT(t){
+ if(LABOFF!==null)return LABOFF+Math.min(5,t*.04);   /* a number in timeline.js */
+ const m=$('#labstage').value;return m==='anim'?t:({early:4,spread:21,full:46}[m]+Math.min(5,t*.04))}
 function drawLab(t,dt){if(labDue(performance.now()))drawCell(t);const lt=labT(t);for(const i of [0,1]){const st=lpState[i];const sm=st.upd($('#lp'+i),lt,dt);const e=$('#lp'+i+'s');if(e.textContent!==sm)e.textContent=sm}
  const f=sig(lt);$('#c1').textContent=(.4+f*6.1).toFixed(1)+'%/hr';$('#c2').textContent=Math.round(f*100)+'%';$('#c4').textContent=f<.2?'STABLE':f<.6?'DEGRADING':'CRITICAL';$('#c4').className=f<.2?'':'r';
  const inc=Math.max(60,840-Math.floor(lt*14));$('#c3').textContent='00:'+pad(Math.floor(inc/60))+':'+pad(inc%60)}
@@ -1780,7 +1790,7 @@ function startTx(){S.txT0=S.t;S.audioStarted=false;hist.fill(0);if(audio){audio.
 function unlockAudio(){if(!audio||!txLive())return;if(!audio.src)audio.src=TXC.audio;audio.muted=true;const p=audio.play();if(p)p.then(()=>{audio.pause();audio.muted=!soundOn;try{audio.currentTime=0}catch(e){}}).catch(()=>{audio.muted=!soundOn})}
 let PATS=[];const VP={get i(){return VPi}};
 function setPatient(i){VPi=(i+PATS.length)%PATS.length;const p=PATS[VPi];VB=Object.assign({hr:74,spo2:98,resp:16,bp:'118/76',temp:37},p.base||{});V.scen=SCEN[p.monitor]?p.monitor:'flat';$('#t-vbed').textContent='Patient Monitor  //  '+(p.bedline||'');vReset();S.modeT0=S.t;document.querySelectorAll('.subjchips button').forEach((b,j)=>b.classList.toggle('on',j===VPi))}
-const HINTS={files:'Pick a folder, then a message',term:'Type HELP, or tap a command',tx:'',cctv:'Pick a camera from the list · tap a feed to enlarge',map:'',alert:'',vitals:'Pick a subject top right, or tap the monitor',lab:'Tap the specimen: next stage · tap a panel to switch it',end:''};
+const HINTS={files:'Pick a folder, then a message',term:'Type HELP, or tap a command',tx:'',cctv:'Pick a camera from the list · tap a feed to enlarge',map:'',alert:'',vitals:'Pick a subject top right, or tap the monitor',lab:'Tap the specimen: next sample · tap a panel to switch it',end:''};
 function goMode(m){
  if(m==='end'){                      /* Respond = send the security team in */
   if(SQ.on)teamStop();
@@ -1799,7 +1809,7 @@ const TABMAP={facility:'map',security:'cctv',medical:'vitals',research:'lab',sys
  'security cameras':'cctv','communications':'tx','labs':'lab','specimen storage':'lab','biohazard monitoring':'lab','containment':'alert','staff tracking':'vitals','emergency protocols':'alert','diagnostics':'term','system logs':'files','facility map':'map'};
 document.querySelectorAll('.screen .tabs span:not(.search), #s-cctv .appbar>span, #side a').forEach(sp=>{const k=sp.textContent.trim().toLowerCase();if(TABMAP[k])sp.addEventListener('click',()=>{ac();goMode(TABMAP[k])})});
 $('#s-vitals .slot').addEventListener('click',()=>{ac();setPatient(VPi+1);glitch('shift')});
-$('#cell').addEventListener('click',()=>{ac();const sel=$('#labstage'),o=['anim','early','spread','full'],i=o.indexOf(sel.value);sel.value=o[(i+1)%4];if(sel.value==='anim')S.modeT0=S.t;glitch('rgb')});
+$('#cell').addEventListener('click',()=>{ac();nextLabClip();glitch('rgb')});
 [0,1].forEach(i=>$('#lp'+i).addEventListener('click',()=>{ac();const cur=lpState[i].key,other=lpState[1-i].key;let k=LPKEYS.indexOf(cur);do{k=(k+1)%LPKEYS.length}while(LPKEYS[k]===other);setPanel(i,LPKEYS[k]);glitch('shift')}));
 $('#s-alert').addEventListener('click',()=>{ac();glitch('flash')});
 /* apply content text */
@@ -1808,7 +1818,8 @@ $('#s-alert').addEventListener('click',()=>{ac();glitch('flash')});
  T('#t-feedlab',TXC.feedLabel);if(TXC.routing)$('#t-route').innerHTML=TXC.routing.map(l=>String(l).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))).join('<br>');
  const MP=C.map||{};T('#t-maptitle',MP.title);T('#t-mapfoot',MP.footer);
  const AL=C.alert||{};T('.t-alert',AL.title);T('.t-alertsub',AL.subtitle);T('#t-alertline',AL.line);
- const LB=C.lab||{};T('#t-labtitle',LB.title);if(LB.media)labMedia=mediaObj(LB.media);if(LB.grade&&GRADES[LB.grade]!==undefined)$('#labgrade').value=LB.grade;if(LB.overlay)$('#labov').value=LB.overlay;
+ const LB=C.lab||{};T('#t-labtitle',LB.title);LABCLIPS=((LB.clips&&LB.clips.length?LB.clips:[LB.media]).filter(Boolean));
+ LABOBJ=[];LABI=0;if(LABCLIPS.length)labMedia=labClip(0);if(LB.grade&&GRADES[LB.grade]!==undefined)$('#labgrade').value=LB.grade;if(LB.overlay)$('#labov').value=LB.overlay;
  const NV=C.nav||{};document.querySelectorAll('#webnav button[data-mode]').forEach(b=>{if(NV[b.dataset.mode])b.textContent=NV[b.dataset.mode]});
  const CN=C.connect||{};T('#c-kick',CN.kicker);T('#c-title',CN.title);T('#c-go',CN.button);T('#c-note',CN.note);
  document.title=(C.endCard&&C.endCard.kicker)||'Incoming Transmission';})();
@@ -1973,7 +1984,8 @@ function applyDay(){
  buildCamList();
  /* the rest of the facility */
  M=buildMap(S.seed);seedBreach(BREACH);logEl.innerHTML='';
- if(E.lab){$('#labstage').value=E.lab;S.modeT0=S.t}
+ if(typeof E.lab==='number'){LABOFF=E.lab;S.modeT0=S.t}
+ else if(E.lab){LABOFF=null;$('#labstage').value=E.lab;S.modeT0=S.t}
  const A=E.alert||{};if(A.title)document.querySelectorAll('.t-alert').forEach(e=>e.textContent=A.title);
  if(A.subtitle)document.querySelectorAll('.t-alertsub').forEach(e=>e.textContent=A.subtitle);
  if(A.line)$('#t-alertline').textContent=A.line;
