@@ -209,43 +209,46 @@ conference. Manage preferences at the link below.` },
 I did not register at a partner conference. I attended one.` },
 
   { folder: 'inbox', day: 4, time: '06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
-    to: 'Principal Investigator', subject: 'Community Digest #224 — the long quiet threads',
+    to: 'Principal Investigator', subject: 'Community Digest #224 — the absorbing state',
     body:
 `POST-VITAL WEEKLY
 Community Digest #224 · week of 26 October
 
 MOST DISCUSSED
 
-  The Tether (family and caregiver support)
-  Thread: "Day 340"
+  Institute of Actuaries, post-vital working party
+  Thread: "Death is no longer an absorbing state and the tables do
+  not survive it"
 
-  The Tether does not usually appear in this digest. It is a quiet
-  forum, it discourages crossposting, and its members have asked more
-  than once not to be studied. We are including this with the
-  author's permission and none of the usual commentary.
+  The working party's interim report is ninety pages and the whole
+  argument is in the first one.
 
-    Day 340. He still turns toward the door when the post arrives.
+  A mortality table assumes that death is absorbing: once you enter
+  the state you do not leave it, and every figure downstream depends
+  on that. Reserves, annuity pricing, the discount applied to a term
+  policy, the entire apparatus. None of it is a judgement about
+  mortality. It is a judgement about arithmetic, and the arithmetic
+  assumed one direction of travel.
 
-    The consultant was kind about it. She explained that it is sound
-    localisation, that the auditory reflex is subcortical and intact,
-    and that it is not recognition. She has explained this four
-    times. I understand it. I have understood it since the second
-    time.
+  Reanimation rates are small. The report is blunt that this does not
+  help. A small probability of leaving an absorbing state is not a
+  small correction to the model, because the model has no term for
+  it. You cannot adjust a number that was never there.
 
-    I am going to keep saying good morning to him. I am not confused
-    about what he is. I am doing it because of what I am.
-
-  The thread has four thousand replies and almost no argument in it,
-  which makes it the only one in the discourse this week that does
-  not appear to be about something else.
+  The recommendation causing the argument: that policies be repriced
+  against a two-state model with a return transition, and that the
+  industry stop describing the benefit as payable on death and start
+  describing it as payable on cessation of vitality. The consumer
+  groups have pointed out, correctly, that these are not the same
+  promise and that nobody bought the second one.
 
 ALSO THIS WEEK
 
   The Ambulatory Labour Project continues to document unpaid
   utilisation in three jurisdictions and continues to be unable to
-  identify a plaintiff. Their position is that the handlers are
-  owed hazard pay, which is uncontroversial, and that the handled are
-  owed something, which is the part nobody will take to a hearing.
+  identify a plaintiff. Their position is that the handlers are owed
+  hazard pay, which is uncontroversial, and that the handled are owed
+  something, which is the part nobody will take to a hearing.
 
   The Vital Line responded with their usual economy: "You cannot
   underpay a thing that cannot be paid. You can only underpay the
