@@ -45,7 +45,8 @@ window.EMAILS = {
     to: 'Principal Investigator', subject: 'Community Digest #184 — the word problem',
     body:
 `POST-VITAL WEEKLY · Community Digest #184
-Seven communities. Twelve minutes. Week of 12 January.
+What the post-vital community argued about this week.
+Seven groups. Twelve minutes. Week of 12 January.
 
 SETAFH · language & ethics
   Position paper on the Z-word dropped Tuesday. Their line, not ours:
@@ -85,7 +86,8 @@ conference. Manage preferences at the link below.` },
     files: ['directive_template_v4.pdf'],
     body:
 `POST-VITAL WEEKLY · Community Digest #198
-Eight communities. Week of 20 April.
+What the post-vital community argued about this week.
+Eight groups. Week of 20 April.
 
 THE THRESHOLD REVIEW · continuity
   Thread of the month: "Name the property. I'll wait." Four hundred
@@ -104,8 +106,8 @@ THE FENCE LINE · residents & property
   Forty pages and counting.
 
 LOCAL 2200 · containment operators
-  Hazard pay arbitration adjourned to June. Separately: still no good
-  gloves.
+  Hazard pay arbitration adjourned to June. Separately, and at
+  greater length: still no good gloves.
 
 SECOND LIVES · sighting network
   Launched a merch line. SETAFH objected to the wording. The Vital
@@ -118,8 +120,8 @@ THE SUNDAY GROUP · faith & practice
 BRIEFLY
   · Someone asked whether it happens to dogs. Nine hundred replies.
     No data. Everyone has a theory and a photograph of their dog.
-  · Post-Vital Media Watch is now moderating its own comment section
-    by hand after the bot kept removing the word.
+  · Post-Vital Media Watch is moderating its comments by hand after
+    the filter kept deleting the word they are arguing about.
 
 You are receiving this digest because you registered at a partner
 conference. Manage preferences at the link below.` },
@@ -128,7 +130,8 @@ conference. Manage preferences at the link below.` },
     to: 'Principal Investigator', subject: 'Community Digest #213 — the Hollings decision',
     body:
 `POST-VITAL WEEKLY · Community Digest #213
-Eight communities. Week of 3 August.
+What the post-vital community argued about this week.
+Eight groups. Week of 3 August.
 
 REANIMATION & ESTATES · practitioner listserv
   Hollings came down Monday. Man dies in March, estate distributed in
@@ -160,7 +163,7 @@ SECOND LIVES · sighting network
   with a donation banner.
 
 BRIEFLY
-  · The dog thread reopened. Still no data.
+  · The dog thread reopened. Still no data. Still everyone's dog.
   · A SETAFH chapter and a Vital Line chapter booked the same
     community hall and have agreed to share it, which is the most
     encouraging thing in this digest.
@@ -179,9 +182,10 @@ I did not register at a partner conference. I attended one.` },
     to: 'Principal Investigator', subject: 'Community Digest #224 — the absorbing state',
     body:
 `POST-VITAL WEEKLY · Community Digest #224
-Nine communities. Week of 26 October.
+What the post-vital community argued about this week.
+Nine groups. Week of 26 October.
 
-INSTITUTE OF ACTUARIES · post-vital working party
+INSTITUTE OF ACTUARIES · insurance & pricing
   Interim report, ninety pages, one idea: a mortality table assumes
   death is absorbing. You go in, you don't come out, and every figure
   downstream rests on that. The rates are tiny and the report is
@@ -192,31 +196,36 @@ INSTITUTE OF ACTUARIES · post-vital working party
   payable on cessation of vitality. Consumer groups note these are
   not the same promise and nobody bought the second one.
 
-AMBULATORY LABOUR PROJECT
+AMBULATORY LABOUR PROJECT · work & wages
   Unpaid utilisation documented in three jurisdictions. Still cannot
   find a plaintiff. The Vital Line: "You cannot underpay a thing that
   cannot be paid. You can only underpay the person you are pretending
   it is." Two years, no proper answer, thousands of loud ones.
 
-THE FENCE LINE · residents & property
+THE FENCE LINE · residents & ordinances
   Halloween guidance issued in four counties. Two ask residents to
   avoid the costume. One asks them to avoid the decoration. One asks
   them to avoid the subject.
 
 LOCAL 2200 · containment operators
-  New gloves. Thread is now about the old gloves.
+  Two years of this local's board has been one thread about glove
+  failures. Management finally issued new gloves. The thread is now
+  about the old gloves.
 
 SECOND LIVES · sighting network
-  Seasonal traffic spike. Mods have pre-emptively locked the map
-  until November 2nd, which went down about as well as expected.
+  The members' map gets a seasonal traffic spike, so the mods have
+  locked it until November 2nd. This went down about as well as
+  every other time they have locked it.
 
-SETAFH
-  Annual statement on Halloween, same as every year, slightly
-  shorter. They have stopped explaining and started linking.
+SETAFH · language & ethics
+  Annual Halloween statement, same as every year and a little
+  shorter. Since their Z-word paper they have stopped explaining and
+  started linking to it.
 
 BRIEFLY
-  · The dog thread is open again. There is now data. It is one
-    photograph and it is not conclusive.
+  · Somebody asked in April whether it happens to dogs. Nine hundred
+    replies, no data, and every member's own dog as evidence. This
+    week the thread produced a photograph. It is not conclusive.
   · Somebody asked what the plural is. Nobody has recovered.
 
 You are receiving this digest because you registered at a partner
