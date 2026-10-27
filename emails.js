@@ -44,52 +44,38 @@ window.EMAILS = {
   { folder: 'archive', date: '2026-01-16 06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
     to: 'Principal Investigator', subject: 'Community Digest #184 — the word problem',
     body:
-`POST-VITAL WEEKLY
-Community Digest #184 · week of 12 January
+`POST-VITAL WEEKLY · Community Digest #184
+Seven communities. Twelve minutes. Week of 12 January.
 
-MOST DISCUSSED
+SETAFH · language & ethics
+  Position paper on the Z-word dropped Tuesday. Their line, not ours:
+  every term we have was coined from behind a barricade. Six hundred
+  replies, no agreement, one new word that nobody likes.
 
-  Society for the Ethical Treatment of Ambulatory Former Humans
-  Thread: "Every word we have was coined from behind a barricade"
+THE VITAL LINE · skeptics
+  Quarterly rebuttal. "The question is not whether they are people.
+  The question is why we need them to be." Widely quoted this week,
+  almost entirely by people arguing against it.
 
-  SETAFH's language working group published its position paper on
-  Tuesday and it has not stopped arguing since. The central claim is
-  narrower than the headlines suggest. They are not saying the word
-  is hurtful. They are saying it is unearned.
+THE FENCE LINE · residents & property
+  Millbrook voted 40-38 to keep "zombie" in the ordinance title. Not
+  on principle. Changing it means re-notifying every household and
+  the clerk is on leave until February.
 
-  "Zombie" is borrowed from Haitian tradition, where it meant
-  something specific and meant it first. It was taken, emptied, and
-  reapplied to a population that did not exist when the word was
-  made. Whatever else that is, it is not description.
+LOCAL 2200 · containment operators
+  The glove failure thread passed eight hundred posts and has become
+  a thread about who gets the good gloves.
 
-  "The walking dead" asks you to hold two claims at once and settle
-  neither. If they are dead, the walking needs explaining. If they
-  walk, the dead is doing work it cannot support. The phrase survives
-  because it lets us stop thinking at exactly the point where
-  thinking becomes expensive.
+SECOND LIVES · sighting network
+  Mods locked the map again after a user geotagged a residential
+  address. Third time since October. The apology post is longer than
+  the rules.
 
-  The paper's conclusion is the part worth reading twice: we do not
-  lack a word because the thing is new. We lack a word because we
-  have not decided what it is, and the terms we use are a way of not
-  having to decide.
-
-  DISSENT WITHIN THE RANKS. The proposed replacement — "post-vital
-  individual" — took heavy fire from SETAFH's own membership, who
-  note that a neutral term makes a containment order easier to sign
-  than an ugly one does. User greywall_7: "You have invented a word
-  that will appear on the form. Congratulations."
-
-ALSO THIS WEEK
-
-  The Vital Line (skeptic forum) ran its quarterly rebuttal. Their
-  position remains the most uncomfortable one in the discourse: that
-  attributing interiority to anything that moves toward us is an
-  ancient reflex, not an observation, and that the entire field is
-  the reflex wearing a lab coat. Their closing line got quoted
-  everywhere this week, mostly by people arguing against it:
-
-  "The question is not whether they are people. The question is why
-  we need them to be."
+BRIEFLY
+  · SETAFH asked an Etsy seller to stop printing their slogan on tote
+    bags. The seller is a SETAFH member. It is being handled badly.
+  · The Threshold Review's server bill is overdue and somebody has
+    started a thread about whether that is symbolic.
 
 You are receiving this digest because you registered at a partner
 conference. Manage preferences at the link below.` },
@@ -98,54 +84,42 @@ conference. Manage preferences at the link below.` },
     to: 'Principal Investigator', subject: 'Community Digest #198 — name the property',
     files: ['directive_template_v4.pdf'],
     body:
-`POST-VITAL WEEKLY
-Community Digest #198 · week of 20 April
+`POST-VITAL WEEKLY · Community Digest #198
+Eight communities. Week of 20 April.
 
-MOST DISCUSSED
+THE THRESHOLD REVIEW · continuity
+  Thread of the month: "Name the property. I'll wait." Four hundred
+  posts, question still unanswered, which the author says is the
+  answer. Best reply came from their own side: "Then name the
+  preference test, and tell me you would pass it on your worst day."
 
-  The Threshold Review (continuity working group)
-  Thread: "Name the property. I'll wait."
+ADVANCE DIRECTIVE PROJECT
+  Template v4 attached. Four hundred thousand filings, none honoured
+  anywhere. The obstacle is not hostility, it is paperwork: the
+  instrument is void at exactly the moment it applies.
 
-  The thread is four hundred posts long and the original question has
-  never been answered, which is the point its author was making.
+THE FENCE LINE · residents & property
+  Two towns now require a sign. One requires it on the house, one
+  requires it on the gate, and the border runs through a cul-de-sac.
+  Forty pages and counting.
 
-  The challenge: identify the property whose loss ends personhood,
-  such that the reanimated lack it and you do not. Continuity of
-  experience fails — we grant it across general anaesthesia, where
-  there is no experience to be continuous with. Continuity of memory
-  fails — we grant it across severe retrograde amnesia, and we do not
-  hold a funeral. Continuity of matter fails on a timescale of years
-  for everyone in this discussion.
+LOCAL 2200 · containment operators
+  Hazard pay arbitration adjourned to June. Separately: still no good
+  gloves.
 
-  Responsiveness to name and to pain is the clinical standard, and it
-  is the one that comes closest. But we do not withdraw personhood
-  from patients in minimally conscious states who fail the same
-  battery on the same afternoon. We withdraw it here. The working
-  group's question is what is doing the work in one case and not the
-  other, and whether we would accept the answer out loud.
+SECOND LIVES · sighting network
+  Launched a merch line. SETAFH objected to the wording. The Vital
+  Line objected to the existence. Sales are reportedly strong.
 
-  The best counter-argument came from within: that the property is
-  the capacity to hold a preference. The reply has been widely
-  circulated — "Then name the preference test, and tell me you would
-  pass it on your worst day."
+THE SUNDAY GROUP · faith & practice
+  Still arguing about whether the funeral counts if it has to be held
+  twice. The pastoral guidance says yes. Nobody's family agrees.
 
-ADVANCE DIRECTIVES
-
-  Template v4 is attached and the uptake numbers are the story. Four
-  hundred thousand filings in eighteen months, the standard clause
-  reading: in the event of post-vital ambulation, I do not consent to
-  cranial destruction.
-
-  No jurisdiction has honoured one. The obstacle is structural rather
-  than hostile: a directive is executed on behalf of a person, and
-  the moment it becomes relevant there is no longer a person for it
-  to be executed on behalf of. It is the only legal instrument we
-  have that is void precisely when it applies.
-
-  The counter-argument the courts have not answered: we already
-  honour directives as a matter of respecting the prior self's wishes
-  about the later self's body. Nothing in that reasoning stops at
-  death. We simply have not needed it to continue past death before.
+BRIEFLY
+  · Someone asked whether it happens to dogs. Nine hundred replies.
+    No data. Everyone has a theory and a photograph of their dog.
+  · Post-Vital Media Watch is now moderating its own comment section
+    by hand after the bot kept removing the word.
 
 You are receiving this digest because you registered at a partner
 conference. Manage preferences at the link below.` },
@@ -153,50 +127,43 @@ conference. Manage preferences at the link below.` },
   { folder: 'archive', date: '2026-08-07 06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
     to: 'Principal Investigator', subject: 'Community Digest #213 — the Hollings decision',
     body:
-`POST-VITAL WEEKLY
-Community Digest #213 · week of 3 August
+`POST-VITAL WEEKLY · Community Digest #213
+Eight communities. Week of 3 August.
 
-MOST DISCUSSED
+REANIMATION & ESTATES · practitioner listserv
+  Hollings came down Monday. Man dies in March, estate distributed in
+  June, man returns in July. Court held the distribution final. He
+  cannot appeal, because a plaintiff has to be a person and the court
+  had just finished explaining he isn't one.
 
-  Reanimation & Estates (practitioner listserv)
-  Thread: "Hollings — read it before you tell me it is simple"
+  Subscriber of the week: "Not dead enough to bury, not alive enough
+  to sue. He is in his daughter's garage."
 
-  The appellate decision landed Monday and the listserv has produced
-  more traffic in four days than in the preceding year.
+  The insurer has filed on the opposite theory to claw the payout
+  back. SETAFH filed in support of the insurer. Nobody is happy.
 
-  Facts, briefly. Decedent died in March. Estate was probated and
-  distributed in June. Decedent returned, ambulatory, in July, eleven
-  days after the final accounting was approved.
+POST-VITAL MEDIA WATCH
+  Annual footage audit. Every clip in the archive was filmed by
+  somebody who survived to keep it. "We do not have a base rate of
+  attack. We have a base rate of filmed attack, and it is one hundred
+  per cent, and it was always going to be."
 
-  The heirs argued that death is an event, not a state: it occurred,
-  the instrument executed, and the distribution is final regardless
-  of what the decedent does afterwards. The court agreed. The estate
-  was not unwound.
+THE FENCE LINE · residents & property
+  Millbrook ordinance amended. The sign must now be reflective. The
+  thread about sign dimensions is longer than the ordinance.
 
-  The part drawing the attention is the standing analysis. The
-  decedent could not challenge the ruling, because a plaintiff must
-  be a person and the court had just finished explaining that he was
-  not one. He is, as one subscriber put it, not dead enough to be
-  buried and not alive enough to sue. He is in his daughter's garage.
+LOCAL 2200 · containment operators
+  Four members suspended over a video. The video is of the gloves.
 
-  The insurers have already filed on the opposite theory — that the
-  policy insured against death, that death has evidently proven
-  survivable, and that the benefit should be clawed back. They are
-  arguing the decedent is not dead. SETAFH filed an amicus brief
-  supporting the insurers, which has caused a certain amount of
-  difficulty for everybody.
+SECOND LIVES · sighting network
+  Site down two days after the Hollings coverage. Back up, slower,
+  with a donation banner.
 
-ALSO THIS WEEK
-
-  Post-Vital Media Watch published its annual footage audit, and the
-  methodology section is better than the finding. Every piece of
-  encounter footage in the archive was recorded by someone who
-  survived to retain it. The archive therefore excludes, by
-  construction, every encounter that ended without incident.
-
-  "We do not have a base rate of attack," the report notes. "We have
-  a base rate of filmed attack, and it is one hundred per cent, and
-  it was always going to be."
+BRIEFLY
+  · The dog thread reopened. Still no data.
+  · A SETAFH chapter and a Vital Line chapter booked the same
+    community hall and have agreed to share it, which is the most
+    encouraging thing in this digest.
 
 You are receiving this digest because you registered at a partner
 conference. Manage preferences at the link below.` },
@@ -211,99 +178,84 @@ I did not register at a partner conference. I attended one.` },
   { folder: 'inbox', day: 4, time: '06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
     to: 'Principal Investigator', subject: 'Community Digest #224 — the absorbing state',
     body:
-`POST-VITAL WEEKLY
-Community Digest #224 · week of 26 October
+`POST-VITAL WEEKLY · Community Digest #224
+Nine communities. Week of 26 October.
 
-MOST DISCUSSED
+INSTITUTE OF ACTUARIES · post-vital working party
+  Interim report, ninety pages, one idea: a mortality table assumes
+  death is absorbing. You go in, you don't come out, and every figure
+  downstream rests on that. The rates are tiny and the report is
+  blunt that this doesn't help — you can't adjust a number the model
+  never had.
 
-  Institute of Actuaries, post-vital working party
-  Thread: "Death is no longer an absorbing state and the tables do
-  not survive it"
+  Proposed fix: stop calling it payable on death, start calling it
+  payable on cessation of vitality. Consumer groups note these are
+  not the same promise and nobody bought the second one.
 
-  The working party's interim report is ninety pages and the whole
-  argument is in the first one.
+AMBULATORY LABOUR PROJECT
+  Unpaid utilisation documented in three jurisdictions. Still cannot
+  find a plaintiff. The Vital Line: "You cannot underpay a thing that
+  cannot be paid. You can only underpay the person you are pretending
+  it is." Two years, no proper answer, thousands of loud ones.
 
-  A mortality table assumes that death is absorbing: once you enter
-  the state you do not leave it, and every figure downstream depends
-  on that. Reserves, annuity pricing, the discount applied to a term
-  policy, the entire apparatus. None of it is a judgement about
-  mortality. It is a judgement about arithmetic, and the arithmetic
-  assumed one direction of travel.
+THE FENCE LINE · residents & property
+  Halloween guidance issued in four counties. Two ask residents to
+  avoid the costume. One asks them to avoid the decoration. One asks
+  them to avoid the subject.
 
-  Reanimation rates are small. The report is blunt that this does not
-  help. A small probability of leaving an absorbing state is not a
-  small correction to the model, because the model has no term for
-  it. You cannot adjust a number that was never there.
+LOCAL 2200 · containment operators
+  New gloves. Thread is now about the old gloves.
 
-  The recommendation causing the argument: that policies be repriced
-  against a two-state model with a return transition, and that the
-  industry stop describing the benefit as payable on death and start
-  describing it as payable on cessation of vitality. The consumer
-  groups have pointed out, correctly, that these are not the same
-  promise and that nobody bought the second one.
+SECOND LIVES · sighting network
+  Seasonal traffic spike. Mods have pre-emptively locked the map
+  until November 2nd, which went down about as well as expected.
 
-ALSO THIS WEEK
+SETAFH
+  Annual statement on Halloween, same as every year, slightly
+  shorter. They have stopped explaining and started linking.
 
-  The Ambulatory Labour Project continues to document unpaid
-  utilisation in three jurisdictions and continues to be unable to
-  identify a plaintiff. Their position is that the handlers are owed
-  hazard pay, which is uncontroversial, and that the handled are owed
-  something, which is the part nobody will take to a hearing.
-
-  The Vital Line responded with their usual economy: "You cannot
-  underpay a thing that cannot be paid. You can only underpay the
-  person you are pretending it is."
-
-  Nobody has answered them properly in two years. Several thousand
-  people have answered them loudly.
+BRIEFLY
+  · The dog thread is open again. There is now data. It is one
+    photograph and it is not conclusive.
+  · Somebody asked what the plural is. Nobody has recovered.
 
 You are receiving this digest because you registered at a partner
 conference. Manage preferences at the link below.` },
 
   { folder: 'inbox', day: 1, time: '06:00', flag: true, from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
-    to: 'Principal Investigator', subject: 'SPECIAL EDITION — containment research and the consent problem',
+    to: 'Principal Investigator', subject: 'SPECIAL EDITION — containment research',
     body:
-`POST-VITAL WEEKLY
-Special Edition · 29 October
+`POST-VITAL WEEKLY · Special Edition
+29 October. We are off schedule. The reason is below.
 
-We are off schedule this week. The reason is below.
+A JOINT STATEMENT
 
-THE CONSENT PROBLEM
+  SETAFH, The Threshold Review and the Ambulatory Labour Project
+  agree on almost nothing and have never co-signed anything. This
+  week they did. It is four sentences:
 
-  SETAFH, The Threshold Review and the Ambulatory Labour Project have
-  issued a joint statement. The three organisations agree on almost
-  nothing and have never co-signed anything before.
+    Every facility doing this work holds an exemption on the same
+    ground — that the subject was not a living human subject at
+    intake. The finding is made once, at the one moment the subject
+    cannot object, and never made again.
 
-  The statement concerns containment research. Its argument is short
-  enough to reproduce in full:
+    We do not dispute the finding. We dispute that making it once
+    counts as making it.
 
-    Every facility conducting this work has obtained an exemption on
-    the same ground: that the subject was not a living human subject
-    at the point of enrolment. The determination is made once, at
-    intake, and it is never revisited.
-
-    We do not dispute the finding. We dispute the timing. A
-    determination made at the one moment when the subject cannot
-    object, and never made again, is not a finding. It is a
-    procedure for avoiding one.
-
-    We ask that status be redetermined at intervals, by someone who
-    did not enrol them.
+  They are asking for redetermination at intervals, by somebody who
+  did not do the enrolling.
 
   We are aware that a portion of this list works at such facilities.
   We have not removed anyone from the distribution. We would rather
   you read it.
 
-ONE MORE THING
-
-  The Vital Line declined to sign, and published their reasons, and
-  for once they are not the most uncomfortable voice in the room:
+THE VITAL LINE declined to sign and published why. For once they are
+not the most uncomfortable voice in the room:
 
   "We have said for four years that these are not people. We have
   never once said that this makes them yours."
 
-You are receiving this digest because you registered at a partner
-conference. Manage preferences at the link below.` },
+Regular digest resumes Monday.` },
 
   /* ---------- the review board ---------- */
   { folder: 'sent', date: '2025-11-04 16:22', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
