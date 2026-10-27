@@ -41,24 +41,37 @@ window.EMAILS = {
 
   /* ---------- a newsletter the PI never quite unsubscribed from ---------- */
 
-  { folder: 'archive', date: '2026-01-16 06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
-    to: 'Principal Investigator', subject: 'Community Digest #184 — the word problem',
+  { folder: 'archive', date: '2026-01-16 06:00', from: 'BRAINZ!', addr: 'digest@brainz-weekly.org',
+    to: 'Principal Investigator', subject: 'BRAINZ! #184 — the word problem',
     body:
-`POST-VITAL WEEKLY · Community Digest #184
-What the post-vital community argued about this week.
+`BRAINZ!  ·  Issue 184
+What the AFH community argued about this week.
 Seven groups. Twelve minutes. Week of 12 January.
 
 SETAFH · Society for the Ethical Treatment of Ambulatory Former Humans
   Position paper on the Z-word dropped Tuesday. Their line, not ours:
-  every term we have was coined from behind a barricade. Six hundred
-  replies, no agreement, one new word that nobody likes.
+  every word we have was coined from behind a barricade. "Shambler"
+  describes a limp. "Biter" describes one afternoon. "Walker"
+  describes walking, which most of us also do.
+  Six hundred replies, no agreement, and one new term that nobody
+  likes, including them.
+
+  They have asked us to change our name. We note the request with
+  warmth, as we do annually.
+
+GAIT & LOCOMOTION GROUP · why some lurk and some charge
+  A member built a chart sorting observed individuals into Shamblers,
+  Striders and Sprinters. It is colour-coded. It has a legend.
+  The group's researchers pointed out that nothing in the data
+  supports three categories, or any categories.
+  The chart now has four hundred replies and a Roman numeral.
 
 THE VITAL LINE · skeptics
   Quarterly rebuttal. "The question is not whether they are people.
-  The question is why we need them to be." Widely quoted this week,
-  almost entirely by people arguing against it.
+  The question is why we need them to be." Quoted everywhere this
+  week, almost entirely by people arguing against it.
 
-THE FENCE LINE · residents & property
+THE FENCE LINE · residents & ordinances
   Millbrook voted 40-38 to keep "zombie" in the ordinance title. Not
   on principle. Changing it means re-notifying every household and
   the clerk is on leave until February.
@@ -68,140 +81,186 @@ LOCAL 2200 · containment operators
   a thread about who gets the good gloves.
 
 SECOND LIVES · sighting network
-  Mods locked the map again after a user geotagged a residential
-  address. Third time since October. The apology post is longer than
-  the rules.
+  Mods locked the members' map after somebody geotagged a residential
+  address. Third time since October. The apology is longer than the
+  rules it apologises for.
 
 BRIEFLY
   · SETAFH asked an Etsy seller to stop printing their slogan on tote
     bags. The seller is a SETAFH member. It is being handled badly.
-  · The Threshold Review's server bill is overdue and somebody has
-    started a thread about whether that is symbolic.
+  · Somebody asked whether they can climb. They can. Briefly. Once.
 
-You are receiving this digest because you registered at a partner
+You are receiving BRAINZ! because you registered at a partner
 conference. Manage preferences at the link below.` },
 
-  { folder: 'archive', date: '2026-04-24 06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
-    to: 'Principal Investigator', subject: 'Community Digest #198 — name the property',
-    files: ['directive_template_v4.pdf'],
+  { folder: 'archive', date: '2026-04-24 06:00', from: 'BRAINZ!', addr: 'digest@brainz-weekly.org',
+    to: 'Principal Investigator', subject: 'BRAINZ! #198 — the twelve-week trial',
     body:
-`POST-VITAL WEEKLY · Community Digest #198
-What the post-vital community argued about this week.
+`BRAINZ!  ·  Issue 198
+What the AFH community argued about this week.
 Eight groups. Week of 20 April.
 
-THE THRESHOLD REVIEW · continuity
-  Thread of the month: "Name the property. I'll wait." Four hundred
-  posts, question still unanswered, which the author says is the
-  answer. Best reply came from their own side: "Then name the
-  preference test, and tell me you would pass it on your worst day."
+REACH & REPEAT · rehabilitation network
+  Ethics approval came through for the ambulation trial after
+  fourteen months. Twelve weeks, forty participants, supervised gait
+  work three times a week.
+  The stated aim is quality of life. The funding application says
+  quality of life nine times and does not define it once, which the
+  reviewers flagged and approved anyway.
+  Recruitment is reportedly straightforward. Nobody declines.
 
-ADVANCE DIRECTIVE PROJECT
-  Template v4 attached. Four hundred thousand filings, none honoured
-  anywhere. The obstacle is not hostility, it is paperwork: the
-  instrument is void at exactly the moment it applies.
+THE MOAN CORPUS · vocalisation study
+  Funding refused. The reviewer's comment has been framed and hung in
+  the lab: "What would you do with it if you had it?"
+  They are reapplying. The new application answers the question at
+  length and the lead investigator describes the answer as "spirited".
 
-THE FENCE LINE · residents & property
-  Two towns now require a sign. One requires it on the house, one
-  requires it on the gate, and the border runs through a cul-de-sac.
-  Forty pages and counting.
+GAIT & LOCOMOTION GROUP · why some lurk and some charge
+  Field season opened. Early note from the group: individuals
+  observed in the morning are consistently quicker than individuals
+  observed at night, and it is the same individuals.
+  The chart community has been informed and is unwell.
+
+THE FENCE LINE · residents & ordinances
+  Two towns now require a warning sign. One requires it on the house,
+  one on the gate, and the boundary runs through a cul-de-sac.
+  Forty pages and counting. Nobody has mentioned the houses.
 
 LOCAL 2200 · containment operators
   Hazard pay arbitration adjourned to June. Separately, and at
-  greater length: still no good gloves.
+  considerably greater length: still no good gloves.
 
 SECOND LIVES · sighting network
   Launched a merch line. SETAFH, who exist to object to wording,
-  objected to the wording. The Vital
-  Line objected to the existence. Sales are reportedly strong.
+  objected to the wording. The Vital Line objected to the existence.
+  Sales are reportedly strong.
 
-THE SUNDAY GROUP · faith & practice
-  Still arguing about whether the funeral counts if it has to be held
-  twice. The pastoral guidance says yes. Nobody's family agrees.
+APPETITE WORKING GROUP · feeding behaviour
+  Asked a streaming series to add a note clarifying that the cranial
+  preference is not documented anywhere. The series added it to the
+  end credits, where it appears for one second at double speed.
+  The group is calling this a win and we admire that.
 
 BRIEFLY
-  · Someone asked whether it happens to dogs. Nine hundred replies.
-    No data. Everyone has a theory and a photograph of their dog.
-  · Post-Vital Media Watch is moderating its comments by hand after
-    the filter kept deleting the word they are arguing about.
+  · Somebody asked whether it happens to dogs. Nine hundred replies.
+    No data. Every member has a theory and a photograph of their dog.
+  · Media Watch is moderating comments by hand after the filter kept
+    deleting the word they are arguing about.
 
-You are receiving this digest because you registered at a partner
+You are receiving BRAINZ! because you registered at a partner
 conference. Manage preferences at the link below.` },
 
-  { folder: 'archive', date: '2026-08-07 06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
-    to: 'Principal Investigator', subject: 'Community Digest #213 — the Hollings decision',
+  { folder: 'archive', date: '2026-08-07 06:00', from: 'BRAINZ!', addr: 'digest@brainz-weekly.org',
+    to: 'Principal Investigator', subject: 'BRAINZ! #213 — one population and a thermometer',
     body:
-`POST-VITAL WEEKLY · Community Digest #213
-What the post-vital community argued about this week.
+`BRAINZ!  ·  Issue 213
+What the AFH community argued about this week.
 Eight groups. Week of 3 August.
 
-REANIMATION & ESTATES · practitioner listserv
-  Hollings came down Monday. Man dies in March, estate distributed in
-  June, man returns in July. Court held the distribution final. He
-  cannot appeal, because a plaintiff has to be a person and the court
-  had just finished explaining he isn't one.
+GAIT & LOCOMOTION GROUP · why some lurk and some charge
+  The preprint landed Monday and the community has not stopped since.
+  The finding: speed tracks ambient temperature, hours upright, and
+  soft-tissue condition at the hip and ankle. It does not track type,
+  because there is no type.
+  A charger at two in the afternoon is a shambler by midnight. The
+  same one. They followed him for nine days.
 
-  Subscriber of the week: "Not dead enough to bury, not alive enough
-  to sue. He is in his daughter's garage."
+  The sentence doing the damage: "You are not observing two species.
+  You are observing one population and a weather report."
 
-  The insurer has filed on the opposite theory to claw the payout
-  back. SETAFH filed in support of the insurer. Nobody is happy.
+  The chart community has produced a rebuttal chart.
 
-POST-VITAL MEDIA WATCH
-  Annual footage audit. Every clip in the archive was filmed by
-  somebody who survived to keep it. "We do not have a base rate of
-  attack. We have a base rate of filmed attack, and it is one hundred
-  per cent, and it was always going to be."
+APPETITE WORKING GROUP · feeding behaviour
+  Tracked the cranial preference claim to a single 1985 film and
+  wrote to the director, who replied, at length, that it was a joke.
+  They have published the letter. He has asked them to stop
+  publishing the letter.
 
-THE FENCE LINE · residents & property
-  Millbrook ordinance amended. The sign must now be reflective. The
-  thread about sign dimensions is longer than the ordinance.
+POST-VITAL MEDIA WATCH · depictions
+  Annual footage audit, and the methodology is better than the
+  finding. Every clip in the archive was filmed by somebody who
+  stayed to keep filming. The archive therefore excludes every
+  encounter that ended with a person getting bored and going inside.
+  "We do not have a base rate of attack. We have a base rate of
+  filmed attack. It is one hundred per cent and it was always going
+  to be."
 
 LOCAL 2200 · containment operators
   Four members suspended over a video. The video is of the gloves.
 
+THE FENCE LINE · residents & ordinances
+  Millbrook ordinance amended: the sign must now be reflective. The
+  thread about sign dimensions is longer than the ordinance, the
+  amendment, and the original complaint combined.
+
 SECOND LIVES · sighting network
-  Site down two days after the Hollings coverage. Back up, slower,
-  with a donation banner.
+  Site down two days under the preprint traffic. Back up, slower,
+  with a donation banner and a note about bandwidth that is somehow
+  also about the mods.
 
 BRIEFLY
-  · The dog thread reopened. Still no data. Still everyone's dog.
+  · The dog thread reopened. Still no data. Still everybody's dog.
   · A SETAFH chapter and a Vital Line chapter booked the same
-    community hall and have agreed to share it, which is the most
-    encouraging thing in this digest.
+    community hall and agreed to share it, which is the most
+    encouraging item in this issue.
 
-You are receiving this digest because you registered at a partner
+You are receiving BRAINZ! because you registered at a partner
 conference. Manage preferences at the link below.` },
 
   { folder: 'sent', date: '2026-08-07 09:12', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
-    to: 'Post-Vital Weekly', subject: 'Unsubscribe',
+    to: 'BRAINZ!', subject: 'Unsubscribe',
     body:
 `Please remove this address.
 
 I did not register at a partner conference. I attended one.` },
 
-  { folder: 'inbox', day: 4, time: '06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
-    to: 'Principal Investigator', subject: 'Community Digest #224 — the absorbing state',
+  { folder: 'inbox', day: 4, time: '06:00', from: 'BRAINZ!', addr: 'digest@brainz-weekly.org',
+    to: 'Principal Investigator', subject: 'BRAINZ! #224 — we have made them better at it',
     body:
-`POST-VITAL WEEKLY · Community Digest #224
-What the post-vital community argued about this week.
+`BRAINZ!  ·  Issue 224
+What the AFH community argued about this week.
 Nine groups. Week of 26 October.
 
-INSTITUTE OF ACTUARIES · insurance & pricing
-  Interim report, ninety pages, one idea: a mortality table assumes
-  death is absorbing. You go in, you don't come out, and every figure
-  downstream rests on that. The rates are tiny and the report is
-  blunt that this doesn't help — you can't adjust a number the model
-  never had.
+REACH & REPEAT · rehabilitation network
+  Twelve-week ambulation trial reported. Gait quality improved
+  measurably. Aggression incidents fell by a third. Three
+  participants can now manage stairs.
+  Then the finding nobody wanted: the participants who improved most
+  are the ones who can now move fastest.
+  The ethics panel has split and the minority report is one sentence.
+  "We have made them better. We have also made them better at it."
 
-  Proposed fix: stop calling it payable on death, start calling it
-  payable on cessation of vitality. Consumer groups note these are
-  not the same promise and nobody bought the second one.
+  The speech wing reports three reliably distinguishable
+  vocalisations after six months of articulation work. One
+  participant may have produced "door". The argument about whether
+  that counts is now longer than the study, the trial, and the
+  fourteen months of ethics approval that preceded both.
 
-AMBULATORY LABOUR PROJECT · work & wages
-  Unpaid utilisation documented in three jurisdictions. Still cannot
-  find a plaintiff. The Vital Line: "You cannot underpay a thing that
-  cannot be paid. You can only underpay the person you are pretending
-  it is." Two years, no proper answer, thousands of loud ones.
+GAIT & LOCOMOTION GROUP · why some lurk and some charge
+  Following the summer preprint, the group has asked the community to
+  retire the words Shambler, Strider and Sprinter on the grounds that
+  all three describe the same individual on different afternoons.
+  The chart community has retired nothing. The chart now has tabs.
+
+THE MOAN CORPUS · vocalisation study
+  Forty thousand recordings analysed. The moan has consistent
+  internal structure, varies reliably between individuals, and
+  changes when others are present.
+  "We can tell you it is not random. We cannot tell you it is speech.
+  We would like more funding and fewer journalists."
+
+APPETITE WORKING GROUP · feeding behaviour
+  Forty years of observation and not one verified instance of
+  selective cranial preference. Not once. The group has formally
+  asked media outlets to stop repeating it.
+  This newsletter has been contacted. This newsletter has no comment.
+
+SETAFH · Society for the Ethical Treatment of Ambulatory Former Humans
+  Annual Halloween statement, same as every year and a little
+  shorter. Since the Z-word paper they have stopped explaining and
+  started linking.
+  They have also asked us to change our name. They ask every year. We
+  remain fond of it.
 
 THE FENCE LINE · residents & ordinances
   Halloween guidance issued in four counties. Two ask residents to
@@ -214,36 +273,41 @@ LOCAL 2200 · containment operators
   about the old gloves.
 
 SECOND LIVES · sighting network
-  The members' map gets a seasonal traffic spike, so the mods have
-  locked it until November 2nd. This went down about as well as
-  every other time they have locked it.
+  Members' map locked until November 2nd for the seasonal traffic.
+  This went down about as well as every other time they have locked
+  it, which they knew, and did anyway, and said so.
 
-SETAFH · Ethical Treatment of Ambulatory Former Humans
-  Annual Halloween statement, same as every year and a little
-  shorter. Since their Z-word paper they have stopped explaining and
-  started linking to it.
+THE VITAL LINE · skeptics
+  "The question is not whether they are people. The question is why
+  we need them to be."
+  Two years, no proper answer, several thousand loud ones.
 
 BRIEFLY
   · Somebody asked in April whether it happens to dogs. Nine hundred
-    replies, no data, and every member's own dog as evidence. This
-    week the thread produced a photograph. It is not conclusive.
+    replies, no data, every member's own dog entered as evidence.
+    This week the thread produced a photograph. It is not conclusive.
+    Nothing about it is conclusive. It is a photograph of a dog.
   · Somebody asked what the plural is. Nobody has recovered.
 
-You are receiving this digest because you registered at a partner
+You are receiving BRAINZ! because you registered at a partner
 conference. Manage preferences at the link below.` },
 
-  { folder: 'inbox', day: 1, time: '06:00', flag: true, from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
-    to: 'Principal Investigator', subject: 'SPECIAL EDITION — containment research',
+  { folder: 'inbox', day: 1, time: '06:00', flag: true, from: 'BRAINZ!', addr: 'digest@brainz-weekly.org',
+    to: 'Principal Investigator', subject: 'BRAINZ! — special edition — containment research',
     body:
-`POST-VITAL WEEKLY · Special Edition
+`BRAINZ!  ·  Special Edition
 29 October. We are off schedule. The reason is below.
+
+The editor is aware that this week of all weeks our name sits
+poorly against the subject matter. It has been raised internally.
+It has been raised externally. It is being kept.
 
 A JOINT STATEMENT
 
   The Society for the Ethical Treatment of Ambulatory Former Humans,
-  The Threshold Review and the Ambulatory Labour Project agree on
-  almost nothing and have never co-signed anything. This week they
-  did. It is four sentences:
+  the Gait & Locomotion Group and the Reach & Repeat rehabilitation
+  network agree on almost nothing and have never co-signed anything.
+  This week they did. It is four sentences:
 
     Every facility doing this work holds an exemption on the same
     ground — that the subject was not a living human subject at
@@ -266,7 +330,7 @@ not the most uncomfortable voice in the room:
   "We have said for four years that these are not people. We have
   never once said that this makes them yours."
 
-Regular digest resumes Monday.` },
+Regular issue resumes Monday. The dog thread continues regardless.` },
 
   /* ---------- the review board ---------- */
   { folder: 'sent', date: '2025-11-04 16:22', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
