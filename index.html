@@ -352,8 +352,8 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
 .subjchips{gap:3px;padding-right:2px}
 .subjchips button{font-size:13px;padding:3px 7px;gap:5px;flex:none}
 .subjchips i{width:7px;height:7px}
-.mailbody{grid-template-columns:200px minmax(400px,34%) minmax(0,1fr)}
-@media (max-width:1240px){.mailbody{grid-template-columns:168px minmax(330px,36%) minmax(0,1fr)}}
+.mailbody{grid-template-columns:250px minmax(380px,32%) minmax(0,1fr)}
+@media (max-width:1240px){.mailbody{grid-template-columns:215px minmax(300px,32%) minmax(0,1fr)}}
 @media (max-width:940px){.mailbody{grid-template-columns:150px minmax(0,1fr)}#mpane{display:none}#s-files.read #mlistpane{display:none}#s-files.read #mpane{display:flex}.mback{display:block!important}}
 .mailside{overflow:auto;padding:6px 0}
 .mailside h4{margin:0;padding:12px 14px 6px;font-size:14px;font-weight:600;letter-spacing:.12em;color:#8fa0a6;text-transform:uppercase;border-top:1px solid var(--line)}
@@ -364,7 +364,9 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
 .mailside a .ico{width:16px;height:16px;color:var(--red)}
 .mailside a .n{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--comms)}
 .mailside a .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mailside .att a{font-family:var(--mono);font-size:13px}
+.mailside .att a{font-family:var(--mono);font-size:13px;align-items:flex-start}
+.mailside .att a .nm{white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+.mailside .att a .ico{margin-top:2px}
 .mlist{flex:1;min-height:0;overflow:auto}
 .mlist a{display:block;padding:9px 14px;border-bottom:1px solid var(--line);cursor:pointer;border-left:2px solid transparent}
 .mlist a:hover{background:rgba(134,212,230,.05)}
@@ -682,7 +684,12 @@ for(let i=1;i<=16;i++){if(i===11)continue;const d=document.createElement('div');
 camlist.appendChild(document.createElement('hr'));
 ['Lab A','Lab B','Storage','Corridors','Exterior','All Cameras'].forEach(n=>{const d=document.createElement('div');d.innerHTML=`<i class="dot"></i>${n.toUpperCase()}`;camlist.appendChild(d)});
 /* occasional signal drops, spread well apart */
-function camLost(i,t){if(i===3)return (t%64)>50&&(t%64)<52.6;if(i===1)return (t%47)>30&&(t%47)<30.45;if(i===2)return t>40&&(t%83)<1.5;return false}
+function camLost(i,t){
+ const f=FEEDS[i]||{},br=(typeof BREACH==='number')?BREACH:0;
+ let share=0.03+0.30*br;                       /* fraction of the time with no signal */
+ if(f.offAt!==undefined&&typeof DAY==='number'&&DAY<=f.offAt)share=0.62;
+ const period=13+((i*7)%11);                   /* each camera on its own rhythm */
+ return ((t+i*13.7)%period) < share*period}
 
 /* facility map (blueprint) */
 const MW=48,MH=34;let M;
@@ -1952,13 +1959,13 @@ function applyDay(){
     date:m.day===undefined?(m.date||''):dayDate(m.day,m.time||'09:00'),
     unread:m.day===undefined?false:m.day===DAY}))
   .sort((a,b)=>(b.date>a.date)-(b.date<a.date)).map((m,i)=>(m.i=i,m));
- ATT=[...(MAIL.attachments||[]).map(a=>({name:a.name||'FILE',text:a.text||'',media:a.media||''})),
+ ATT=[...(MAIL.attachments||[]).filter(a=>a.day===undefined||a.day>=DAY)
+       .map(a=>({name:a.name||'FILE',text:a.text||'',media:a.media||''})),
       ...SUBJ.filter(x=>x.id!=='0-00').map(x=>({name:'subject_'+x.id+'.rec',text:subjText(x),media:''}))].map((a,i)=>(a.i=i,a));
  FILES=ATT;
  /* cameras that have gone dark */
  FEEDS.forEach(f=>{
-  const off=!f.src0||(f.offAt!==undefined&&DAY<=f.offAt);
-  if(off){f.m=null;return}
+  if(!f.src0){f.m=null;return}
   const rev=f.revealSrc&&f.reveal!==undefined&&DAY<=f.reveal;
   if(rev&&!f.mRev)f.mRev=mediaObj(f.revealSrc);
   f.m=rev?f.mRev:f.m0});

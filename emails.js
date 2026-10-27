@@ -1106,7 +1106,7 @@ Hold your position. They are coming.` }
 Rev 4 note: rule 6 added following an incident. The name has been
 removed from all prior revisions.` },
 
-  { name: 'door_events_B1.log', text:
+  { name: 'door_events_B1.log', day: 0, text:
 `21:52  LAB B DOOR        BADGE (TECH)    OPEN
 21:55  VENT 7 HATCH      MANUAL          OPEN
 21:57  LAB B DOOR        FORCED          ALARM
@@ -1117,7 +1117,7 @@ removed from all prior revisions.` },
 22:38  COMMS ROOM        BADGE (PI)      SEALED
 22:39  COMMS ROOM        —               SOMETHING KNOCKING` },
 
-  { name: 'staff_roster_sublevel_B.txt', text:
+  { name: 'staff_roster_sublevel_B.txt', day: 0, text:
 `SUBLEVEL B · ON SITE 21:58 · 23 TOTAL
 
 PRINCIPAL INVESTIGATOR   Virology       ALIVE · COMMS ROOM
@@ -1131,7 +1131,7 @@ CAFETERIA STAFF          Kitchen        SUBJECT 0-31
 RESEARCH SCIENTIST       Lab A          SUBJECT 0-33
 (14 more)                —              [[UNACCOUNTED FOR]]` },
 
-  { name: 'evac_routes_B1.txt', text:
+  { name: 'evac_routes_B1.txt', day: 1, text:
 `EVACUATION ROUTES · LEVEL B1
 
 ROUTE A   Stairwell C to loading dock      BLOCKED
@@ -1142,7 +1142,7 @@ ROUTE D   Wait for rescue                  RECOMMENDED
 Rescue teams enter through the loading dock.
 Listen for the foam.` },
 
-  { name: 'power_report_2240.txt', text:
+  { name: 'power_report_2240.txt', day: 0, text:
 `POWER · LEVEL B1 · AUTO REPORT 22:40
 
 MAIN GRID          OFFLINE
@@ -1153,7 +1153,7 @@ COMMS ROOM         PRIORITY ROUTING
 FREEZER, LAB A     ON (please)
 COFFEE MACHINE     ON (unexplained)` },
 
-  { name: 'personal_log_2209.txt', text:
+  { name: 'personal_log_2209.txt', day: 0, text:
 `[PERSONAL LOG · 22:09 · TRANSCRIPT]
 
 It is in the air handling now. Vent 7. I told them in February.
