@@ -39,6 +39,269 @@ window.EMAILS = {
 
   messages: [
 
+  /* ---------- a newsletter the PI never quite unsubscribed from ---------- */
+
+  { folder: 'archive', date: '2026-01-16 06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
+    to: 'Principal Investigator', subject: 'Community Digest #184 — the word problem',
+    body:
+`POST-VITAL WEEKLY
+Community Digest #184 · week of 12 January
+
+MOST DISCUSSED
+
+  Society for the Ethical Treatment of Ambulatory Former Humans
+  Thread: "Every word we have was coined from behind a barricade"
+
+  SETAFH's language working group published its position paper on
+  Tuesday and it has not stopped arguing since. The central claim is
+  narrower than the headlines suggest. They are not saying the word
+  is hurtful. They are saying it is unearned.
+
+  "Zombie" is borrowed from Haitian tradition, where it meant
+  something specific and meant it first. It was taken, emptied, and
+  reapplied to a population that did not exist when the word was
+  made. Whatever else that is, it is not description.
+
+  "The walking dead" asks you to hold two claims at once and settle
+  neither. If they are dead, the walking needs explaining. If they
+  walk, the dead is doing work it cannot support. The phrase survives
+  because it lets us stop thinking at exactly the point where
+  thinking becomes expensive.
+
+  The paper's conclusion is the part worth reading twice: we do not
+  lack a word because the thing is new. We lack a word because we
+  have not decided what it is, and the terms we use are a way of not
+  having to decide.
+
+  DISSENT WITHIN THE RANKS. The proposed replacement — "post-vital
+  individual" — took heavy fire from SETAFH's own membership, who
+  note that a neutral term makes a containment order easier to sign
+  than an ugly one does. User greywall_7: "You have invented a word
+  that will appear on the form. Congratulations."
+
+ALSO THIS WEEK
+
+  The Vital Line (skeptic forum) ran its quarterly rebuttal. Their
+  position remains the most uncomfortable one in the discourse: that
+  attributing interiority to anything that moves toward us is an
+  ancient reflex, not an observation, and that the entire field is
+  the reflex wearing a lab coat. Their closing line got quoted
+  everywhere this week, mostly by people arguing against it:
+
+  "The question is not whether they are people. The question is why
+  we need them to be."
+
+You are receiving this digest because you registered at a partner
+conference. Manage preferences at the link below.` },
+
+  { folder: 'archive', date: '2026-04-24 06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
+    to: 'Principal Investigator', subject: 'Community Digest #198 — name the property',
+    files: ['directive_template_v4.pdf'],
+    body:
+`POST-VITAL WEEKLY
+Community Digest #198 · week of 20 April
+
+MOST DISCUSSED
+
+  The Threshold Review (continuity working group)
+  Thread: "Name the property. I'll wait."
+
+  The thread is four hundred posts long and the original question has
+  never been answered, which is the point its author was making.
+
+  The challenge: identify the property whose loss ends personhood,
+  such that the reanimated lack it and you do not. Continuity of
+  experience fails — we grant it across general anaesthesia, where
+  there is no experience to be continuous with. Continuity of memory
+  fails — we grant it across severe retrograde amnesia, and we do not
+  hold a funeral. Continuity of matter fails on a timescale of years
+  for everyone in this discussion.
+
+  Responsiveness to name and to pain is the clinical standard, and it
+  is the one that comes closest. But we do not withdraw personhood
+  from patients in minimally conscious states who fail the same
+  battery on the same afternoon. We withdraw it here. The working
+  group's question is what is doing the work in one case and not the
+  other, and whether we would accept the answer out loud.
+
+  The best counter-argument came from within: that the property is
+  the capacity to hold a preference. The reply has been widely
+  circulated — "Then name the preference test, and tell me you would
+  pass it on your worst day."
+
+ADVANCE DIRECTIVES
+
+  Template v4 is attached and the uptake numbers are the story. Four
+  hundred thousand filings in eighteen months, the standard clause
+  reading: in the event of post-vital ambulation, I do not consent to
+  cranial destruction.
+
+  No jurisdiction has honoured one. The obstacle is structural rather
+  than hostile: a directive is executed on behalf of a person, and
+  the moment it becomes relevant there is no longer a person for it
+  to be executed on behalf of. It is the only legal instrument we
+  have that is void precisely when it applies.
+
+  The counter-argument the courts have not answered: we already
+  honour directives as a matter of respecting the prior self's wishes
+  about the later self's body. Nothing in that reasoning stops at
+  death. We simply have not needed it to continue past death before.
+
+You are receiving this digest because you registered at a partner
+conference. Manage preferences at the link below.` },
+
+  { folder: 'archive', date: '2026-08-07 06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
+    to: 'Principal Investigator', subject: 'Community Digest #213 — the Hollings decision',
+    body:
+`POST-VITAL WEEKLY
+Community Digest #213 · week of 3 August
+
+MOST DISCUSSED
+
+  Reanimation & Estates (practitioner listserv)
+  Thread: "Hollings — read it before you tell me it is simple"
+
+  The appellate decision landed Monday and the listserv has produced
+  more traffic in four days than in the preceding year.
+
+  Facts, briefly. Decedent died in March. Estate was probated and
+  distributed in June. Decedent returned, ambulatory, in July, eleven
+  days after the final accounting was approved.
+
+  The heirs argued that death is an event, not a state: it occurred,
+  the instrument executed, and the distribution is final regardless
+  of what the decedent does afterwards. The court agreed. The estate
+  was not unwound.
+
+  The part drawing the attention is the standing analysis. The
+  decedent could not challenge the ruling, because a plaintiff must
+  be a person and the court had just finished explaining that he was
+  not one. He is, as one subscriber put it, not dead enough to be
+  buried and not alive enough to sue. He is in his daughter's garage.
+
+  The insurers have already filed on the opposite theory — that the
+  policy insured against death, that death has evidently proven
+  survivable, and that the benefit should be clawed back. They are
+  arguing the decedent is not dead. SETAFH filed an amicus brief
+  supporting the insurers, which has caused a certain amount of
+  difficulty for everybody.
+
+ALSO THIS WEEK
+
+  Post-Vital Media Watch published its annual footage audit, and the
+  methodology section is better than the finding. Every piece of
+  encounter footage in the archive was recorded by someone who
+  survived to retain it. The archive therefore excludes, by
+  construction, every encounter that ended without incident.
+
+  "We do not have a base rate of attack," the report notes. "We have
+  a base rate of filmed attack, and it is one hundred per cent, and
+  it was always going to be."
+
+You are receiving this digest because you registered at a partner
+conference. Manage preferences at the link below.` },
+
+  { folder: 'sent', date: '2026-08-07 09:12', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
+    to: 'Post-Vital Weekly', subject: 'Unsubscribe',
+    body:
+`Please remove this address.
+
+I did not register at a partner conference. I attended one.` },
+
+  { folder: 'inbox', day: 4, time: '06:00', from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
+    to: 'Principal Investigator', subject: 'Community Digest #224 — the long quiet threads',
+    body:
+`POST-VITAL WEEKLY
+Community Digest #224 · week of 26 October
+
+MOST DISCUSSED
+
+  The Tether (family and caregiver support)
+  Thread: "Day 340"
+
+  The Tether does not usually appear in this digest. It is a quiet
+  forum, it discourages crossposting, and its members have asked more
+  than once not to be studied. We are including this with the
+  author's permission and none of the usual commentary.
+
+    Day 340. He still turns toward the door when the post arrives.
+
+    The consultant was kind about it. She explained that it is sound
+    localisation, that the auditory reflex is subcortical and intact,
+    and that it is not recognition. She has explained this four
+    times. I understand it. I have understood it since the second
+    time.
+
+    I am going to keep saying good morning to him. I am not confused
+    about what he is. I am doing it because of what I am.
+
+  The thread has four thousand replies and almost no argument in it,
+  which makes it the only one in the discourse this week that does
+  not appear to be about something else.
+
+ALSO THIS WEEK
+
+  The Ambulatory Labour Project continues to document unpaid
+  utilisation in three jurisdictions and continues to be unable to
+  identify a plaintiff. Their position is that the handlers are
+  owed hazard pay, which is uncontroversial, and that the handled are
+  owed something, which is the part nobody will take to a hearing.
+
+  The Vital Line responded with their usual economy: "You cannot
+  underpay a thing that cannot be paid. You can only underpay the
+  person you are pretending it is."
+
+  Nobody has answered them properly in two years. Several thousand
+  people have answered them loudly.
+
+You are receiving this digest because you registered at a partner
+conference. Manage preferences at the link below.` },
+
+  { folder: 'inbox', day: 1, time: '06:00', flag: true, from: 'Post-Vital Weekly', addr: 'digest@postvital-weekly.org',
+    to: 'Principal Investigator', subject: 'SPECIAL EDITION — containment research and the consent problem',
+    body:
+`POST-VITAL WEEKLY
+Special Edition · 29 October
+
+We are off schedule this week. The reason is below.
+
+THE CONSENT PROBLEM
+
+  SETAFH, The Threshold Review and the Ambulatory Labour Project have
+  issued a joint statement. The three organisations agree on almost
+  nothing and have never co-signed anything before.
+
+  The statement concerns containment research. Its argument is short
+  enough to reproduce in full:
+
+    Every facility conducting this work has obtained an exemption on
+    the same ground: that the subject was not a living human subject
+    at the point of enrolment. The determination is made once, at
+    intake, and it is never revisited.
+
+    We do not dispute the finding. We dispute the timing. A
+    determination made at the one moment when the subject cannot
+    object, and never made again, is not a finding. It is a
+    procedure for avoiding one.
+
+    We ask that status be redetermined at intervals, by someone who
+    did not enrol them.
+
+  We are aware that a portion of this list works at such facilities.
+  We have not removed anyone from the distribution. We would rather
+  you read it.
+
+ONE MORE THING
+
+  The Vital Line declined to sign, and published their reasons, and
+  for once they are not the most uncomfortable voice in the room:
+
+  "We have said for four years that these are not people. We have
+  never once said that this makes them yours."
+
+You are receiving this digest because you registered at a partner
+conference. Manage preferences at the link below.` },
+
   /* ---------- the review board ---------- */
   { folder: 'sent', date: '2025-11-04 16:22', from: 'Principal Investigator', addr: 'pi.sublevel-b@exresfac.org',
     to: 'Institutional Review Board', subject: 'Request for exemption determination — Protocol B-07',
