@@ -38,7 +38,7 @@ window.CONTENT = {
        on. -1 = the channel never comes up. Until it does the screen reads
        NO SIGNAL, the waveform sits flat, and the audio file is never even
        requested. offLine1/offLine2 are what it says while it's dead.     */
-    liveFrom: 2,
+    liveFrom: -1,
     offLine1: 'No carrier found.',
     offLine2: 'Nothing is transmitting on this channel.',
 
@@ -182,7 +182,7 @@ window.CONTENT = {
       { cmd: 'joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
       { cmd: 'logan',    listed: false, text: '\nHappy Birthday Logan!' },
       { cmd: 'secret',    listed: true, about: "[[REDACTED]]", text: '\nPASSWORD: ' },
-      { cmd: 'password2',  listed: false, text: "\nYup. That's the password.\nPut it in the video comments. First one gets a shoutout." }
+      { cmd: 'password2',  listed: false, text: "\nYup. That's the password.\nPut it in the video comments and get a shoutout." }
     ]
   },
 
@@ -193,8 +193,8 @@ window.CONTENT = {
      every:  seconds between auto glitches, [shortest, longest].       */
   glitches: {
     auto: true,
-    styles: ['shift', 'rgb', 'roll', 'stutter', 'flash', 'flicker', 'punch', 'crt'],
-    every: [4, 10]
+    styles: ['shift', 'rgb', 'stutter', 'flash', 'flicker', 'punch'],
+    every: [6, 12]
   },
 
   /* ---------- bottom menu labels ---------- */
