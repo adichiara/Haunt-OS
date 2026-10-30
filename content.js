@@ -139,7 +139,7 @@ window.CONTENT = {
        conversion, mutation rate, incubation, stability — comes from the
        countdown in timeline.js, not from tapping.                      */
     clips: ['media/lab3.mp4', 'media/lab1.mp4', 'media/lab2.mp4', 'media/lab4.mp4'],
-    grade: 'green', overlay: 'track',
+    grade: 'red', overlay: 'track',
     panels: ['dna', 'serum']
   },
 
