@@ -182,7 +182,7 @@ window.CONTENT = {
       { cmd: 'joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
       { cmd: 'logan',    listed: false, text: '\nHappy Birthday Logan!' },
       { cmd: 'secret',    listed: true, about: "[[REDACTED]]", text: '\nPASSWORD: ' },
-      { cmd: 'password2',  listed: false, text: "\nYup. That's the password.\nPut it in the video comments and get a shoutout." }
+      { cmd: 'password2',  listed: false, text: "\nYup. That's the password." }
     ]
   },
 
