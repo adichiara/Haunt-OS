@@ -38,7 +38,7 @@ window.CONTENT = {
        on. -1 = the channel never comes up. Until it does the screen reads
        NO SIGNAL, the waveform sits flat, and the audio file is never even
        requested. offLine1/offLine2 are what it says while it's dead.     */
-    liveFrom: -1,
+    liveFrom: 2,
     offLine1: 'No carrier found.',
     offLine2: 'Nothing is transmitting on this channel.',
 
@@ -139,7 +139,7 @@ window.CONTENT = {
        conversion, mutation rate, incubation, stability — comes from the
        countdown in timeline.js, not from tapping.                      */
     clips: ['media/lab3.mp4', 'media/lab1.mp4', 'media/lab2.mp4', 'media/lab4.mp4'],
-    grade: 'red', overlay: 'track',
+    grade: 'green', overlay: 'track',
     panels: ['dna', 'serum']
   },
 
@@ -168,7 +168,7 @@ window.CONTENT = {
                tx, cctv, map, alert, vitals, lab, files (mail), end   */
   terminal: {
     welcome: 'Type HELP for a list of commands.',
-    quick: ['help', 'ls', 'subjects', 'lockdown'],
+    quick: ['help', 'mail', 'ls', 'subjects', 'lockdown'],
     commands: [
       { cmd: 'lockdown', listed: true,  about: 'check lockdown status', goto: 'alert',
         text: 'LOCKDOWN ACTIVE SINCE 21:59.\nALL EXITS SEALED. OVERRIDE REQUIRES LEVEL 5.\nYOU ARE LEVEL 0.' },
@@ -180,8 +180,9 @@ window.CONTENT = {
       { cmd: 'exit',     listed: false, text: 'There is no exit.' },
       { cmd: 'sudo',     listed: false, text: 'Nice try.' },
       { cmd: 'joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
+      { cmd: 'Joshua',   listed: false, text: 'Greetings Professor Falken...\n\nShall we play a game?' },
       { cmd: 'logan',    listed: false, text: '\nHappy Birthday Logan!' },
-      { cmd: 'secret',    listed: true, about: "[[REDACTED]]", text: '\nPASSWORD: ' },
+      { cmd: 'login',    listed: true, text: '\nPASSWORD: ' },
       { cmd: 'password2',  listed: false, text: "\nYup. That's the password." }
     ]
   },
@@ -193,11 +194,11 @@ window.CONTENT = {
      every:  seconds between auto glitches, [shortest, longest].       */
   glitches: {
     auto: true,
-    styles: ['shift', 'rgb', 'stutter', 'flash', 'flicker', 'punch'],
-    every: [6, 12]
+    styles: ['shift', 'rgb', 'roll', 'stutter', 'flash', 'flicker', 'punch', 'crt'],
+    every: [4, 10]
   },
 
   /* ---------- bottom menu labels ---------- */
   nav: { tx: 'Transmission', cctv: 'Cameras', map: 'Map', alert: 'Alert', vitals: 'Vitals', lab: 'Lab',
-         files: 'Mail', term: 'Terminal', end: 'Respond' }
+         files: 'Mail', term: 'Terminal', archive: 'Archive', end: 'Respond' }
 };

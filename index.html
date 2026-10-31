@@ -343,6 +343,34 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
 .tin span{color:var(--comms)}
 .tin input{flex:1;min-width:0;background:transparent;border:0;outline:none;color:#fff;font:inherit;caret-color:var(--comms)}
 .side a{cursor:pointer}
+#pvbar{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:14px;padding:7px 16px;background:#2a0d10;border-bottom:1px solid var(--red);font-family:var(--cond);font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:#ffd5d8;white-space:nowrap;overflow:hidden}
+#pvbar .pvl{color:var(--red);font-weight:600}
+#pvbar .pvro{margin-left:auto;color:#a98}
+#pvbar button{font:inherit;font-family:var(--cond);letter-spacing:.14em;text-transform:uppercase;color:#fff;background:rgba(255,43,56,.18);border:1px solid var(--red);padding:3px 14px;cursor:pointer}
+body.pv .wrap{top:34px}
+@media (max-width:700px){
+ #pvbar{font-size:13px;gap:9px;padding:5px 10px;letter-spacing:.1em}
+ #pvbar .pvro{display:none}
+ #pvbar button{padding:2px 9px}
+ body.pv .wrap{top:27px}}
+.arcpane{height:100%;display:flex;flex-direction:column;min-height:0}
+.arcwrap{flex:1;min-height:0;overflow:auto;padding:14px 18px 18px}
+.arclist{display:flex;flex-direction:column;gap:2px}
+.arcrow{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;padding:13px 16px;border:1px solid var(--line);background:rgba(255,255,255,.012);font-family:var(--mono);font-size:18px;color:#cbd5d8}
+.arcrow:hover{background:rgba(134,212,230,.06)}
+.arcrow .when{color:#fff;letter-spacing:.04em}
+.arcrow .st{color:#8fa0a6;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arcrow .st b{color:#cbd5d8;font-weight:400}
+.arcrow .act{font-family:var(--cond);font-size:18px;letter-spacing:.16em;text-transform:uppercase;color:#86d4e6;border:1px solid var(--line2);padding:4px 16px;cursor:pointer;white-space:nowrap}
+.arcrow:hover .act{color:#fff;border-color:#86d4e6}
+.arcrow.cur{border-color:var(--red)}
+.arcrow.cur .act{color:#ffd5d8;border-color:transparent;cursor:default}
+.arcrow.here{border-color:#86d4e6}
+.arcfoot{margin-top:18px;font-family:var(--mono);font-size:15px;line-height:1.7;color:var(--dim)}
+@media (max-width:860px){
+ .arcrow{grid-template-columns:1fr auto;grid-template-areas:'when act' 'st act';gap:4px 14px;font-size:16px}
+ .arcrow .when{grid-area:when}.arcrow .st{grid-area:st;white-space:normal;font-size:14px}
+ .arcrow .act{grid-area:act;align-self:center}}
 .tabs{overflow-x:auto;scrollbar-width:none;gap:0}
 .tabs::-webkit-scrollbar{display:none}
 .tabs span{flex:none;padding:0 11px;font-size:17px}
@@ -508,7 +536,14 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
   </section>
 
   <!-- TERMINAL -->
-  <section class="screen" id="s-term" hidden>
+  <section class="screen" id="s-archive" hidden>
+  <div class="pane arcpane">
+   <div class="ph"><span>Snapshot index</span><small id="arcsub"></small></div>
+   <div class="arcwrap"><div class="arclist" id="arclist"></div>
+    <div class="arcfoot" id="arcfoot"></div></div>
+  </div>
+ </section>
+ <section class="screen" id="s-term" hidden>
    <div class="appbar"><span class="brand"><img class="bioimg" alt=""><span class="t-brand">Haunt-OS v3.7.4</span></span><span class="sp"></span><span class="dt"><span class="t-date">OCT 31</span><span data-clock></span></span></div>
    <div class="tabs"><span>Facility</span><span>Security</span><span>Medical</span><span>Research</span><span>Files</span><span class="on">Terminal</span><span class="search">Search commands… <svg class="ico" viewBox="0 0 24 24" style="width:14px"><circle cx="10" cy="10" r="6"/><path d="M15 15l5 5"/></svg></span></div>
    <div class="body" style="grid-template-columns:1fr">
@@ -534,8 +569,9 @@ body{padding:0!important;margin:0;overflow:hidden;background:#000}
 </div>
 </div>
 
+<div id="pvbar" hidden><span class="pvl">ARCHIVED STATE</span><span id="pvdate"></span><span class="pvro">READ ONLY</span><button id="pvexit">Return to live</button></div>
 <nav id="webnav" aria-label="Screens">
- <button data-mode="tx" class="on">Transmission</button><button data-mode="cctv">Cameras</button><button data-mode="map">Map</button><button data-mode="alert">Alert</button><button data-mode="vitals">Vitals</button><button data-mode="lab">Lab</button><button data-mode="files">Files</button><button data-mode="term">Terminal</button><button data-mode="end" class="resp">Respond</button>
+ <button data-mode="tx" class="on">Transmission</button><button data-mode="cctv">Cameras</button><button data-mode="map">Map</button><button data-mode="alert">Alert</button><button data-mode="vitals">Vitals</button><button data-mode="lab">Lab</button><button data-mode="files">Files</button><button data-mode="term">Terminal</button><button data-mode="archive">Archive</button><button data-mode="end" class="resp">Respond</button>
  <span class="sp"></span><span class="hint2" id="hint2"></span><button class="mini" id="w-replay">Replay</button><button class="mini" id="w-snd">Sound on</button><button class="mini" id="w-full" aria-label="Full screen">⛶</button>
 </nav>
 <div id="connect"><img class="bioimg" alt=""><div class="k" id="c-kick">INCOMING TRANSMISSION</div><h1 id="c-title">CHANNEL 07</h1><button id="c-go">Connect</button><small id="c-note"></small></div>
@@ -1790,7 +1826,7 @@ function startTx(){S.txT0=S.t;S.audioStarted=false;hist.fill(0);if(audio){audio.
 function unlockAudio(){if(!audio||!txLive())return;if(!audio.src)audio.src=TXC.audio;audio.muted=true;const p=audio.play();if(p)p.then(()=>{audio.pause();audio.muted=!soundOn;try{audio.currentTime=0}catch(e){}}).catch(()=>{audio.muted=!soundOn})}
 let PATS=[];const VP={get i(){return VPi}};
 function setPatient(i){VPi=(i+PATS.length)%PATS.length;const p=PATS[VPi];VB=Object.assign({hr:74,spo2:98,resp:16,bp:'118/76',temp:37},p.base||{});V.scen=SCEN[p.monitor]?p.monitor:'flat';$('#t-vbed').textContent='Patient Monitor  //  '+(p.bedline||'');vReset();S.modeT0=S.t;document.querySelectorAll('.subjchips button').forEach((b,j)=>b.classList.toggle('on',j===VPi))}
-const HINTS={files:'Pick a folder, then a message',term:'Type HELP, or tap a command',tx:'',cctv:'Pick a camera from the list · tap a feed to enlarge',map:'',alert:'',vitals:'Pick a subject top right, or tap the monitor',lab:'Tap the specimen: next sample · tap a panel to switch it',end:''};
+const HINTS={files:'Pick a folder, then a message',term:'Type HELP, or tap a command',tx:'',cctv:'Pick a camera from the list · tap a feed to enlarge',map:'',alert:'',vitals:'Pick a subject top right, or tap the monitor',lab:'Tap the specimen: next sample · tap a panel to switch it',end:'',archive:'Pick a snapshot to restore'};
 function goMode(m){
  if(m==='end'){                      /* Respond = send the security team in */
   if(SQ.on)teamStop();
@@ -1824,7 +1860,7 @@ $('#s-alert').addEventListener('click',()=>{ac();glitch('flash')});
  const CN=C.connect||{};T('#c-kick',CN.kicker);T('#c-title',CN.title);T('#c-go',CN.button);T('#c-note',CN.note);
  document.title=(C.endCard&&C.endCard.kicker)||'Incoming Transmission';})();
 /* ---------- mail ---------- */
-screens.files=$('#s-files');screens.term=$('#s-term');
+screens.files=$('#s-files');screens.term=$('#s-term');screens.archive=$('#s-archive');
 const escH=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const rich=s=>escH(s).replace(/\[\[(.+?)\]\]/g,'<span class="rd">$1</span>');
 const plain=s=>String(s).replace(/\[\[(.+?)\]\]/g,(m,g)=>'#'.repeat(Math.max(4,g.length)));
@@ -1997,7 +2033,45 @@ function applyDay(){
   :BREACH<.7?['shift','flicker','rgb','roll','stutter','punch']:GKINDS.slice();
  S.nextGlitch=S.t+GMIN;
  buildChips();setPatient(0);renderSide();renderList();blankPane();cams.forEach(c=>warmFeed(c.feed));syncVideos();
- if(PREVIEW)console.log('Haunt-OS preview: '+(DAY===0?'party day':DAY+' days out'));}
+ if(PREVIEW)console.log('Haunt-OS preview: '+(DAY===0?'party day':DAY+' days out'));
+ buildArchive();}
+
+/* ---------- snapshot archive ----------
+   The tokens already exist to stop anyone skipping ahead during the
+   countdown. Once day 0 has passed there is nothing left to protect, so
+   the same links become an index the console offers on purpose. */
+const MON3A=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function arcLabel(d){const p=dayDate(d).split('-');return p[2]+' '+MON3A[+p[1]-1]+' '+p[0]}
+function buildArchive(){
+ const list=$('#arclist');if(!list)return;
+ const live=clampDay(daysUntil(new Date()));
+ let h='';
+ for(let d=FIRSTDAY;d>=0;d--){
+  const E=dayState(d)||{};
+  const seal=Math.max(0,Math.round((1-(+E.breach||0))*100));
+  const subj=(window.SUBJECTS||[]).filter(x=>x.day===undefined||x.day>=d).length||1;
+  const al=(E.alert&&E.alert.subtitle)||'NOMINAL';
+  const cur=d===live, here=d===DAY&&!cur;
+  h+='<div class="arcrow'+(cur?' cur':here?' here':'')+'" data-d="'+d+'">'
+    +'<span class="when">'+arcLabel(d)+' · 06:00</span>'
+    +'<span class="st">SEAL <b>'+seal+'%</b> · ISOLATION <b>'+subj+'</b> · <b>'+al+'</b></span>'
+    +'<span class="act">'+(cur?'Current':here?'Viewing':'Restore')+'</span></div>';
+ }
+ list.innerHTML=h;
+ $('#arcsub').textContent=(FIRSTDAY+1)+' captures retained';
+ $('#arcfoot').innerHTML='Automated daily capture, 06:00, Sublevel B.<br>'
+   +'Snapshots are read only. Restoring one suspends live monitoring '
+   +'until the session is returned to current.';
+ list.querySelectorAll('.arcrow').forEach(r=>r.onclick=()=>{
+   const d=+r.dataset.d;
+   if(d===live){location.search='';return}
+   location.search='?k='+tok(d)});
+ const bar=$('#pvbar');
+ if(bar){
+  bar.hidden=!PREVIEW;document.body.classList.toggle('pv',PREVIEW);
+  if(PREVIEW)$('#pvdate').textContent=arcLabel(DAY);
+  $('#pvexit').onclick=()=>{location.search=''};
+ }}
 
 const dayReady=resolveDay();
 S.paused=true;
